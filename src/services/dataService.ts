@@ -230,3 +230,33 @@ export function updateFridgeAfterMeal(mealItems: Meal['items']): void {
   saveData(data);
 }
 
+/**
+ * Delete a meal and restore used percentages to fridge items
+ * Only restores if the item still exists in the fridge (by ID)
+ */
+export function deleteMeal(mealId: string): boolean {
+  const data = getData();
+  const mealIndex = data.meals.findIndex(meal => meal.id === mealId);
+
+  if (mealIndex === -1) {
+    return false;
+  }
+
+  const meal = data.meals[mealIndex];
+
+  // Restore percentages to fridge items
+  for (const mealItem of meal.items) {
+    const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
+    if (fridgeItem) {
+      // Restore the percentage used back to the item
+      fridgeItem.percentageLeft = Math.min(100, fridgeItem.percentageLeft + mealItem.percentageUsed);
+    }
+    // If item doesn't exist in fridge, do nothing (as per requirements)
+  }
+
+  // Remove the meal
+  data.meals.splice(mealIndex, 1);
+  saveData(data);
+  return true;
+}
+

@@ -85,7 +85,7 @@ function Fridge() {
       ) : (
         <div className="fridge-items">
           {items.map((item) => (
-            <FridgeItemCard key={item.id} item={item} />
+            <FridgeItemCard key={item.id} item={item} onUpdate={loadItems} />
           ))}
         </div>
       )}

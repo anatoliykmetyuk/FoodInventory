@@ -8,6 +8,7 @@ import {
   getMeals,
   addMeal,
   updateMeal,
+  deleteMeal,
   getShoppingEvents,
   addShoppingEvent,
   getSettings,
@@ -127,6 +128,109 @@ describe('dataService', () => {
 
       const updated = updateMeal(meal.id, { portionsLeft: 1 });
       expect(updated?.portionsLeft).toBe(1);
+    });
+
+    it('should delete a meal and restore percentages to fridge items', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create meal items
+      const mealItems = [
+        {
+          itemId: item.id,
+          name: 'Apple',
+          percentageUsed: 50,
+          cost: 0.75,
+          calories: 47.5,
+        },
+      ];
+
+      // Create a meal using the item
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: mealItems,
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+      });
+
+      // Update fridge after meal (simulating meal creation)
+      updateFridgeAfterMeal(mealItems);
+
+      // Verify meal exists
+      expect(getMeals()).toHaveLength(1);
+
+      // Verify item percentage was reduced
+      const itemAfterMeal = getItem(item.id);
+      expect(itemAfterMeal?.percentageLeft).toBe(50);
+
+      // Delete the meal
+      const deleted = deleteMeal(meal.id);
+      expect(deleted).toBe(true);
+
+      // Verify meal is deleted
+      expect(getMeals()).toHaveLength(0);
+
+      // Verify item percentage was restored
+      const itemAfterDelete = getItem(item.id);
+      expect(itemAfterDelete?.percentageLeft).toBe(100);
+    });
+
+    it('should not restore percentages if item no longer exists in fridge', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create a meal using the item
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Apple',
+            percentageUsed: 50,
+            cost: 0.75,
+            calories: 47.5,
+          },
+        ],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+      });
+
+      // Remove item from fridge
+      removeItem(item.id);
+      expect(getItem(item.id)).toBeNull();
+
+      // Delete the meal - should not error even though item doesn't exist
+      const deleted = deleteMeal(meal.id);
+      expect(deleted).toBe(true);
+
+      // Verify meal is deleted
+      expect(getMeals()).toHaveLength(0);
+
+      // Verify item still doesn't exist
+      expect(getItem(item.id)).toBeNull();
+    });
+
+    it('should return false when deleting non-existent meal', () => {
+      const deleted = deleteMeal('non-existent');
+      expect(deleted).toBe(false);
     });
   });
 

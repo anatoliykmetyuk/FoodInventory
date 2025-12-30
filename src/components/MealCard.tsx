@@ -7,9 +7,10 @@ import './MealCard.css';
 interface MealCardProps {
   meal: Meal;
   onConsumePortion?: (mealId: string) => void;
+  onDelete?: (mealId: string) => void;
 }
 
-function MealCard({ meal, onConsumePortion }: MealCardProps) {
+function MealCard({ meal, onConsumePortion, onDelete }: MealCardProps) {
   const currency = getCurrency();
   const date = new Date(meal.date);
   const formattedDate = date.toLocaleDateString('en-US', {
@@ -32,7 +33,7 @@ function MealCard({ meal, onConsumePortion }: MealCardProps) {
           </div>
           <div className="meal-detail">
             <span className="detail-label">Calories:</span>
-            <span className="detail-value">{meal.totalCalories}</span>
+            <span className="detail-value">{parseFloat(meal.totalCalories.toFixed(2))}</span>
           </div>
           <div className="meal-detail">
             <span className="detail-label">Portions:</span>
@@ -40,17 +41,30 @@ function MealCard({ meal, onConsumePortion }: MealCardProps) {
           </div>
         </div>
       </Link>
-      {meal.isActive && meal.portionsLeft > 0 && onConsumePortion && (
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            onConsumePortion(meal.id);
-          }}
-          className="consume-portion-button"
-        >
-          Consume Portion
-        </button>
-      )}
+      <div className="meal-card-actions">
+        {meal.isActive && meal.portionsLeft > 0 && onConsumePortion && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onConsumePortion(meal.id);
+            }}
+            className="consume-portion-button"
+          >
+            Consume Portion
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              onDelete(meal.id);
+            }}
+            className="delete-meal-button"
+          >
+            Delete
+          </button>
+        )}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { getOpenAIApiKey, setOpenAIApiKey } from '../services/settingsService';
 import CurrencySelector from '../components/CurrencySelector';
 import ExportData from '../components/ExportData';
+import ImportData from '../components/ImportData';
 import WipeData from '../components/WipeData';
 import './Settings.css';
 
@@ -64,7 +65,15 @@ function Settings() {
 
       <section className="settings-section">
         <h2>Data Management</h2>
+        <div className="data-warning">
+          <p className="warning-text">
+            <strong>⚠️ Important:</strong> All data is stored locally in your browser.
+            If you clear your browser history or data, all your information will be lost.
+            Please make sure to export and back up your data regularly.
+          </p>
+        </div>
         <ExportData />
+        <ImportData />
         <WipeData />
       </section>
     </div>

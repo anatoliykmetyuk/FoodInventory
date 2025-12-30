@@ -73,3 +73,21 @@
   background-color: #555;
 }
 
+.data-warning {
+  background-color: #2a2a2a;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.warning-text {
+  color: #fff;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.warning-text strong {
+  color: #ffc107;
+}
+

@@ -84,22 +84,8 @@ function Meal() {
 
       // Navigate to view mode
       navigate(`/cooking/meal/${newMeal.id}`);
-    } else if (id && meal) {
-      // Update existing meal (only if in edit mode)
-      updateMeal(id, {
-        name: mealName.trim(),
-        items: mealItems,
-        totalCost,
-        totalCalories,
-        portionsCooked,
-      });
-
-      // Update fridge
-      updateFridgeAfterMeal(mealItems);
-
-      setIsEditable(false);
-      loadMeal(id);
     }
+    // Meals are immutable after creation - no update path
   };
 
   const handleConsumePortion = () => {
@@ -169,6 +155,7 @@ function Meal() {
       <MealItemEditor
         mealItems={mealItems}
         onMealItemsChange={handleMealItemsChange}
+        isEditable={isEditable}
       />
 
       {!isEditable && meal && (
@@ -179,7 +166,7 @@ function Meal() {
           </div>
           <div className="summary-item">
             <span className="summary-label">Total Calories:</span>
-            <span className="summary-value">{meal.totalCalories}</span>
+            <span className="summary-value">{parseFloat(meal.totalCalories.toFixed(2))}</span>
           </div>
           <div className="summary-item">
             <span className="summary-label">Portions:</span>

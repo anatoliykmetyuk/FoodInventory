@@ -8,9 +8,10 @@ import './MealItemEditor.css';
 interface MealItemEditorProps {
   mealItems: MealItem[];
   onMealItemsChange: (items: MealItem[]) => void;
+  isEditable?: boolean;
 }
 
-function MealItemEditor({ mealItems, onMealItemsChange }: MealItemEditorProps) {
+function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: MealItemEditorProps) {
   const [fridgeItems, setFridgeItems] = useState<Item[]>([]);
   const [localMealItems, setLocalMealItems] = useState<MealItem[]>(mealItems);
   const currency = getCurrency();
@@ -98,11 +99,11 @@ function MealItemEditor({ mealItems, onMealItemsChange }: MealItemEditorProps) {
           <span className="total-label">Total Cost:</span>
           <span className="total-value">{formatPrice(totalCost, currency)}</span>
           <span className="total-label">Total Calories:</span>
-          <span className="total-value">{totalCalories}</span>
+          <span className="total-value">{parseFloat(totalCalories.toFixed(2))}</span>
         </div>
       </div>
 
-      {availableItems.length > 0 && (
+      {isEditable && availableItems.length > 0 && (
         <div className="add-item-section">
           <label htmlFor="item-select">Add Item from Fridge:</label>
           <select
@@ -148,27 +149,35 @@ function MealItemEditor({ mealItems, onMealItemsChange }: MealItemEditorProps) {
                   <tr key={mealItem.itemId}>
                     <td>{mealItem.name}</td>
                     <td>
-                      <input
-                        type="number"
-                        min="0.01"
-                        max={maxPercentage}
-                        step="0.01"
-                        value={mealItem.percentageUsed}
-                        onChange={(e) => updatePercentage(mealItem.itemId, parseFloat(e.target.value) || 0)}
-                        className="percentage-input"
-                      />
-                      <span className="max-hint">(max: {maxPercentage}%)</span>
+                      {isEditable ? (
+                        <>
+                          <input
+                            type="number"
+                            min="0.01"
+                            max={maxPercentage}
+                            step="0.01"
+                            value={mealItem.percentageUsed}
+                            onChange={(e) => updatePercentage(mealItem.itemId, parseFloat(e.target.value) || 0)}
+                            className="percentage-input"
+                          />
+                          <span className="max-hint">(max: {maxPercentage}%)</span>
+                        </>
+                      ) : (
+                        <span>{mealItem.percentageUsed}%</span>
+                      )}
                     </td>
                     <td>{formatPrice(mealItem.cost, currency)}</td>
-                    <td>{Math.round(mealItem.calories)}</td>
+                    <td>{parseFloat(mealItem.calories.toFixed(2))}</td>
                     <td>
-                      <button
-                        onClick={() => removeItem(mealItem.itemId)}
-                        className="remove-button"
-                        type="button"
-                      >
-                        Remove
-                      </button>
+                      {isEditable && (
+                        <button
+                          onClick={() => removeItem(mealItem.itemId)}
+                          className="remove-button"
+                          type="button"
+                        >
+                          Remove
+                        </button>
+                      )}
                     </td>
                   </tr>
                 );

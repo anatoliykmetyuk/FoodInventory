@@ -1,8 +1,14 @@
-- [ ] Fridge: should be able to CRUD items. This operation does NOT affect existing meals.
-- [ ] Calories on the cooking page and elsewhere: should be formatted to 2 decimal places.
-- [ ] Fridge: item layout should be a list, even on desktop.
-- [ ] Cooking: should be able to delete meals. When deleting a meal, restore used percentages of ingredients to the fridge - but only if the item is still available in the fridge, otherwise do nothing. Items are uniquely identified by their ID (and NOT by name, check and enforce this).
-- [ ] Meal: once created, should be immutable. That is, percentage used cannot be changed after creation, ingredients cannot be deleted.
-- [ ] Statistics: chart should reflect the currency of the user's account in the vertical axis.
-- [ ] Statistics: when hovering over a data point, the popup moves around for some reason. Fix this, should stay in place.
-- [ ] Statistics: should be possible to click on the entries in the popup to navigate to the entry's respective page (Meal or Shopping Event).
+- [x] Fridge: should be able to CRUD items. This operation does NOT affect existing meals.
+- [x] Calories on the cooking page and elsewhere: should be formatted to 2 decimal places.
+- [x] Fridge: item layout should be a list, even on desktop.
+- [x] Cooking: should be able to delete meals. When deleting a meal, restore used percentages of ingredients to the fridge - but only if the item is still available in the fridge, otherwise do nothing. Items are uniquely identified by their ID (and NOT by name, check and enforce this).
+- [x] Meal: once created, should be immutable. That is, percentage used cannot be changed after creation, ingredients cannot be deleted.
+- [x] Statistics: chart should reflect the currency of the user's account in the vertical axis.
+- [x] Statistics: when hovering over a data point, the popup moves around for some reason. Fix this, should stay in place.
+- [x] Statistics: should be possible to click on the entries in the popup to navigate to the entry's respective page (Meal or Shopping Event).
+- [x] Data Management in Settings: add a disclaimer that the data will be lost if the user clears their browser history, so they better back it up to their machine.
+- [x] Settings: add a button to import data from a JSON file.
+
+- [ ] It should be possible to delete a Meal from that Meal's page.
+- [ ] Statistics: the tooltip is STILL not staying in place. Fix this!
+- [ ] Shopping Events: when creating, should be possible to edit the date!

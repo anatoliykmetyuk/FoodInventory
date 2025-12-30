@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMeals, updateMeal } from '../services/dataService';
+import { getMeals, updateMeal, deleteMeal } from '../services/dataService';
 import { useNavigate } from 'react-router-dom';
 import type { Meal } from '../types';
 import MealCard from '../components/MealCard';
@@ -46,6 +46,16 @@ function Cooking() {
     loadMeals();
   };
 
+  const handleDeleteMeal = (mealId: string) => {
+    const meal = meals.find(m => m.id === mealId);
+    if (!meal) return;
+
+    if (window.confirm(`Are you sure you want to delete "${meal.name}"? This will restore the used percentages to your fridge items.`)) {
+      deleteMeal(mealId);
+      loadMeals();
+    }
+  };
+
   const activeMeals = meals.filter(m => m.isActive);
   const completedMeals = meals.filter(m => !m.isActive);
 
@@ -70,6 +80,7 @@ function Cooking() {
                 key={meal.id}
                 meal={meal}
                 onConsumePortion={handleConsumePortion}
+                onDelete={handleDeleteMeal}
               />
             ))}
           </div>
@@ -81,7 +92,7 @@ function Cooking() {
           <h2>Completed Meals</h2>
           <div className="meals-grid">
             {completedMeals.map((meal) => (
-              <MealCard key={meal.id} meal={meal} />
+              <MealCard key={meal.id} meal={meal} onDelete={handleDeleteMeal} />
             ))}
           </div>
         </section>
