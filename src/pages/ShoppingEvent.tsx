@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getShoppingEvent, updateShoppingEvent, addItemsToFridgeFromShopping } from '../services/dataService';
+import { getShoppingEvent, updateShoppingEvent, addItemsToFridgeFromShopping, deleteShoppingEvent } from '../services/dataService';
 import type { ShoppingItem } from '../types';
 import ShoppingItemEditor from '../components/ShoppingItemEditor';
+import Toast from '../components/Toast';
 import './ShoppingEvent.css';
 
 function ShoppingEvent() {
@@ -17,6 +18,7 @@ function ShoppingEvent() {
     }
     return new Date().toISOString().split('T')[0];
   });
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -58,7 +60,13 @@ function ShoppingEvent() {
     if (!event || !id) return;
 
     if (items.length === 0) {
-      alert('Please add at least one item');
+      setToast({ message: 'Shopping event was not saved because it is empty.', type: 'error' });
+      // Delete the empty event if it exists
+      deleteShoppingEvent(id);
+      // Navigate back to shopping page
+      setTimeout(() => {
+        navigate('/shopping');
+      }, 2000);
       return;
     }
 
@@ -75,6 +83,15 @@ function ShoppingEvent() {
 
     // Navigate to fridge
     navigate('/');
+  };
+
+  const handleDelete = () => {
+    if (!event || !id) return;
+
+    if (window.confirm(`Are you sure you want to delete this shopping event from ${formattedDate}?`)) {
+      deleteShoppingEvent(id);
+      navigate('/shopping');
+    }
   };
 
   const handleCancel = () => {
@@ -125,6 +142,9 @@ function ShoppingEvent() {
       <div className="event-actions">
         {isEditable && (
           <>
+            <button onClick={handleDelete} className="delete-button">
+              Delete
+            </button>
             <button onClick={handleCancel} className="cancel-button">
               Cancel
             </button>
@@ -134,11 +154,23 @@ function ShoppingEvent() {
           </>
         )}
         {!isEditable && (
-          <button onClick={handleCancel} className="back-button">
-            Back to Shopping
-          </button>
+          <>
+            <button onClick={handleDelete} className="delete-button">
+              Delete
+            </button>
+            <button onClick={handleCancel} className="back-button">
+              Back to Shopping
+            </button>
+          </>
         )}
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

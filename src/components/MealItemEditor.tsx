@@ -153,9 +153,9 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: Mea
                         <>
                           <input
                             type="number"
-                            min="0.01"
+                            min="1"
                             max={maxPercentage}
-                            step="0.01"
+                            step="1"
                             value={mealItem.percentageUsed}
                             onChange={(e) => updatePercentage(mealItem.itemId, parseFloat(e.target.value) || 0)}
                             className="percentage-input"

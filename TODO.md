@@ -13,8 +13,15 @@
 - [x] Statistics: the tooltip is STILL not staying in place. Fix this!
 - [x] Shopping Events: when creating, should be possible to edit the date!
 
-- [ ] Meal page when creating a new meal: percentage used ticker should have a step of 1%.
-- [ ] It should be possible to Delete Shopping Events both from the Shopping Events page and from the Shopping Event's page.
-- [ ] If the user tries to save an empty Shopping Event, do not save it, show a toaster saying it was not saved because it is empty.
-- [ ] Statistics: you could not fix the floating tooltip problem. Change to tooltip to not display the related items, only the total numbers.
-- [ ] Statistics: when the user clicks a data point, related items are displayed at the bottom of the page, clickable to navigate to the respective Meal or Shopping Event page.
+- [x] Meal page when creating a new meal: percentage used ticker should have a step of 1%.
+- [x] It should be possible to Delete Shopping Events both from the Shopping Events page and from the Shopping Event's page.
+- [x] If the user tries to save an empty Shopping Event, do not save it, show a toaster saying it was not saved because it is empty.
+- [x] Statistics: you could not fix the floating tooltip problem. Change to tooltip to not display the related items, only the total numbers.
+- [x] Statistics: when the user clicks a data point, related items are displayed at the bottom of the page, clickable to navigate to the respective Meal or Shopping Event page.
+
+- [x] Fridge when editing a percentage of an item: ticker should have a step of 1%.
+- [x] Shopping Events: delete button should be only visible on hover, as a red button saying "Delete", bottom right of the card.
+- [x] Shopping Event page: add delete button there.
+- [x] Shopping event Save button: the event is STILL saved even if it is empty, even though the toaster is displayed! Fix this!
+
+- [x] Statistics: calculate cumulative totals. Make each day or week's data point a Bar and the cumulative total a Line.

@@ -70,7 +70,7 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
               type="number"
               min="0"
               max="100"
-              step="0.01"
+              step="1"
               value={percentageLeft}
               onChange={(e) => setPercentageLeft(e.target.value)}
               className="item-percentage-input"

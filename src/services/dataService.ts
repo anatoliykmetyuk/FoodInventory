@@ -149,6 +149,20 @@ export function updateShoppingEvent(eventId: string, updates: Partial<Omit<Shopp
 }
 
 /**
+ * Delete a shopping event
+ */
+export function deleteShoppingEvent(eventId: string): boolean {
+  const data = getData();
+  const index = data.shoppingEvents.findIndex(event => event.id === eventId);
+  if (index === -1) {
+    return false;
+  }
+  data.shoppingEvents.splice(index, 1);
+  saveData(data);
+  return true;
+}
+
+/**
  * Get settings
  */
 export function getSettings(): Settings {

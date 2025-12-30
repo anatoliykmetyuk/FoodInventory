@@ -74,7 +74,7 @@ function Shopping() {
       ) : (
         <div className="shopping-events">
           {events.map((event) => (
-            <ShoppingEventCard key={event.id} event={event} />
+            <ShoppingEventCard key={event.id} event={event} onDelete={loadEvents} />
           ))}
         </div>
       )}

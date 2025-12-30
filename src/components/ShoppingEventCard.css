@@ -1,3 +1,8 @@
+.shopping-event-card-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
 .shopping-event-card-link {
   text-decoration: none;
   display: block;
@@ -40,5 +45,31 @@
 .event-item-count {
   color: #aaa;
   font-size: 0.9rem;
+}
+
+.shopping-event-delete-button {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: background-color 0.2s;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shopping-event-card-wrapper:hover .shopping-event-delete-button {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.shopping-event-delete-button:hover {
+  background-color: #c82333;
 }
 

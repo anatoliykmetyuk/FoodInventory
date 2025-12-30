@@ -26,6 +26,12 @@
 .tooltip-total {
   color: #4a9eff;
   font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.tooltip-cumulative {
+  color: #ffc107;
+  font-weight: bold;
   margin-bottom: 0.75rem;
 }
 

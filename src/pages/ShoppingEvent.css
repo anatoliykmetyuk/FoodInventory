@@ -90,3 +90,12 @@
   background-color: #3a8eef;
 }
 
+.delete-button {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+

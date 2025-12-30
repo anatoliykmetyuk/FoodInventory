@@ -7,6 +7,7 @@ export type StatisticsType = 'meals' | 'shopping';
 export interface StatisticsDataPoint {
   date: string;
   cost: number;
+  cumulativeTotal: number;
   items: Array<{
     id: string;
     name: string;
@@ -47,7 +48,7 @@ export function aggregateData(
   meals.forEach(meal => {
     const dateKey = getDateKey(new Date(meal.date), granularity);
     if (!dateMap.has(dateKey)) {
-      dateMap.set(dateKey, { date: dateKey, cost: 0, items: [] });
+      dateMap.set(dateKey, { date: dateKey, cost: 0, cumulativeTotal: 0, items: [] });
     }
     const point = dateMap.get(dateKey)!;
     point.cost += meal.totalCost;
@@ -63,7 +64,7 @@ export function aggregateData(
   shoppingEvents.forEach(event => {
     const dateKey = getDateKey(new Date(event.date), granularity);
     if (!dateMap.has(dateKey)) {
-      dateMap.set(dateKey, { date: dateKey, cost: 0, items: [] });
+      dateMap.set(dateKey, { date: dateKey, cost: 0, cumulativeTotal: 0, items: [] });
     }
     const point = dateMap.get(dateKey)!;
     point.cost += event.totalCost;
@@ -79,6 +80,13 @@ export function aggregateData(
   const result = Array.from(dateMap.values()).sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
+
+  // Calculate cumulative totals
+  let runningTotal = 0;
+  result.forEach(point => {
+    runningTotal += point.cost;
+    point.cumulativeTotal = runningTotal;
+  });
 
   return result;
 }
