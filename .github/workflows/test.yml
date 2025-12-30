@@ -26,10 +26,12 @@ jobs:
       run: npm run test
 
     - name: Install Playwright browsers
-      run: npx playwright install --with-deps
+      run: npx playwright install chromium --with-deps
 
     - name: Run E2E tests
       run: npm run test:e2e
+      env:
+        CI: true
 
     - name: Upload test results
       if: always()
