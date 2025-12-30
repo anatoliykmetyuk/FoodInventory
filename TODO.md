@@ -25,3 +25,7 @@
 - [x] Shopping event Save button: the event is STILL saved even if it is empty, even though the toaster is displayed! Fix this!
 
 - [x] Statistics: calculate cumulative totals. Make each day or week's data point a Bar and the cumulative total a Line.
+
+- [x] Scan Receipt on Mobile: the result has too small width. Set a reasonable minimal width so it's possible to read the items, and make it scrollable if necessary.
+- [x] Statistics: on mobile, controls should be stacked vertically, not horizontally like a flex layout.
+- [x] Shopping Events: when creating a new event, "Cancel" button somehow STILL creates an event. Fix this!

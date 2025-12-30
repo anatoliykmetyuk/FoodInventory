@@ -53,3 +53,39 @@ body {
   background: #444;
 }
 
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* Improve touch targets on mobile */
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="password"],
+  input[type="file"],
+  select,
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+
+  /* Make dialogs more mobile-friendly */
+  .dialog-content {
+    max-width: 95%;
+    padding: 15px;
+    margin: 10px;
+  }
+
+  /* Improve table readability on mobile */
+  table {
+    font-size: 0.9rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.5rem;
+  }
+}
+

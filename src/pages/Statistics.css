@@ -20,6 +20,18 @@
   align-items: center;
 }
 
+@media (max-width: 768px) {
+  .statistics-controls {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .statistics-controls > * {
+    width: 100%;
+  }
+}
+
 .no-data {
   text-align: center;
   padding: 3rem;
@@ -75,11 +87,6 @@
 }
 
 @media (max-width: 768px) {
-  .statistics-controls {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
   .items-grid {
     grid-template-columns: 1fr;
   }

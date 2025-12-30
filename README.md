@@ -83,6 +83,10 @@ npm run dev
 
 4. Open your browser and navigate to `http://localhost:5173`
 
+### Testing on Mobile Devices
+
+To test the application on your mobile device while developing locally, see [MOBILE_TESTING.md](./docs/MOBILE_TESTING.md) for detailed instructions on exposing the development server on your local network.
+
 ### Building for Production
 
 ```bash

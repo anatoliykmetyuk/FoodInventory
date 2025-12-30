@@ -35,3 +35,24 @@
   border-color: #4a9eff;
 }
 
+@media (max-width: 768px) {
+  .granularity-selector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .granularity-selector label {
+    width: 100%;
+  }
+
+  .granularity-options {
+    width: 100%;
+  }
+
+  .granularity-options button {
+    flex: 1;
+    min-height: 44px;
+  }
+}
+

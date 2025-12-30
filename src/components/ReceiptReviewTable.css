@@ -31,10 +31,12 @@
 
 .table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 table {
   width: 100%;
+  min-width: 600px; /* Ensure table has reasonable width on mobile */
   border-collapse: collapse;
   background-color: #1a1a1a;
   border-radius: 8px;

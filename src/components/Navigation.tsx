@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import './Navigation.css';
 
 function Navigation() {
   const location = useLocation();
-  const isMobile = window.innerWidth < 768;
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
     { path: '/', label: 'Fridge' },
@@ -13,44 +14,73 @@ function Navigation() {
     { path: '/settings', label: 'Settings' },
   ];
 
-  if (isMobile) {
-    // Breadcrumb navigation for mobile
-    const pathParts = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = pathParts.map((part, idx) => {
-      const path = '/' + pathParts.slice(0, idx + 1).join('/');
-      return { path, label: part.charAt(0).toUpperCase() + part.slice(1) };
-    });
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-    return (
-      <nav className="navigation mobile">
-        <div className="breadcrumb">
-          <Link to="/">Home</Link>
-          {breadcrumbs.map((crumb) => (
-            <span key={crumb.path}>
-              <span className="separator">/</span>
-              <Link to={crumb.path}>{crumb.label}</Link>
-            </span>
-          ))}
-        </div>
-      </nav>
-    );
-  }
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
-  // Top navigation bar for desktop
   return (
-    <nav className="navigation desktop">
-      <ul className="nav-list">
-        {navItems.map((item) => (
-          <li key={item.path}>
-            <Link
-              to={item.path}
-              className={location.pathname === item.path ? 'active' : ''}
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
+    <nav className="navigation">
+      {/* Desktop navigation */}
+      <div className="nav-desktop">
+        <ul className="nav-list">
+          {navItems.map((item) => (
+            <li key={item.path}>
+              <Link
+                to={item.path}
+                className={location.pathname === item.path ? 'active' : ''}
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Mobile hamburger menu */}
+      <div className="nav-mobile">
+        <button
+          className="hamburger-button"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          <span className={`hamburger-icon ${isMenuOpen ? 'open' : ''}`}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </button>
+
+        {/* Mobile menu overlay */}
+        {isMenuOpen && (
+          <div className="mobile-menu-overlay" onClick={closeMenu}>
+            <div className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+              <div className="mobile-menu-header">
+                <h2>Menu</h2>
+                <button className="close-button" onClick={closeMenu} aria-label="Close menu">
+                  ×
+                </button>
+              </div>
+              <ul className="mobile-nav-list">
+                {navItems.map((item) => (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={location.pathname === item.path ? 'active' : ''}
+                      onClick={closeMenu}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
