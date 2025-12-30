@@ -1,0 +1,60 @@
+import type { ShoppingItem } from '../types';
+
+export interface ParsedReceiptItem {
+  name: string;
+  listedPrice: number;
+  finalPrice: number;
+  estimatedCalories: number;
+}
+
+/**
+ * Parse and validate receipt items from OpenAI response
+ */
+export function parseReceiptItems(data: any): ParsedReceiptItem[] {
+  if (!data || !data.items || !Array.isArray(data.items)) {
+    throw new Error('Invalid receipt data format');
+  }
+
+  return data.items.map((item: any) => {
+    const name = item.Item || item.item || item.name || '';
+    const listedPrice = parseFloat(item['Listed Price'] || item.listedPrice || item.listed_price || '0');
+    const finalPrice = parseFloat(item['Final Price'] || item.finalPrice || item.final_price || item['Listed Price'] || item.listedPrice || '0');
+    const estimatedCalories = parseInt(item['Estimated Calories'] || item.estimatedCalories || item.estimated_calories || '0', 10);
+
+    if (!name.trim()) {
+      throw new Error('Item name is required');
+    }
+
+    if (isNaN(listedPrice) || listedPrice < 0) {
+      throw new Error(`Invalid listed price for item: ${name}`);
+    }
+
+    if (isNaN(finalPrice) || finalPrice < 0) {
+      throw new Error(`Invalid final price for item: ${name}`);
+    }
+
+    if (isNaN(estimatedCalories) || estimatedCalories < 0) {
+      throw new Error(`Invalid calories for item: ${name}`);
+    }
+
+    return {
+      name: name.trim(),
+      listedPrice,
+      finalPrice,
+      estimatedCalories,
+    };
+  });
+}
+
+/**
+ * Convert parsed receipt items to ShoppingItem format
+ */
+export function toShoppingItems(parsedItems: ParsedReceiptItem[]): ShoppingItem[] {
+  return parsedItems.map(item => ({
+    name: item.name,
+    listedPrice: item.listedPrice,
+    finalPrice: item.finalPrice,
+    estimatedCalories: item.estimatedCalories,
+  }));
+}
+

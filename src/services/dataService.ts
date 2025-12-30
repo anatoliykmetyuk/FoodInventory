@@ -1,0 +1,232 @@
+import type { Item, Meal, ShoppingEvent, Settings } from '../types';
+import { getData, saveData } from './storage';
+import { generateId } from '../utils/idGenerator';
+
+/**
+ * Get all items from the fridge
+ */
+export function getItems(): Item[] {
+  const data = getData();
+  return data.items;
+}
+
+/**
+ * Add a new item to the fridge
+ */
+export function addItem(item: Omit<Item, 'id'>): Item {
+  const data = getData();
+  const newItem: Item = {
+    ...item,
+    id: generateId(),
+  };
+  data.items.push(newItem);
+  saveData(data);
+  return newItem;
+}
+
+/**
+ * Update an existing item
+ */
+export function updateItem(itemId: string, updates: Partial<Omit<Item, 'id'>>): Item | null {
+  const data = getData();
+  const index = data.items.findIndex(item => item.id === itemId);
+  if (index === -1) {
+    return null;
+  }
+  data.items[index] = { ...data.items[index], ...updates };
+  saveData(data);
+  return data.items[index];
+}
+
+/**
+ * Remove an item from the fridge
+ */
+export function removeItem(itemId: string): boolean {
+  const data = getData();
+  const index = data.items.findIndex(item => item.id === itemId);
+  if (index === -1) {
+    return false;
+  }
+  data.items.splice(index, 1);
+  saveData(data);
+  return true;
+}
+
+/**
+ * Get an item by ID
+ */
+export function getItem(itemId: string): Item | null {
+  const data = getData();
+  return data.items.find(item => item.id === itemId) || null;
+}
+
+/**
+ * Get all meals
+ */
+export function getMeals(): Meal[] {
+  const data = getData();
+  return data.meals;
+}
+
+/**
+ * Get a meal by ID
+ */
+export function getMeal(mealId: string): Meal | null {
+  const data = getData();
+  return data.meals.find(meal => meal.id === mealId) || null;
+}
+
+/**
+ * Add a new meal
+ */
+export function addMeal(meal: Omit<Meal, 'id'>): Meal {
+  const data = getData();
+  const newMeal: Meal = {
+    ...meal,
+    id: generateId(),
+  };
+  data.meals.push(newMeal);
+  saveData(data);
+  return newMeal;
+}
+
+/**
+ * Update an existing meal
+ */
+export function updateMeal(mealId: string, updates: Partial<Omit<Meal, 'id'>>): Meal | null {
+  const data = getData();
+  const index = data.meals.findIndex(meal => meal.id === mealId);
+  if (index === -1) {
+    return null;
+  }
+  data.meals[index] = { ...data.meals[index], ...updates };
+  saveData(data);
+  return data.meals[index];
+}
+
+/**
+ * Get all shopping events
+ */
+export function getShoppingEvents(): ShoppingEvent[] {
+  const data = getData();
+  return data.shoppingEvents;
+}
+
+/**
+ * Get a shopping event by ID
+ */
+export function getShoppingEvent(eventId: string): ShoppingEvent | null {
+  const data = getData();
+  return data.shoppingEvents.find(event => event.id === eventId) || null;
+}
+
+/**
+ * Add a new shopping event
+ */
+export function addShoppingEvent(event: Omit<ShoppingEvent, 'id'>): ShoppingEvent {
+  const data = getData();
+  const newEvent: ShoppingEvent = {
+    ...event,
+    id: generateId(),
+  };
+  data.shoppingEvents.push(newEvent);
+  saveData(data);
+  return newEvent;
+}
+
+/**
+ * Update an existing shopping event
+ */
+export function updateShoppingEvent(eventId: string, updates: Partial<Omit<ShoppingEvent, 'id'>>): ShoppingEvent | null {
+  const data = getData();
+  const index = data.shoppingEvents.findIndex(event => event.id === eventId);
+  if (index === -1) {
+    return null;
+  }
+  data.shoppingEvents[index] = { ...data.shoppingEvents[index], ...updates };
+  saveData(data);
+  return data.shoppingEvents[index];
+}
+
+/**
+ * Get settings
+ */
+export function getSettings(): Settings {
+  const data = getData();
+  return data.settings || { currency: 'USD' };
+}
+
+/**
+ * Update settings
+ */
+export function updateSettings(updates: Partial<Settings>): Settings {
+  const data = getData();
+  data.settings = {
+    ...data.settings,
+    ...updates,
+  };
+  saveData(data);
+  return data.settings;
+}
+
+/**
+ * Add items from a shopping event to the fridge
+ * This creates new items or updates existing ones based on name matching
+ */
+export function addItemsToFridgeFromShopping(shoppingItems: ShoppingEvent['items']): Item[] {
+  const data = getData();
+  const addedItems: Item[] = [];
+
+  for (const shoppingItem of shoppingItems) {
+    // Check if item with same name already exists
+    const existingItem = data.items.find(item => item.name.toLowerCase() === shoppingItem.name.toLowerCase());
+
+    if (existingItem) {
+      // Update existing item: add to percentage left (up to 100%)
+      existingItem.percentageLeft = Math.min(100, existingItem.percentageLeft + 100);
+      existingItem.cost = shoppingItem.finalPrice;
+      existingItem.estimatedCalories = shoppingItem.estimatedCalories;
+      addedItems.push(existingItem);
+    } else {
+      // Create new item
+      const newItem: Item = {
+        id: generateId(),
+        name: shoppingItem.name,
+        cost: shoppingItem.finalPrice,
+        estimatedCalories: shoppingItem.estimatedCalories,
+        percentageLeft: 100,
+      };
+      data.items.push(newItem);
+      addedItems.push(newItem);
+    }
+  }
+
+  saveData(data);
+  return addedItems;
+}
+
+/**
+ * Update fridge items when a meal is cooked
+ * Reduces the percentage left for each item used in the meal
+ */
+export function updateFridgeAfterMeal(mealItems: Meal['items']): void {
+  const data = getData();
+
+  for (const mealItem of mealItems) {
+    const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
+    if (fridgeItem) {
+      fridgeItem.percentageLeft = Math.max(0, fridgeItem.percentageLeft - mealItem.percentageUsed);
+
+      // Remove item if percentage reaches 0
+      if (fridgeItem.percentageLeft <= 0) {
+        const index = data.items.findIndex(item => item.id === mealItem.itemId);
+        if (index !== -1) {
+          data.items.splice(index, 1);
+        }
+      }
+    }
+  }
+
+  saveData(data);
+}
+

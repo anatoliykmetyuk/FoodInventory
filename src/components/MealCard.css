@@ -1,0 +1,76 @@
+.meal-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s;
+}
+
+.meal-card:hover {
+  border-color: #4a9eff;
+}
+
+.meal-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.meal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.meal-name {
+  color: #fff;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.meal-date {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.meal-details {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.meal-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.detail-value {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.consume-portion-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 0.75rem;
+}
+
+.consume-portion-button:hover {
+  background-color: #218838;
+}
+

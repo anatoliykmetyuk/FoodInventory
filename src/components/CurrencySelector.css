@@ -1,0 +1,26 @@
+.currency-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.currency-selector label {
+  color: #fff;
+  font-weight: 500;
+}
+
+.currency-select {
+  padding: 0.5rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.currency-select:focus {
+  outline: none;
+  border-color: #666;
+}
+

@@ -1,0 +1,35 @@
+.statistics-page {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.statistics-page h1 {
+  color: #fff;
+  margin-bottom: 2rem;
+}
+
+.statistics-controls {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem;
+  color: #aaa;
+}
+
+@media (max-width: 768px) {
+  .statistics-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+

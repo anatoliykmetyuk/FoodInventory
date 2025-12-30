@@ -1,0 +1,44 @@
+.shopping-event-card-link {
+  text-decoration: none;
+  display: block;
+}
+
+.shopping-event-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: border-color 0.2s, background-color 0.2s;
+  cursor: pointer;
+}
+
+.shopping-event-card:hover {
+  border-color: #4a9eff;
+  background-color: #222;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.event-date {
+  color: #fff;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.event-total {
+  color: #4a9eff;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.event-item-count {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+

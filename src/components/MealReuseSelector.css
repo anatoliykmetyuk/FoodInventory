@@ -1,0 +1,74 @@
+.meal-reuse-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 400px;
+  max-height: 600px;
+}
+
+.search-container {
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.meals-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.no-meals {
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+}
+
+.meal-option {
+  padding: 1rem;
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.meal-option:hover {
+  background-color: #333;
+  border-color: #4a9eff;
+}
+
+.meal-option-name {
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+
+.meal-option-date {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.selector-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+

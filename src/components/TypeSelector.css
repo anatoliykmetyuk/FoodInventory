@@ -1,0 +1,37 @@
+.type-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.type-selector label {
+  color: #fff;
+  font-weight: 500;
+}
+
+.type-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.type-options button {
+  padding: 0.5rem 1rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.type-options button:hover {
+  background-color: #333;
+  border-color: #666;
+}
+
+.type-options button.active {
+  background-color: #4a9eff;
+  border-color: #4a9eff;
+}
+

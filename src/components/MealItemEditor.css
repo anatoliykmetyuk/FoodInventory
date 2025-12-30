@@ -1,0 +1,139 @@
+.meal-item-editor {
+  margin: 1.5rem 0;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.editor-header h3 {
+  color: #fff;
+  margin: 0;
+}
+
+.meal-totals {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.total-label {
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.total-value {
+  color: #4a9eff;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.add-item-section {
+  margin-bottom: 1.5rem;
+}
+
+.add-item-section label {
+  display: block;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.item-select {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.item-select:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.meal-items-list {
+  overflow-x: auto;
+}
+
+.meal-items-list table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.meal-items-list thead {
+  background-color: #2a2a2a;
+}
+
+.meal-items-list th {
+  color: #fff;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #444;
+}
+
+.meal-items-list td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #333;
+  color: #fff;
+}
+
+.meal-items-list tbody tr:hover {
+  background-color: #222;
+}
+
+.percentage-input {
+  width: 100px;
+  padding: 0.5rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.percentage-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.max-hint {
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-left: 0.5rem;
+}
+
+.remove-button {
+  padding: 0.4rem 0.8rem;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.remove-button:hover {
+  background-color: #c82333;
+}
+
+.no-items {
+  color: #aaa;
+  text-align: center;
+  padding: 2rem;
+}
+

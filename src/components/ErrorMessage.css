@@ -1,0 +1,42 @@
+.error-message-container {
+  margin: 1rem 0;
+}
+
+.error-message-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: #2a1a1a;
+  border: 1px solid var(--error-color);
+  border-radius: 4px;
+  color: #ff6b6b;
+}
+
+.error-icon {
+  font-size: 1.2rem;
+}
+
+.error-text {
+  flex: 1;
+}
+
+.dismiss-button {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.dismiss-button:hover {
+  color: #ff5252;
+}
+

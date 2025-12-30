@@ -1,0 +1,63 @@
+.fridge-item-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.item-name {
+  color: #fff;
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.item-percentage {
+  color: #4a9eff;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.item-details {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+.item-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+.detail-value {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.item-progress {
+  height: 8px;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.item-progress-bar {
+  height: 100%;
+  background-color: #4a9eff;
+  transition: width 0.3s ease;
+}
+

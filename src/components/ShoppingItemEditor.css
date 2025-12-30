@@ -1,0 +1,54 @@
+.shopping-item-view {
+  margin: 1.5rem 0;
+}
+
+.shopping-item-view .table-container {
+  overflow-x: auto;
+}
+
+.shopping-item-view table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.shopping-item-view thead {
+  background-color: #2a2a2a;
+}
+
+.shopping-item-view th {
+  color: #fff;
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #444;
+}
+
+.shopping-item-view td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #333;
+  color: #fff;
+}
+
+.shopping-item-view tbody tr:hover {
+  background-color: #222;
+}
+
+.shopping-item-view tfoot {
+  background-color: #2a2a2a;
+  font-weight: bold;
+}
+
+.shopping-item-view .total-label {
+  color: #fff;
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.shopping-item-view .total-value {
+  color: #4a9eff;
+  font-size: 1.1rem;
+}
+
