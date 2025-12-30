@@ -5,24 +5,10 @@ export default defineConfig({
   plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 10000,
     exclude: ['**/node_modules/**', '**/dist/**', '**/tests/e2e/**'],
-    server: {
-      deps: {
-        inline: [
-          /html-encoding-sniffer/,
-          /@exodus\/bytes/,
-        ],
-      },
-    },
-    pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
   },
 })
 
