@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { getMeal, addMeal, updateMeal } from '../services/dataService';
+import { getMeal, addMeal, updateMeal, deleteMeal } from '../services/dataService';
 import { updateFridgeAfterMeal } from '../services/dataService';
 import type { Meal, MealItem } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
@@ -102,6 +102,15 @@ function Meal() {
     loadMeal(id);
   };
 
+  const handleDeleteMeal = () => {
+    if (!meal || !id) return;
+
+    if (window.confirm(`Are you sure you want to delete "${meal.name}"? This will restore the used percentages to your fridge items.`)) {
+      deleteMeal(id);
+      navigate('/cooking');
+    }
+  };
+
   const loadMeal = (mealId: string) => {
     const loadedMeal = getMeal(mealId);
     if (loadedMeal) {
@@ -192,6 +201,9 @@ function Meal() {
                 Consume Portion
               </button>
             )}
+            <button onClick={handleDeleteMeal} className="delete-button">
+              Delete Meal
+            </button>
             <button onClick={() => navigate('/cooking')} className="back-button">
               Back to Cooking
             </button>

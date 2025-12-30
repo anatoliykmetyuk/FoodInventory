@@ -9,6 +9,12 @@
 - [x] Data Management in Settings: add a disclaimer that the data will be lost if the user clears their browser history, so they better back it up to their machine.
 - [x] Settings: add a button to import data from a JSON file.
 
-- [ ] It should be possible to delete a Meal from that Meal's page.
-- [ ] Statistics: the tooltip is STILL not staying in place. Fix this!
-- [ ] Shopping Events: when creating, should be possible to edit the date!
+- [x] It should be possible to delete a Meal from that Meal's page.
+- [x] Statistics: the tooltip is STILL not staying in place. Fix this!
+- [x] Shopping Events: when creating, should be possible to edit the date!
+
+- [ ] Meal page when creating a new meal: percentage used ticker should have a step of 1%.
+- [ ] It should be possible to Delete Shopping Events both from the Shopping Events page and from the Shopping Event's page.
+- [ ] If the user tries to save an empty Shopping Event, do not save it, show a toaster saying it was not saved because it is empty.
+- [ ] Statistics: you could not fix the floating tooltip problem. Change to tooltip to not display the related items, only the total numbers.
+- [ ] Statistics: when the user clicks a data point, related items are displayed at the bottom of the page, clickable to navigate to the respective Meal or Shopping Event page.

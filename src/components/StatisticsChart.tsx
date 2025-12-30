@@ -19,20 +19,11 @@ function StatisticsChart({ data }: StatisticsChartProps) {
     items: point.items,
   }));
 
-  const CustomTooltip = ({ active, payload, coordinate }: any) => {
+  const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
-      // Use coordinate to position tooltip, but keep it stable
-      const tooltipStyle: React.CSSProperties = {
-        position: 'absolute',
-        left: coordinate?.x ? `${coordinate.x}px` : '50%',
-        top: coordinate?.y ? `${coordinate.y - 10}px` : '50%',
-        transform: 'translate(-50%, -100%)',
-        zIndex: 1000,
-      };
-
       return (
-        <div className="chart-tooltip" style={tooltipStyle}>
+        <div className="chart-tooltip">
           <p className="tooltip-date">{dataPoint.date}</p>
           <p className="tooltip-total">
             Total: {formatPrice(dataPoint.cost, currency)}

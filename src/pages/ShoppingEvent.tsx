@@ -11,6 +11,12 @@ function ShoppingEvent() {
   const [event, setEvent] = useState(() => id ? getShoppingEvent(id) : null);
   const [isEditable, setIsEditable] = useState(!event || event.items.length === 0);
   const [items, setItems] = useState<ShoppingItem[]>(event?.items || []);
+  const [eventDate, setEventDate] = useState(() => {
+    if (event) {
+      return new Date(event.date).toISOString().split('T')[0];
+    }
+    return new Date().toISOString().split('T')[0];
+  });
 
   useEffect(() => {
     if (id) {
@@ -19,6 +25,7 @@ function ShoppingEvent() {
         setEvent(shoppingEvent);
         setItems(shoppingEvent.items);
         setIsEditable(shoppingEvent.items.length === 0);
+        setEventDate(new Date(shoppingEvent.date).toISOString().split('T')[0]);
       }
     }
   }, [id]);
@@ -33,6 +40,17 @@ function ShoppingEvent() {
         totalCost,
       });
       setEvent({ ...event, items: newItems, totalCost });
+    }
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newDate = e.target.value;
+    setEventDate(newDate);
+    if (event && id) {
+      updateShoppingEvent(id, {
+        date: new Date(newDate),
+      });
+      setEvent({ ...event, date: new Date(newDate) });
     }
   };
 
@@ -52,6 +70,7 @@ function ShoppingEvent() {
     updateShoppingEvent(id, {
       items,
       totalCost,
+      date: new Date(eventDate),
     });
 
     // Navigate to fridge
@@ -81,7 +100,20 @@ function ShoppingEvent() {
     <div className="shopping-event-page">
       <div className="event-header">
         <h1>Shopping Event</h1>
-        <span className="event-date">{formattedDate}</span>
+        {isEditable ? (
+          <div className="event-date-input-group">
+            <label htmlFor="event-date">Date:</label>
+            <input
+              id="event-date"
+              type="date"
+              value={eventDate}
+              onChange={handleDateChange}
+              className="event-date-input"
+            />
+          </div>
+        ) : (
+          <span className="event-date">{formattedDate}</span>
+        )}
       </div>
 
       <ShoppingItemEditor
