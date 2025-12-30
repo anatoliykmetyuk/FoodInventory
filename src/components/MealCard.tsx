@@ -20,7 +20,7 @@ function MealCard({ meal, onConsumePortion, onDelete }: MealCardProps) {
   });
 
   return (
-    <div className="meal-card">
+    <div className={`meal-card ${meal.isActive ? 'meal-card-active' : ''}`}>
       <Link to={`/cooking/meal/${meal.id}`} className="meal-card-link">
         <div className="meal-header">
           <h3 className="meal-name">{meal.name}</h3>

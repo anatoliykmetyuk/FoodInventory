@@ -7,6 +7,10 @@
   transition: border-color 0.2s;
 }
 
+.meal-card-active {
+  border-color: #4a9eff;
+}
+
 .meal-card:hover {
   border-color: #4a9eff;
 }
@@ -36,7 +40,8 @@
 
 .meal-details {
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
 
@@ -92,5 +97,12 @@
 
 .delete-meal-button:hover {
   background-color: #c82333;
+}
+
+@media (min-width: 768px) {
+  .meal-details {
+    flex-direction: row;
+    gap: 2rem;
+  }
 }
 
