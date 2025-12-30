@@ -35,7 +35,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{html,ico,png,svg,woff2}'],
+        globIgnores: ['**/*.{js,css}'],
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
@@ -56,14 +57,8 @@ export default defineConfig({
           },
           {
             urlPattern: /\.(?:js|css)$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'static-resources',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-              }
-            }
+            handler: 'NetworkOnly',
+            options: {}
           }
         ]
       },
@@ -76,10 +71,6 @@ export default defineConfig({
   server: {
     host: '0.0.0.0', // Allow access from local network for mobile testing
     port: 5173,
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
   },
 })
 
