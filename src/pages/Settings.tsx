@@ -4,6 +4,7 @@ import CurrencySelector from '../components/CurrencySelector';
 import ExportData from '../components/ExportData';
 import ImportData from '../components/ImportData';
 import WipeData from '../components/WipeData';
+import InstallApp from '../components/InstallApp';
 import './Settings.css';
 
 function Settings() {
@@ -56,6 +57,11 @@ function Settings() {
             {showApiKey ? 'Hide' : 'Show'}
           </button>
         </div>
+      </section>
+
+      <section className="settings-section">
+        <h2>Install App</h2>
+        <InstallApp />
       </section>
 
       <section className="settings-section">

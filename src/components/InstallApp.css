@@ -1,0 +1,72 @@
+.install-app-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.install-button {
+  padding: 0.75rem 1.5rem;
+  background-color: #4a9eff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  align-self: flex-start;
+}
+
+.install-button:hover:not(:disabled) {
+  background-color: #3a8eef;
+}
+
+.install-button:disabled {
+  background-color: #555;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.install-instructions {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 1rem;
+  margin-top: 0.5rem;
+}
+
+.install-instructions h3 {
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.install-instructions p {
+  color: #aaa;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.install-instructions ol {
+  color: #aaa;
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.install-instructions li {
+  margin: 0.5rem 0;
+}
+
+.install-status {
+  color: #4a9eff;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.install-status.installed {
+  color: #4caf50;
+}
+
