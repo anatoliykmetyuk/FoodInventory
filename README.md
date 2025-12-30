@@ -55,6 +55,10 @@ All data is stored locally in your browser for privacy and security.
 - Clear all data with confirmation
 - **Important**: Data is stored locally - clearing browser data will delete your information
 
+## 📱 Progressive Web App (PWA)
+
+This app is a Progressive Web App! You can install it on your device for a native app-like experience with offline support. See [PWA.md](./docs/PWA.md) for installation instructions and details.
+
 ## 🚀 Getting Started
 
 ### Prerequisites
