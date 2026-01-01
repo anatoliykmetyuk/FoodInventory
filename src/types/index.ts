@@ -24,6 +24,7 @@ export interface Meal {
   portionsCooked: number;
   portionsLeft: number;
   isActive: boolean;
+  isPlanned?: boolean;
 }
 
 export interface ShoppingItem {

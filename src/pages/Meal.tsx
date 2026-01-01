@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { getMeal, addMeal, updateMeal, deleteMeal } from '../services/dataService';
+import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked } from '../services/dataService';
 import { updateFridgeAfterMeal } from '../services/dataService';
 import type { Meal, MealItem } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency } from '../services/settingsService';
 import MealItemEditor from '../components/MealItemEditor';
+import Toast from '../components/Toast';
 import './Meal.css';
 
 function Meal() {
@@ -17,10 +18,13 @@ function Meal() {
   const [mealItems, setMealItems] = useState<MealItem[]>([]);
   const [portionsCooked, setPortionsCooked] = useState(1);
   const [isEditable, setIsEditable] = useState(false);
+  const [isPlanned, setIsPlanned] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const currency = getCurrency();
 
   useEffect(() => {
     const reuseId = searchParams.get('reuse');
+    const editMode = searchParams.get('edit') === 'true';
 
     if (id === 'new') {
       // New meal
@@ -42,7 +46,9 @@ function Meal() {
         setMealName(existingMeal.name);
         setMealItems(existingMeal.items);
         setPortionsCooked(existingMeal.portionsCooked);
-        setIsEditable(false);
+        setIsPlanned(existingMeal.isPlanned || false);
+        // Allow editing if it's a planned meal and we're in edit mode
+        setIsEditable(editMode && (existingMeal.isPlanned || false));
       }
     }
   }, [id, searchParams]);
@@ -77,15 +83,33 @@ function Meal() {
         portionsCooked,
         portionsLeft: portionsCooked,
         isActive: true,
+        isPlanned,
       });
 
-      // Update fridge
-      updateFridgeAfterMeal(mealItems);
+      // Only update fridge if not a planned meal
+      if (!isPlanned) {
+        updateFridgeAfterMeal(mealItems);
+      }
 
       // Navigate to view mode
       navigate(`/cooking/meal/${newMeal.id}`);
+    } else if (id && meal?.isPlanned) {
+      // Update existing planned meal
+      updateMeal(id, {
+        name: mealName.trim(),
+        items: mealItems,
+        totalCost,
+        totalCalories,
+        portionsCooked,
+        portionsLeft: portionsCooked,
+      });
+
+      // Reload meal and exit edit mode
+      loadMeal(id);
+      setIsEditable(false);
+      // Update URL to remove edit param
+      navigate(`/cooking/meal/${id}`, { replace: true });
     }
-    // Meals are immutable after creation - no update path
   };
 
   const handleConsumePortion = () => {
@@ -100,6 +124,24 @@ function Meal() {
     });
 
     loadMeal(id);
+  };
+
+  const handleMarkCooked = () => {
+    if (!meal || !id) return;
+
+    const result = markMealAsCooked(id);
+    
+    if (result.success) {
+      setToast({ message: 'Meal marked as cooked!', type: 'success' });
+      loadMeal(id);
+    } else {
+      setToast({ message: result.errors.join('. '), type: 'error' });
+    }
+  };
+
+  const handleEdit = () => {
+    if (!id) return;
+    navigate(`/cooking/meal/${id}?edit=true`);
   };
 
   const handleDeleteMeal = () => {
@@ -118,6 +160,7 @@ function Meal() {
       setMealName(loadedMeal.name);
       setMealItems(loadedMeal.items);
       setPortionsCooked(loadedMeal.portionsCooked);
+      setIsPlanned(loadedMeal.isPlanned || false);
     }
   };
 
@@ -148,17 +191,31 @@ function Meal() {
       </div>
 
       {isEditable && (
-        <div className="portions-input-group">
-          <label htmlFor="portions">Portions Cooked:</label>
-          <input
-            id="portions"
-            type="number"
-            min="1"
-            value={portionsCooked}
-            onChange={(e) => setPortionsCooked(parseInt(e.target.value, 10) || 1)}
-            className="portions-input"
-          />
-        </div>
+        <>
+          <div className="portions-input-group">
+            <label htmlFor="portions">Portions Cooked:</label>
+            <input
+              id="portions"
+              type="number"
+              min="1"
+              value={portionsCooked}
+              onChange={(e) => setPortionsCooked(parseInt(e.target.value, 10) || 1)}
+              className="portions-input"
+            />
+          </div>
+          {id === 'new' && (
+            <div className="planned-checkbox-group">
+              <input
+                id="planned"
+                type="checkbox"
+                checked={isPlanned}
+                onChange={(e) => setIsPlanned(e.target.checked)}
+                className="planned-checkbox"
+              />
+              <label htmlFor="planned">Plan this meal (don't consume ingredients yet)</label>
+            </div>
+          )}
+        </>
       )}
 
       <MealItemEditor
@@ -184,6 +241,13 @@ function Meal() {
         </div>
       )}
 
+      {!isEditable && meal?.isPlanned && (
+        <div className="planned-badge">
+          <span className="planned-icon">📋</span>
+          <span>This meal is planned but not yet cooked</span>
+        </div>
+      )}
+
       <div className="meal-actions">
         {isEditable ? (
           <>
@@ -196,10 +260,21 @@ function Meal() {
           </>
         ) : (
           <>
-            {meal && meal.isActive && meal.portionsLeft > 0 && (
-              <button onClick={handleConsumePortion} className="consume-button">
-                Consume Portion
-              </button>
+            {meal?.isPlanned ? (
+              <>
+                <button onClick={handleMarkCooked} className="mark-cooked-button">
+                  Mark Cooked
+                </button>
+                <button onClick={handleEdit} className="edit-button">
+                  Edit
+                </button>
+              </>
+            ) : (
+              meal && meal.isActive && meal.portionsLeft > 0 && (
+                <button onClick={handleConsumePortion} className="consume-button">
+                  Consume Portion
+                </button>
+              )
             )}
             <button onClick={handleDeleteMeal} className="delete-button">
               Delete Meal
@@ -210,6 +285,14 @@ function Meal() {
           </>
         )}
       </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
