@@ -26,6 +26,10 @@ export function getData(): AppData {
     // Convert date strings back to Date objects
     return {
       ...parsed,
+      items: parsed.items?.map((item: any) => ({
+        ...item,
+        expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
+      })) || [],
       meals: parsed.meals?.map((meal: any) => ({
         ...meal,
         date: new Date(meal.date),

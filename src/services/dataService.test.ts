@@ -43,6 +43,34 @@ describe('dataService', () => {
       expect(items[0].name).toBe('Apple');
     });
 
+    it('should add item with expiration date', () => {
+      const expirationDate = new Date('2024-12-31');
+      const item = addItem({
+        name: 'Milk',
+        cost: 3.00,
+        estimatedCalories: 150,
+        percentageLeft: 100,
+        expirationDate,
+      });
+
+      expect(item.expirationDate).toBeDefined();
+      expect(new Date(item.expirationDate!).toISOString().split('T')[0]).toBe('2024-12-31');
+
+      const retrieved = getItem(item.id);
+      expect(retrieved?.expirationDate).toBeDefined();
+    });
+
+    it('should add item without expiration date', () => {
+      const item = addItem({
+        name: 'Rice',
+        cost: 5.00,
+        estimatedCalories: 200,
+        percentageLeft: 100,
+      });
+
+      expect(item.expirationDate).toBeUndefined();
+    });
+
     it('should update an item', () => {
       const item = addItem({
         name: 'Apple',
@@ -56,6 +84,38 @@ describe('dataService', () => {
 
       const retrieved = getItem(item.id);
       expect(retrieved?.cost).toBe(2.00);
+    });
+
+    it('should update item expiration date', () => {
+      const item = addItem({
+        name: 'Yogurt',
+        cost: 2.00,
+        estimatedCalories: 100,
+        percentageLeft: 100,
+      });
+
+      expect(item.expirationDate).toBeUndefined();
+
+      const expirationDate = new Date('2024-06-15');
+      const updated = updateItem(item.id, { expirationDate });
+      expect(updated?.expirationDate).toBeDefined();
+      expect(new Date(updated!.expirationDate!).toISOString().split('T')[0]).toBe('2024-06-15');
+    });
+
+    it('should clear item expiration date', () => {
+      const expirationDate = new Date('2024-06-15');
+      const item = addItem({
+        name: 'Cheese',
+        cost: 4.00,
+        estimatedCalories: 200,
+        percentageLeft: 100,
+        expirationDate,
+      });
+
+      expect(item.expirationDate).toBeDefined();
+
+      const updated = updateItem(item.id, { expirationDate: undefined });
+      expect(updated?.expirationDate).toBeUndefined();
     });
 
     it('should remove an item', () => {

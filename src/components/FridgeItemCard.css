@@ -85,6 +85,21 @@
   width: 100px;
 }
 
+.item-date-input {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 140px;
+}
+
+.expiring-soon {
+  color: #dc3545 !important;
+  font-weight: bold;
+}
+
 .item-actions {
   display: flex;
   gap: 0.5rem;

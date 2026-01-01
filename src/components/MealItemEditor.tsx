@@ -87,9 +87,16 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: Mea
   const totalCost = localMealItems.reduce((sum, item) => sum + item.cost, 0);
   const totalCalories = localMealItems.reduce((sum, item) => sum + item.calories, 0);
 
-  const availableItems = fridgeItems.filter(
-    item => !localMealItems.find(mi => mi.itemId === item.id)
-  );
+  const availableItems = fridgeItems
+    .filter(item => !localMealItems.find(mi => mi.itemId === item.id))
+    .sort((a, b) => {
+      // Items without expiration date go to the end
+      if (!a.expirationDate && !b.expirationDate) return 0;
+      if (!a.expirationDate) return 1;
+      if (!b.expirationDate) return -1;
+      // Sort by expiration date (earliest first)
+      return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+    });
 
   return (
     <div className="meal-item-editor">

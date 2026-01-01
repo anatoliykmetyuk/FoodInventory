@@ -30,7 +30,16 @@ function Fridge() {
 
   const loadItems = () => {
     const fridgeItems = getItems();
-    setItems(fridgeItems);
+    // Sort items by expiration date - earliest first, items without expiration date at the end
+    const sortedItems = [...fridgeItems].sort((a, b) => {
+      // Items without expiration date go to the end
+      if (!a.expirationDate && !b.expirationDate) return 0;
+      if (!a.expirationDate) return 1;
+      if (!b.expirationDate) return -1;
+      // Sort by expiration date (earliest first)
+      return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
+    });
+    setItems(sortedItems);
   };
 
   const handleAddItem = () => {

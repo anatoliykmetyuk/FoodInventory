@@ -12,6 +12,7 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
   const [name, setName] = useState('');
   const [cost, setCost] = useState('');
   const [calories, setCalories] = useState('');
+  const [expirationDate, setExpirationDate] = useState('');
 
   useEffect(() => {
     if (!isOpen) {
@@ -19,6 +20,7 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
       setName('');
       setCost('');
       setCalories('');
+      setExpirationDate('');
     }
   }, [isOpen]);
 
@@ -32,12 +34,18 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
       return;
     }
 
-    addItem({
+    const newItem: Parameters<typeof addItem>[0] = {
       name: name.trim(),
       cost: costNum,
       estimatedCalories: caloriesNum,
       percentageLeft: 100,
-    });
+    };
+
+    if (expirationDate) {
+      newItem.expirationDate = new Date(expirationDate);
+    }
+
+    addItem(newItem);
 
     onSave();
     onClose();
@@ -82,6 +90,15 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
               value={calories}
               onChange={(e) => setCalories(e.target.value)}
               required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="item-expiration">Expiration Date (optional):</label>
+            <input
+              id="item-expiration"
+              type="date"
+              value={expirationDate}
+              onChange={(e) => setExpirationDate(e.target.value)}
             />
           </div>
           <div className="form-actions">
