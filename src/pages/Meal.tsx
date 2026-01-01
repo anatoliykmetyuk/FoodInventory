@@ -230,19 +230,20 @@ function Meal() {
               <label htmlFor="planned">Plan this meal (don't consume ingredients yet)</label>
             </div>
           )}
-          {isPlanned && (
-            <div className="planned-date-group">
-              <label htmlFor="planned-date">Planned Date:</label>
-              <input
-                id="planned-date"
-                type="date"
-                value={plannedDate}
-                onChange={(e) => setPlannedDate(e.target.value)}
-                className="planned-date-input"
-              />
-            </div>
-          )}
         </>
+      )}
+
+      {isEditable && isPlanned && (
+        <div className="planned-date-group">
+          <label htmlFor="planned-date">Planned Date:</label>
+          <input
+            id="planned-date"
+            type="date"
+            value={plannedDate}
+            onChange={(e) => setPlannedDate(e.target.value)}
+            className="planned-date-input"
+          />
+        </div>
       )}
 
       <MealItemEditor
