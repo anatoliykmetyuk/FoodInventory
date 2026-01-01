@@ -226,3 +226,35 @@
   font-size: 1.25rem;
 }
 
+.planned-date-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.planned-date-group label {
+  color: #fff;
+  font-weight: 500;
+}
+
+.planned-date-input {
+  padding: 0.5rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.planned-date-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+/* Override browser's default date picker styling */
+.planned-date-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+

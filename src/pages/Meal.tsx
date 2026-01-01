@@ -19,6 +19,10 @@ function Meal() {
   const [portionsCooked, setPortionsCooked] = useState(1);
   const [isEditable, setIsEditable] = useState(false);
   const [isPlanned, setIsPlanned] = useState(false);
+  const [plannedDate, setPlannedDate] = useState<string>(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const currency = getCurrency();
 
@@ -47,6 +51,9 @@ function Meal() {
         setMealItems(existingMeal.items);
         setPortionsCooked(existingMeal.portionsCooked);
         setIsPlanned(existingMeal.isPlanned || false);
+        // Set planned date from existing meal
+        const mealDate = new Date(existingMeal.date);
+        setPlannedDate(mealDate.toISOString().split('T')[0]);
         // Allow editing if it's a planned meal and we're in edit mode
         setIsEditable(editMode && (existingMeal.isPlanned || false));
       }
@@ -74,9 +81,12 @@ function Meal() {
 
     if (id === 'new') {
       // Create new meal
+      // Use planned date for planned meals, current date for regular meals
+      const mealDate = isPlanned ? new Date(plannedDate + 'T12:00:00') : new Date();
+      
       const newMeal = addMeal({
         name: mealName.trim(),
-        date: new Date(),
+        date: mealDate,
         items: mealItems,
         totalCost,
         totalCalories,
@@ -95,8 +105,11 @@ function Meal() {
       navigate(`/cooking/meal/${newMeal.id}`);
     } else if (id && meal?.isPlanned) {
       // Update existing planned meal
+      const mealDate = new Date(plannedDate + 'T12:00:00');
+      
       updateMeal(id, {
         name: mealName.trim(),
+        date: mealDate,
         items: mealItems,
         totalCost,
         totalCalories,
@@ -161,6 +174,8 @@ function Meal() {
       setMealItems(loadedMeal.items);
       setPortionsCooked(loadedMeal.portionsCooked);
       setIsPlanned(loadedMeal.isPlanned || false);
+      const mealDate = new Date(loadedMeal.date);
+      setPlannedDate(mealDate.toISOString().split('T')[0]);
     }
   };
 
@@ -213,6 +228,18 @@ function Meal() {
                 className="planned-checkbox"
               />
               <label htmlFor="planned">Plan this meal (don't consume ingredients yet)</label>
+            </div>
+          )}
+          {isPlanned && (
+            <div className="planned-date-group">
+              <label htmlFor="planned-date">Planned Date:</label>
+              <input
+                id="planned-date"
+                type="date"
+                value={plannedDate}
+                onChange={(e) => setPlannedDate(e.target.value)}
+                className="planned-date-input"
+              />
             </div>
           )}
         </>
