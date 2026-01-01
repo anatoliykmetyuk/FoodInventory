@@ -18,6 +18,8 @@ function Cooking() {
 
   const loadMeals = () => {
     const allMeals = getMeals();
+    // Sort meals by date in descending order (newest first)
+    allMeals.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     setMeals(allMeals);
   };
 
