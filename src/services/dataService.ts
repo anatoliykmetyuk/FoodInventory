@@ -247,6 +247,7 @@ export function updateFridgeAfterMeal(mealItems: Meal['items']): void {
 /**
  * Delete a meal and restore used percentages to fridge items
  * Only restores if the item still exists in the fridge (by ID)
+ * For planned meals, no restoration is needed as ingredients were never consumed
  */
 export function deleteMeal(mealId: string): boolean {
   const data = getData();
@@ -258,19 +259,84 @@ export function deleteMeal(mealId: string): boolean {
 
   const meal = data.meals[mealIndex];
 
-  // Restore percentages to fridge items
-  for (const mealItem of meal.items) {
-    const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
-    if (fridgeItem) {
-      // Restore the percentage used back to the item
-      fridgeItem.percentageLeft = Math.min(100, fridgeItem.percentageLeft + mealItem.percentageUsed);
+  // Only restore percentages for non-planned meals (planned meals never consumed ingredients)
+  if (!meal.isPlanned) {
+    for (const mealItem of meal.items) {
+      const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
+      if (fridgeItem) {
+        // Restore the percentage used back to the item
+        fridgeItem.percentageLeft = Math.min(100, fridgeItem.percentageLeft + mealItem.percentageUsed);
+      }
+      // If item doesn't exist in fridge, do nothing (as per requirements)
     }
-    // If item doesn't exist in fridge, do nothing (as per requirements)
   }
 
   // Remove the meal
   data.meals.splice(mealIndex, 1);
   saveData(data);
   return true;
+}
+
+/**
+ * Validate that all meal ingredients are available in the fridge
+ * Returns an object with validation result and error messages
+ */
+export function validateMealIngredients(mealItems: Meal['items']): { valid: boolean; errors: string[] } {
+  const data = getData();
+  const errors: string[] = [];
+
+  for (const mealItem of mealItems) {
+    const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
+    
+    if (!fridgeItem) {
+      errors.push(`"${mealItem.name}" is no longer in your fridge`);
+    } else if (fridgeItem.percentageLeft < mealItem.percentageUsed) {
+      errors.push(`Not enough "${mealItem.name}" in fridge (need ${mealItem.percentageUsed}%, have ${fridgeItem.percentageLeft}%)`);
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Mark a planned meal as cooked
+ * This will consume the ingredients from the fridge and mark the meal as no longer planned
+ * Returns an object with success status and error messages
+ */
+export function markMealAsCooked(mealId: string): { success: boolean; errors: string[] } {
+  let data = getData();
+  const meal = data.meals.find(m => m.id === mealId);
+
+  if (!meal) {
+    return { success: false, errors: ['Meal not found'] };
+  }
+
+  if (!meal.isPlanned) {
+    return { success: false, errors: ['Meal is already cooked'] };
+  }
+
+  // Validate ingredients are available
+  const validation = validateMealIngredients(meal.items);
+  if (!validation.valid) {
+    return { success: false, errors: validation.errors };
+  }
+
+  // Consume ingredients from fridge
+  updateFridgeAfterMeal(meal.items);
+
+  // Get fresh data after fridge update and update meal
+  data = getData();
+  const mealIndex = data.meals.findIndex(m => m.id === mealId);
+  data.meals[mealIndex] = {
+    ...data.meals[mealIndex],
+    isPlanned: false,
+    date: new Date(), // Update date to when it was actually cooked
+  };
+  saveData(data);
+
+  return { success: true, errors: [] };
 }
 

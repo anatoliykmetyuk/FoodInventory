@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { getMeals, updateMeal, deleteMeal } from '../services/dataService';
+import { getMeals, updateMeal, deleteMeal, markMealAsCooked } from '../services/dataService';
 import { useNavigate } from 'react-router-dom';
 import type { Meal } from '../types';
 import MealCard from '../components/MealCard';
 import CookMealDialog from '../components/CookMealDialog';
 import EmptyState from '../components/EmptyState';
+import Toast from '../components/Toast';
 import './Cooking.css';
 
 function Cooking() {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [isCookDialogOpen, setIsCookDialogOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,14 +54,30 @@ function Cooking() {
     const meal = meals.find(m => m.id === mealId);
     if (!meal) return;
 
-    if (window.confirm(`Are you sure you want to delete "${meal.name}"? This will restore the used percentages to your fridge items.`)) {
+    const confirmMessage = meal.isPlanned
+      ? `Are you sure you want to delete "${meal.name}"?`
+      : `Are you sure you want to delete "${meal.name}"? This will restore the used percentages to your fridge items.`;
+
+    if (window.confirm(confirmMessage)) {
       deleteMeal(mealId);
       loadMeals();
     }
   };
 
-  const activeMeals = meals.filter(m => m.isActive);
-  const completedMeals = meals.filter(m => !m.isActive);
+  const handleMarkCooked = (mealId: string) => {
+    const result = markMealAsCooked(mealId);
+    
+    if (result.success) {
+      setToast({ message: 'Meal marked as cooked!', type: 'success' });
+      loadMeals();
+    } else {
+      setToast({ message: result.errors.join('. '), type: 'error' });
+    }
+  };
+
+  const plannedMeals = meals.filter(m => m.isPlanned);
+  const activeMeals = meals.filter(m => m.isActive && !m.isPlanned);
+  const completedMeals = meals.filter(m => !m.isActive && !m.isPlanned);
 
   return (
     <div className="cooking-page">
@@ -72,6 +90,22 @@ function Cooking() {
           Cook Meal
         </button>
       </div>
+
+      {plannedMeals.length > 0 && (
+        <section className="meals-section">
+          <h2>Planned Meals</h2>
+          <div className="meals-grid">
+            {plannedMeals.map((meal) => (
+              <MealCard
+                key={meal.id}
+                meal={meal}
+                onMarkCooked={handleMarkCooked}
+                onDelete={handleDeleteMeal}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       {activeMeals.length > 0 && (
         <section className="meals-section">
@@ -114,6 +148,14 @@ function Cooking() {
         onCookFromScratch={handleCookFromScratch}
         onReuseMeal={handleReuseMeal}
       />
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

@@ -15,6 +15,8 @@ import {
   updateSettings,
   addItemsToFridgeFromShopping,
   updateFridgeAfterMeal,
+  validateMealIngredients,
+  markMealAsCooked,
 } from './dataService';
 import type { ShoppingItem } from '../types';
 
@@ -291,6 +293,277 @@ describe('dataService', () => {
     it('should return false when deleting non-existent meal', () => {
       const deleted = deleteMeal('non-existent');
       expect(deleted).toBe(false);
+    });
+
+    it('should not restore percentages when deleting a planned meal', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create a planned meal (ingredients not consumed)
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Apple',
+            percentageUsed: 50,
+            cost: 0.75,
+            calories: 47.5,
+          },
+        ],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: true,
+      });
+
+      // Verify item percentage is still 100% (not consumed)
+      const itemBeforeDelete = getItem(item.id);
+      expect(itemBeforeDelete?.percentageLeft).toBe(100);
+
+      // Delete the planned meal
+      const deleted = deleteMeal(meal.id);
+      expect(deleted).toBe(true);
+
+      // Verify item percentage is still 100% (no restoration needed)
+      const itemAfterDelete = getItem(item.id);
+      expect(itemAfterDelete?.percentageLeft).toBe(100);
+    });
+  });
+
+  describe('validateMealIngredients', () => {
+    it('should return valid when all ingredients are available', () => {
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      const mealItems = [
+        {
+          itemId: item.id,
+          name: 'Apple',
+          percentageUsed: 50,
+          cost: 0.75,
+          calories: 47.5,
+        },
+      ];
+
+      const result = validateMealIngredients(mealItems);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('should return invalid when item is not in fridge', () => {
+      const mealItems = [
+        {
+          itemId: 'non-existent-id',
+          name: 'Missing Item',
+          percentageUsed: 50,
+          cost: 0.75,
+          calories: 47.5,
+        },
+      ];
+
+      const result = validateMealIngredients(mealItems);
+      expect(result.valid).toBe(false);
+      expect(result.errors).toContain('"Missing Item" is no longer in your fridge');
+    });
+
+    it('should return invalid when not enough percentage available', () => {
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 30,
+      });
+
+      const mealItems = [
+        {
+          itemId: item.id,
+          name: 'Apple',
+          percentageUsed: 50,
+          cost: 0.75,
+          calories: 47.5,
+        },
+      ];
+
+      const result = validateMealIngredients(mealItems);
+      expect(result.valid).toBe(false);
+      expect(result.errors[0]).toContain('Not enough "Apple"');
+    });
+  });
+
+  describe('markMealAsCooked', () => {
+    it('should mark a planned meal as cooked and consume ingredients', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create a planned meal
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Apple',
+            percentageUsed: 50,
+            cost: 0.75,
+            calories: 47.5,
+          },
+        ],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: true,
+      });
+
+      // Mark as cooked
+      const result = markMealAsCooked(meal.id);
+      expect(result.success).toBe(true);
+      expect(result.errors).toHaveLength(0);
+
+      // Verify item percentage was reduced
+      const itemAfter = getItem(item.id);
+      expect(itemAfter?.percentageLeft).toBe(50);
+
+      // Verify meal is no longer planned
+      const meals = getMeals();
+      const updatedMeal = meals.find(m => m.id === meal.id);
+      expect(updatedMeal?.isPlanned).toBe(false);
+    });
+
+    it('should fail when ingredient is no longer available', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create a planned meal
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Apple',
+            percentageUsed: 50,
+            cost: 0.75,
+            calories: 47.5,
+          },
+        ],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: true,
+      });
+
+      // Remove item from fridge
+      removeItem(item.id);
+
+      // Try to mark as cooked
+      const result = markMealAsCooked(meal.id);
+      expect(result.success).toBe(false);
+      expect(result.errors).toContain('"Apple" is no longer in your fridge');
+
+      // Verify meal is still planned
+      const meals = getMeals();
+      const unchangedMeal = meals.find(m => m.id === meal.id);
+      expect(unchangedMeal?.isPlanned).toBe(true);
+    });
+
+    it('should fail when not enough ingredient percentage', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Apple',
+        cost: 1.50,
+        estimatedCalories: 95,
+        percentageLeft: 100,
+      });
+
+      // Create a planned meal
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Apple',
+            percentageUsed: 50,
+            cost: 0.75,
+            calories: 47.5,
+          },
+        ],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: true,
+      });
+
+      // Reduce item percentage
+      updateItem(item.id, { percentageLeft: 30 });
+
+      // Try to mark as cooked
+      const result = markMealAsCooked(meal.id);
+      expect(result.success).toBe(false);
+      expect(result.errors[0]).toContain('Not enough "Apple"');
+
+      // Verify item percentage was not changed
+      const itemAfter = getItem(item.id);
+      expect(itemAfter?.percentageLeft).toBe(30);
+
+      // Verify meal is still planned
+      const meals = getMeals();
+      const unchangedMeal = meals.find(m => m.id === meal.id);
+      expect(unchangedMeal?.isPlanned).toBe(true);
+    });
+
+    it('should fail for non-existent meal', () => {
+      const result = markMealAsCooked('non-existent');
+      expect(result.success).toBe(false);
+      expect(result.errors).toContain('Meal not found');
+    });
+
+    it('should fail for already cooked meal', () => {
+      // Create a non-planned meal
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: false,
+      });
+
+      const result = markMealAsCooked(meal.id);
+      expect(result.success).toBe(false);
+      expect(result.errors).toContain('Meal is already cooked');
     });
   });
 

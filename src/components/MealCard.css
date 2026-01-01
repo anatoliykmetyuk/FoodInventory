@@ -99,6 +99,50 @@
   background-color: #c82333;
 }
 
+.meal-card-planned {
+  border-color: #ffc107;
+}
+
+.meal-card-planned:hover {
+  border-color: #e0a800;
+}
+
+.planned-indicator {
+  margin-left: 0.5rem;
+  font-size: 1rem;
+}
+
+.mark-cooked-button {
+  flex: 1;
+  padding: 0.75rem;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.mark-cooked-button:hover {
+  background-color: #218838;
+}
+
+.edit-meal-button {
+  padding: 0.75rem 1rem;
+  background-color: #ffc107;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-meal-button:hover {
+  background-color: #e0a800;
+}
+
 @media (min-width: 768px) {
   .meal-details {
     flex-direction: row;
