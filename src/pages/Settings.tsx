@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getOpenAIApiKey, setOpenAIApiKey } from '../services/settingsService';
+import { getOpenAIApiKey, setOpenAIApiKey, getExpirationWarningDays, setExpirationWarningDays } from '../services/settingsService';
 import CurrencySelector from '../components/CurrencySelector';
 import ExportData from '../components/ExportData';
 import ImportData from '../components/ImportData';
@@ -10,18 +10,28 @@ import './Settings.css';
 function Settings() {
   const [apiKey, setApiKey] = useState<string>('');
   const [showApiKey, setShowApiKey] = useState(false);
+  const [warningDays, setWarningDays] = useState<number>(7);
 
   useEffect(() => {
     const savedKey = getOpenAIApiKey();
     if (savedKey) {
       setApiKey(savedKey);
     }
+    setWarningDays(getExpirationWarningDays());
   }, []);
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newKey = e.target.value;
     setApiKey(newKey);
     setOpenAIApiKey(newKey);
+  };
+
+  const handleWarningDaysChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const days = parseInt(e.target.value, 10);
+    if (!isNaN(days) && days >= 0) {
+      setWarningDays(days);
+      setExpirationWarningDays(days);
+    }
   };
 
   return (
@@ -67,6 +77,23 @@ function Settings() {
       <section className="settings-section">
         <h2>Currency</h2>
         <CurrencySelector />
+      </section>
+
+      <section className="settings-section">
+        <h2>Expiration Warning</h2>
+        <p className="settings-description">
+          Items expiring within this many days will be highlighted in red.
+        </p>
+        <div className="expiration-warning-input-group">
+          <input
+            type="number"
+            min="0"
+            value={warningDays}
+            onChange={handleWarningDaysChange}
+            className="expiration-warning-input"
+          />
+          <span className="expiration-warning-label">days</span>
+        </div>
       </section>
 
       <section className="settings-section">

@@ -4,6 +4,7 @@ export interface Item {
   cost: number;
   estimatedCalories: number;
   percentageLeft: number;
+  expirationDate?: Date;
 }
 
 export interface MealItem {
@@ -43,6 +44,7 @@ export interface ShoppingEvent {
 export interface Settings {
   openaiApiKey?: string;
   currency?: string;
+  expirationWarningDays?: number;
 }
 
 export interface AppData {

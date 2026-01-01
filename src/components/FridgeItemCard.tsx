@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Item } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
-import { getCurrency } from '../services/settingsService';
+import { getCurrency, getExpirationWarningDays } from '../services/settingsService';
 import { updateItem, removeItem } from '../services/dataService';
 import './FridgeItemCard.css';
 
@@ -12,11 +12,29 @@ interface FridgeItemCardProps {
 
 function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
   const currency = getCurrency();
+  const expirationWarningDays = getExpirationWarningDays();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(item.name);
   const [cost, setCost] = useState(item.cost.toString());
   const [calories, setCalories] = useState(item.estimatedCalories.toString());
   const [percentageLeft, setPercentageLeft] = useState(item.percentageLeft.toString());
+  const [expirationDate, setExpirationDate] = useState(
+    item.expirationDate ? new Date(item.expirationDate).toISOString().split('T')[0] : ''
+  );
+
+  // Calculate days until expiration
+  const getDaysUntilExpiration = (): number | null => {
+    if (!item.expirationDate) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const expDate = new Date(item.expirationDate);
+    expDate.setHours(0, 0, 0, 0);
+    const diffTime = expDate.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  };
+
+  const daysUntilExpiration = getDaysUntilExpiration();
+  const isExpiringSoon = daysUntilExpiration !== null && daysUntilExpiration <= expirationWarningDays;
 
   const handleSave = () => {
     const costNum = parseFloat(cost);
@@ -28,12 +46,20 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
       return;
     }
 
-    updateItem(item.id, {
+    const updates: Partial<Omit<Item, 'id'>> = {
       name: name.trim(),
       cost: costNum,
       estimatedCalories: caloriesNum,
       percentageLeft: percentageNum,
-    });
+    };
+
+    if (expirationDate) {
+      updates.expirationDate = new Date(expirationDate);
+    } else {
+      updates.expirationDate = undefined;
+    }
+
+    updateItem(item.id, updates);
 
     setIsEditing(false);
     if (onUpdate) onUpdate();
@@ -44,6 +70,9 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
     setCost(item.cost.toString());
     setCalories(item.estimatedCalories.toString());
     setPercentageLeft(item.percentageLeft.toString());
+    setExpirationDate(
+      item.expirationDate ? new Date(item.expirationDate).toISOString().split('T')[0] : ''
+    );
     setIsEditing(false);
   };
 
@@ -98,6 +127,15 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
                 className="item-value-input"
               />
             </div>
+            <div className="item-detail">
+              <span className="detail-label">Expires:</span>
+              <input
+                type="date"
+                value={expirationDate}
+                onChange={(e) => setExpirationDate(e.target.value)}
+                className="item-date-input"
+              />
+            </div>
           </div>
           <div className="item-actions">
             <button onClick={handleSave} className="save-button">Save</button>
@@ -119,6 +157,24 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
               <span className="detail-label">Calories:</span>
               <span className="detail-value">{parseFloat(item.estimatedCalories.toFixed(2))}</span>
             </div>
+            {item.expirationDate && (
+              <div className="item-detail">
+                <span className="detail-label">Expires:</span>
+                <span className={`detail-value ${isExpiringSoon ? 'expiring-soon' : ''}`}>
+                  {new Date(item.expirationDate).toISOString().split('T')[0]}
+                  {' '}
+                  ({daysUntilExpiration !== null && (
+                    daysUntilExpiration < 0
+                      ? `${Math.abs(daysUntilExpiration)} days ago`
+                      : daysUntilExpiration === 0
+                        ? 'today'
+                        : daysUntilExpiration === 1
+                          ? '1 day left'
+                          : `${daysUntilExpiration} days left`
+                  )})
+                </span>
+              </div>
+            )}
           </div>
           <div className="item-progress">
             <div

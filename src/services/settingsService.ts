@@ -32,6 +32,21 @@ export function setCurrency(currency: string): void {
 }
 
 /**
+ * Get expiration warning days setting (default 7 days)
+ */
+export function getExpirationWarningDays(): number {
+  const settings = getSettings();
+  return settings.expirationWarningDays ?? 7;
+}
+
+/**
+ * Set expiration warning days setting
+ */
+export function setExpirationWarningDays(days: number): void {
+  updateSettings({ expirationWarningDays: days });
+}
+
+/**
  * Export all data as JSON
  */
 export function exportData(): string {
@@ -64,6 +79,11 @@ export function importData(data: any): void {
   };
 
   // Convert date strings to Date objects
+  importedData.items = importedData.items.map((item: any) => ({
+    ...item,
+    expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
+  }));
+
   importedData.meals = importedData.meals.map((meal: any) => ({
     ...meal,
     date: meal.date ? new Date(meal.date) : new Date(),

@@ -91,3 +91,29 @@
   color: #ffc107;
 }
 
+.expiration-warning-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.expiration-warning-input {
+  width: 80px;
+  padding: 0.75rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.expiration-warning-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.expiration-warning-label {
+  color: #aaa;
+  font-size: 1rem;
+}
+
