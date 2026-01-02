@@ -47,6 +47,8 @@ export interface ShoppingEvent {
   totalCost: number;
 }
 
+export type FridgeViewMode = 'full' | 'compact';
+
 export interface Settings {
   openaiApiKey?: string;
   currency?: string;
@@ -55,6 +57,7 @@ export interface Settings {
   breakfastCost?: number;
   lunchCost?: number;
   dinnerCost?: number;
+  fridgeViewMode?: FridgeViewMode;
 }
 
 export interface AppData {

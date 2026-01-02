@@ -1,5 +1,6 @@
 import { getSettings, updateSettings } from './dataService';
 import { getData, clearData, saveData } from './storage';
+import type { FridgeViewMode } from '../types';
 
 /**
  * Get OpenAI API key from settings
@@ -91,6 +92,21 @@ export function setMealTypeCost(mealType: 'breakfast' | 'lunch' | 'dinner', cost
       updateSettings({ dinnerCost: cost });
       break;
   }
+}
+
+/**
+ * Get fridge view mode setting (default 'full')
+ */
+export function getFridgeViewMode(): FridgeViewMode {
+  const settings = getSettings();
+  return settings.fridgeViewMode ?? 'full';
+}
+
+/**
+ * Set fridge view mode setting
+ */
+export function setFridgeViewMode(mode: FridgeViewMode): void {
+  updateSettings({ fridgeViewMode: mode });
 }
 
 /**

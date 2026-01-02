@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { getItems, addItemsToFridgeFromShopping, addShoppingEvent } from '../services/dataService';
-import type { Item, ShoppingItem } from '../types';
+import type { Item, ShoppingItem, FridgeViewMode } from '../types';
+import { getFridgeViewMode, setFridgeViewMode } from '../services/settingsService';
 import FridgeItemCard from '../components/FridgeItemCard';
+import FridgeItemCardCompact from '../components/FridgeItemCardCompact';
 import AddItemDialog from '../components/AddItemDialog';
 import ScanReceiptDialog from '../components/ScanReceiptDialog';
 import EmptyState from '../components/EmptyState';
@@ -12,7 +14,15 @@ function Fridge() {
   const [items, setItems] = useState<Item[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<FridgeViewMode>(getFridgeViewMode());
+  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const handleViewModeChange = (mode: FridgeViewMode) => {
+    setViewMode(mode);
+    setFridgeViewMode(mode);
+    setSelectedItemId(null);
+  };
 
   useEffect(() => {
     loadItems();
@@ -68,7 +78,32 @@ function Fridge() {
   return (
     <div className="fridge-page">
       <div className="fridge-header">
-        <h1>Fridge</h1>
+        <div className="fridge-title-row">
+          <h1>Fridge</h1>
+          <div className="view-toggle">
+            <button
+              className={`view-toggle-button ${viewMode === 'full' ? 'active' : ''}`}
+              onClick={() => handleViewModeChange('full')}
+              title="Full view"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="3" y="3" width="18" height="7" rx="1" />
+                <rect x="3" y="14" width="18" height="7" rx="1" />
+              </svg>
+            </button>
+            <button
+              className={`view-toggle-button ${viewMode === 'compact' ? 'active' : ''}`}
+              onClick={() => handleViewModeChange('compact')}
+              title="Compact view"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="3" y="4" width="18" height="3" rx="1" />
+                <rect x="3" y="10.5" width="18" height="3" rx="1" />
+                <rect x="3" y="17" width="18" height="3" rx="1" />
+              </svg>
+            </button>
+          </div>
+        </div>
         <div className="fridge-actions">
           <button
             onClick={() => setIsScanDialogOpen(true)}
@@ -91,6 +126,20 @@ function Fridge() {
           actionLabel="Add Item"
           onAction={() => setIsAddDialogOpen(true)}
         />
+      ) : viewMode === 'compact' ? (
+        <div className="fridge-items fridge-items-compact">
+          {items.map((item) => (
+            selectedItemId === item.id ? (
+              <FridgeItemCard key={item.id} item={item} onUpdate={() => { loadItems(); setSelectedItemId(null); }} />
+            ) : (
+              <FridgeItemCardCompact
+                key={item.id}
+                item={item}
+                onClick={() => setSelectedItemId(item.id)}
+              />
+            )
+          ))}
+        </div>
       ) : (
         <div className="fridge-items">
           {items.map((item) => (
