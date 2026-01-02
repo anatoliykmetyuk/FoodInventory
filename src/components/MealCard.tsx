@@ -59,18 +59,6 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked, onRate }: Me
               </span>
             </div>
           )}
-          {!meal.isPlanned && (
-            <div className="meal-detail">
-              <span className="detail-label">Rating:</span>
-              <span className="detail-value">
-                {meal.rating ? (
-                  <StarRating rating={meal.rating} readonly size="small" />
-                ) : (
-                  <span className="no-rating">Not rated</span>
-                )}
-              </span>
-            </div>
-          )}
         </div>
       </Link>
       <div className="meal-card-actions">

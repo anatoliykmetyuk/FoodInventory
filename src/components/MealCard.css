@@ -147,12 +147,6 @@
   background-color: #e0a800;
 }
 
-.no-rating {
-  color: #666;
-  font-style: italic;
-  font-size: 0.85rem;
-}
-
 .meal-rating-inline {
   display: flex;
   align-items: center;
