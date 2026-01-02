@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked } from '../services/dataService';
+import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked, rateMeal } from '../services/dataService';
 import { updateFridgeAfterMeal } from '../services/dataService';
-import type { Meal, MealItem } from '../types';
+import type { Meal as MealType, MealItem } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency } from '../services/settingsService';
 import MealItemEditor from '../components/MealItemEditor';
+import StarRating from '../components/StarRating';
 import Toast from '../components/Toast';
 import './Meal.css';
 
@@ -13,7 +14,7 @@ function Meal() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [meal, setMeal] = useState<Meal | null>(null);
+  const [meal, setMeal] = useState<MealType | null>(null);
   const [mealName, setMealName] = useState('');
   const [mealItems, setMealItems] = useState<MealItem[]>([]);
   const [portionsCooked, setPortionsCooked] = useState(1);
@@ -166,6 +167,18 @@ function Meal() {
     }
   };
 
+  const handleRateMeal = (rating: number) => {
+    if (!id) return;
+
+    const result = rateMeal(id, rating);
+    if (result) {
+      setToast({ message: `Rated meal ${rating} star${rating > 1 ? 's' : ''}!`, type: 'success' });
+      loadMeal(id);
+    } else {
+      setToast({ message: 'Failed to rate meal', type: 'error' });
+    }
+  };
+
   const loadMeal = (mealId: string) => {
     const loadedMeal = getMeal(mealId);
     if (loadedMeal) {
@@ -266,6 +279,26 @@ function Meal() {
             <span className="summary-label">Portions:</span>
             <span className="summary-value">{meal.portionsLeft} / {meal.portionsCooked} left</span>
           </div>
+        </div>
+      )}
+
+      {!isEditable && meal && !meal.isPlanned && (
+        <div className="meal-rating-section">
+          <h3>How did this meal make you feel?</h3>
+          <StarRating
+            rating={meal.rating}
+            onRatingChange={handleRateMeal}
+            size="large"
+          />
+          {meal.rating && (
+            <p className="rating-description">
+              {meal.rating === 1 && "Poor - didn't feel good after eating"}
+              {meal.rating === 2 && "Below average - some discomfort"}
+              {meal.rating === 3 && "Average - felt okay"}
+              {meal.rating === 4 && "Good - felt satisfied"}
+              {meal.rating === 5 && "Excellent - felt great!"}
+            </p>
+          )}
         </div>
       )}
 

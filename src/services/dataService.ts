@@ -340,3 +340,28 @@ export function markMealAsCooked(mealId: string): { success: boolean; errors: st
   return { success: true, errors: [] };
 }
 
+/**
+ * Rate a meal with 1-5 stars
+ * This represents how your body feels about the meal after eating it
+ */
+export function rateMeal(mealId: string, rating: number): Meal | null {
+  if (rating < 1 || rating > 5) {
+    return null;
+  }
+
+  const data = getData();
+  const mealIndex = data.meals.findIndex(meal => meal.id === mealId);
+  
+  if (mealIndex === -1) {
+    return null;
+  }
+
+  data.meals[mealIndex] = {
+    ...data.meals[mealIndex],
+    rating,
+  };
+  
+  saveData(data);
+  return data.meals[mealIndex];
+}
+

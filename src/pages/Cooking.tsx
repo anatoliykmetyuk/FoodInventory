@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getMeals, updateMeal, deleteMeal, markMealAsCooked } from '../services/dataService';
+import { getMeals, updateMeal, deleteMeal, markMealAsCooked, rateMeal } from '../services/dataService';
 import { useNavigate } from 'react-router-dom';
 import type { Meal } from '../types';
 import MealCard from '../components/MealCard';
@@ -75,6 +75,16 @@ function Cooking() {
     }
   };
 
+  const handleRateMeal = (mealId: string, rating: number) => {
+    const result = rateMeal(mealId, rating);
+    if (result) {
+      setToast({ message: `Rated meal ${rating} star${rating > 1 ? 's' : ''}!`, type: 'success' });
+      loadMeals();
+    } else {
+      setToast({ message: 'Failed to rate meal', type: 'error' });
+    }
+  };
+
   const plannedMeals = meals.filter(m => m.isPlanned);
   const activeMeals = meals.filter(m => m.isActive && !m.isPlanned);
   const completedMeals = meals.filter(m => !m.isActive && !m.isPlanned);
@@ -117,6 +127,7 @@ function Cooking() {
                 meal={meal}
                 onConsumePortion={handleConsumePortion}
                 onDelete={handleDeleteMeal}
+                onRate={handleRateMeal}
               />
             ))}
           </div>
@@ -128,7 +139,12 @@ function Cooking() {
           <h2>Completed Meals</h2>
           <div className="meals-grid">
             {completedMeals.map((meal) => (
-              <MealCard key={meal.id} meal={meal} onDelete={handleDeleteMeal} />
+              <MealCard 
+                key={meal.id} 
+                meal={meal} 
+                onDelete={handleDeleteMeal}
+                onRate={handleRateMeal}
+              />
             ))}
           </div>
         </section>

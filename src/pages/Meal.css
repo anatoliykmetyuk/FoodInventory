@@ -252,3 +252,28 @@
   cursor: pointer;
 }
 
+.meal-rating-section {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.meal-rating-section h3 {
+  color: #fff;
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+}
+
+.meal-rating-section .star-rating {
+  justify-content: center;
+}
+
+.rating-description {
+  color: #aaa;
+  margin-top: 0.75rem;
+  font-size: 0.95rem;
+}
+
