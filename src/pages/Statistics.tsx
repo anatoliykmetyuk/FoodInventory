@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { aggregateData, aggregateRatings, type Granularity, type StatisticsType } from '../services/statisticsService';
 import type { StatisticsDataPoint, RatingsDataPoint } from '../services/statisticsService';
@@ -39,6 +39,23 @@ function Statistics() {
     }
   }, [startDate, endDate, granularity, type]);
 
+  // Calculate total and average cost for the period
+  const costSummary = useMemo(() => {
+    if (type === 'ratings' || data.length === 0) {
+      return null;
+    }
+    
+    const totalCost = data.reduce((sum, point) => sum + point.cost, 0);
+    const totalItems = data.reduce((sum, point) => sum + point.items.length, 0);
+    const averageCostPerItem = totalItems > 0 ? totalCost / totalItems : 0;
+    
+    return {
+      totalCost,
+      totalItems,
+      averageCostPerItem,
+    };
+  }, [data, type]);
+
   return (
     <div className="statistics-page">
       <h1>Statistics</h1>
@@ -59,6 +76,27 @@ function Statistics() {
           onTypeChange={setType}
         />
       </div>
+
+      {costSummary && (
+        <div className="statistics-summary">
+          <div className="summary-item">
+            <span className="summary-label">{type === 'savings' ? 'Total Savings' : 'Total Cost'}</span>
+            <span className={`summary-value ${type === 'savings' ? (costSummary.totalCost >= 0 ? 'savings-positive' : 'savings-negative') : ''}`}>
+              {type === 'savings' && costSummary.totalCost >= 0 ? '+' : ''}{formatPrice(costSummary.totalCost, currency)}
+            </span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">Total Items</span>
+            <span className="summary-value">{costSummary.totalItems}</span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-label">{type === 'savings' ? 'Average Savings per Item' : 'Average Cost per Item'}</span>
+            <span className={`summary-value ${type === 'savings' ? (costSummary.averageCostPerItem >= 0 ? 'savings-positive' : 'savings-negative') : ''}`}>
+              {type === 'savings' && costSummary.averageCostPerItem >= 0 ? '+' : ''}{formatPrice(costSummary.averageCostPerItem, currency)}
+            </span>
+          </div>
+        </div>
+      )}
 
       {type === 'ratings' ? (
         ratingsData.length === 0 ? (
