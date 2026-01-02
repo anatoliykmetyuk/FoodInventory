@@ -6,6 +6,15 @@
   margin-bottom: 1rem;
 }
 
+.fridge-item-card.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.fridge-item-card.clickable:hover {
+  background-color: #252525;
+}
+
 .item-header {
   display: flex;
   justify-content: space-between;
