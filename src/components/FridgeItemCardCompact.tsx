@@ -1,13 +1,14 @@
+import { useNavigate } from 'react-router-dom';
 import { Item } from '../types';
 import { getExpirationWarningDays } from '../services/settingsService';
 import './FridgeItemCardCompact.css';
 
 interface FridgeItemCardCompactProps {
   item: Item;
-  onClick?: () => void;
 }
 
-function FridgeItemCardCompact({ item, onClick }: FridgeItemCardCompactProps) {
+function FridgeItemCardCompact({ item }: FridgeItemCardCompactProps) {
+  const navigate = useNavigate();
   const expirationWarningDays = getExpirationWarningDays();
 
   // Calculate days until expiration
@@ -32,7 +33,7 @@ function FridgeItemCardCompact({ item, onClick }: FridgeItemCardCompactProps) {
   };
 
   return (
-    <div className="fridge-item-card-compact" onClick={onClick}>
+    <div className="fridge-item-card-compact" onClick={() => navigate(`/fridge/item/${item.id}`)}>
       <span className="compact-item-name">{item.name}</span>
       <span className={`compact-item-expiration ${isExpiringSoon ? 'expiring-soon' : ''}`}>
         {formatDaysUntilExpiration()}

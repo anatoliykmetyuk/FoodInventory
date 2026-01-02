@@ -15,13 +15,11 @@ function Fridge() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<FridgeViewMode>(getFridgeViewMode());
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleViewModeChange = (mode: FridgeViewMode) => {
     setViewMode(mode);
     setFridgeViewMode(mode);
-    setSelectedItemId(null);
   };
 
   useEffect(() => {
@@ -129,15 +127,7 @@ function Fridge() {
       ) : viewMode === 'compact' ? (
         <div className="fridge-items fridge-items-compact">
           {items.map((item) => (
-            selectedItemId === item.id ? (
-              <FridgeItemCard key={item.id} item={item} onUpdate={() => { loadItems(); setSelectedItemId(null); }} />
-            ) : (
-              <FridgeItemCardCompact
-                key={item.id}
-                item={item}
-                onClick={() => setSelectedItemId(item.id)}
-              />
-            )
+            <FridgeItemCardCompact key={item.id} item={item} />
           ))}
         </div>
       ) : (
