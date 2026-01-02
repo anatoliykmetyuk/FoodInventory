@@ -51,6 +51,7 @@ interface Meal {
   portionsCooked: number;       // Number of portions cooked
   portionsLeft: number;         // Number of portions remaining
   isActive: boolean;             // true if portionsLeft > 0
+  rating?: number;               // 1-5 stars rating for how your body feels about the meal
   mealType?: MealType;           // Type of meal (for savings tracking)
   savings?: number;              // Amount saved compared to eating out
 }
