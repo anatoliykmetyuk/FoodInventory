@@ -99,5 +99,20 @@
 
 .fridge-items-compact {
   gap: 0.5rem;
+  max-width: 800px;
+}
+
+/* Two-column layout for compact view on wide screens */
+@media (min-width: 768px) {
+  .fridge-items-compact {
+    display: block;
+    column-count: 2;
+    column-gap: 1rem;
+  }
+
+  .fridge-items-compact > * {
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+  }
 }
 
