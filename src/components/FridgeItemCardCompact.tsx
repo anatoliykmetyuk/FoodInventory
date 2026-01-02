@@ -43,6 +43,7 @@ function FridgeItemCardCompact({ item, onClick }: FridgeItemCardCompactProps) {
           style={{ width: `${item.percentageLeft}%` }}
         />
       </div>
+      <span className="compact-item-percentage">{item.percentageLeft}%</span>
     </div>
   );
 }

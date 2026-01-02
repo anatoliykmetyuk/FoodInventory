@@ -53,6 +53,15 @@
   transition: width 0.3s ease;
 }
 
+.compact-item-percentage {
+  color: #4a9eff;
+  font-size: 0.85rem;
+  font-weight: 500;
+  min-width: 36px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 /* Mobile responsive - ensure compact view still fits in one row */
 @media (max-width: 480px) {
   .fridge-item-card-compact {
@@ -70,6 +79,11 @@
   }
 
   .compact-item-progress {
-    width: 50px;
+    width: 40px;
+  }
+
+  .compact-item-percentage {
+    font-size: 0.8rem;
+    min-width: 32px;
   }
 }
