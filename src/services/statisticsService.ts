@@ -2,7 +2,7 @@ import type { Meal, ShoppingEvent } from '../types';
 import { getMeals, getShoppingEvents } from './dataService';
 
 export type Granularity = 'day' | 'week';
-export type StatisticsType = 'meals' | 'shopping' | 'ratings';
+export type StatisticsType = 'meals' | 'shopping' | 'ratings' | 'savings';
 
 export interface StatisticsDataPoint {
   date: string;
@@ -42,9 +42,10 @@ export function aggregateData(
   let shoppingEvents: ShoppingEvent[] = [];
 
   if (type === 'meals') {
+    // Exclude planned meals - only include cooked/consumed meals
     meals = getMeals().filter(meal => {
       const mealDate = new Date(meal.date);
-      return mealDate >= startDate && mealDate <= endDate;
+      return mealDate >= startDate && mealDate <= endDate && !meal.isPlanned;
     });
   }
 
@@ -55,18 +56,28 @@ export function aggregateData(
     });
   }
 
-  // Process meals
+  if (type === 'savings') {
+    // Only include meals that have savings defined and are not planned
+    meals = getMeals().filter(meal => {
+      const mealDate = new Date(meal.date);
+      return mealDate >= startDate && mealDate <= endDate && meal.savings !== undefined && !meal.isPlanned;
+    });
+  }
+
+  // Process meals (for both 'meals' and 'savings' types)
   meals.forEach(meal => {
     const dateKey = getDateKey(new Date(meal.date), granularity);
     if (!dateMap.has(dateKey)) {
       dateMap.set(dateKey, { date: dateKey, cost: 0, cumulativeTotal: 0, items: [] });
     }
     const point = dateMap.get(dateKey)!;
-    point.cost += meal.totalCost;
+    // For savings type, use savings value; for meals type, use totalCost
+    const value = type === 'savings' ? (meal.savings ?? 0) : meal.totalCost;
+    point.cost += value;
     point.items.push({
       id: meal.id,
       name: meal.name,
-      cost: meal.totalCost,
+      cost: value,
       type: 'meal',
     });
   });
@@ -134,8 +145,8 @@ export function aggregateRatings(
 
   const meals = getMeals().filter(meal => {
     const mealDate = new Date(meal.date);
-    // Only include meals with ratings
-    return meal.rating && meal.rating > 0 && mealDate >= startDate && mealDate <= endDate;
+    // Only include meals with ratings and not planned
+    return meal.rating && meal.rating > 0 && mealDate >= startDate && mealDate <= endDate && !meal.isPlanned;
   });
 
   // Process meals with ratings
@@ -167,4 +178,3 @@ export function aggregateRatings(
 
   return result;
 }
-

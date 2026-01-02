@@ -47,6 +47,53 @@ export function setExpirationWarningDays(days: number): void {
 }
 
 /**
+ * Get savings mode setting (default false)
+ */
+export function getSavingsMode(): boolean {
+  const settings = getSettings();
+  return settings.savingsMode ?? false;
+}
+
+/**
+ * Set savings mode setting
+ */
+export function setSavingsMode(enabled: boolean): void {
+  updateSettings({ savingsMode: enabled });
+}
+
+/**
+ * Get meal type cost setting
+ */
+export function getMealTypeCost(mealType: 'breakfast' | 'lunch' | 'dinner'): number {
+  const settings = getSettings();
+  switch (mealType) {
+    case 'breakfast':
+      return settings.breakfastCost ?? 0;
+    case 'lunch':
+      return settings.lunchCost ?? 0;
+    case 'dinner':
+      return settings.dinnerCost ?? 0;
+  }
+}
+
+/**
+ * Set meal type cost setting
+ */
+export function setMealTypeCost(mealType: 'breakfast' | 'lunch' | 'dinner', cost: number): void {
+  switch (mealType) {
+    case 'breakfast':
+      updateSettings({ breakfastCost: cost });
+      break;
+    case 'lunch':
+      updateSettings({ lunchCost: cost });
+      break;
+    case 'dinner':
+      updateSettings({ dinnerCost: cost });
+      break;
+  }
+}
+
+/**
  * Export all data as JSON
  */
 export function exportData(): string {

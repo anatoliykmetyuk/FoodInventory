@@ -39,6 +39,8 @@ interface MealItem {
 Represents a cooked meal.
 
 ```typescript
+type MealType = 'unspecified' | 'breakfast' | 'lunch' | 'dinner';
+
 interface Meal {
   id: string;                    // Unique identifier
   name: string;                  // Meal name
@@ -49,6 +51,9 @@ interface Meal {
   portionsCooked: number;       // Number of portions cooked
   portionsLeft: number;         // Number of portions remaining
   isActive: boolean;             // true if portionsLeft > 0
+  rating?: number;               // 1-5 stars rating for how your body feels about the meal
+  mealType?: MealType;           // Type of meal (for savings tracking)
+  savings?: number;              // Amount saved compared to eating out
 }
 ```
 
@@ -88,6 +93,11 @@ Application settings.
 interface Settings {
   openaiApiKey?: string;         // OpenAI API key (stored locally)
   currency?: string;              // Currency code (default: 'USD')
+  expirationWarningDays?: number; // Days before expiration to show warning
+  savingsMode?: boolean;          // Enable savings tracking feature
+  breakfastCost?: number;         // Normal cost of breakfast for savings calculation
+  lunchCost?: number;             // Normal cost of lunch for savings calculation
+  dinnerCost?: number;            // Normal cost of dinner for savings calculation
 }
 ```
 
@@ -126,6 +136,20 @@ mealTotalCalories = sum(mealItem.calories for all mealItems)
 ```
 shoppingEventTotalCost = sum(shoppingItem.finalPrice for all items)
 ```
+
+### Meal Savings
+
+When Savings Mode is enabled and a meal type (Breakfast, Lunch, or Dinner) is selected:
+
+```
+savings = normalCost - actualCost
+```
+
+Where:
+- `normalCost` is the user-configured cost for eating out (from Settings)
+- `actualCost` is the meal's totalCost
+
+**Note:** Savings are calculated only at the time of creating or editing a meal. They are NOT retroactively updated when the user changes the normal costs in Settings.
 
 ## Fridge Updates
 

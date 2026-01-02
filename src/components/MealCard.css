@@ -60,12 +60,15 @@
   color: #fff;
   font-size: 1rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .meal-card-actions {
   display: flex;
   gap: 0.5rem;
   margin-top: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .consume-portion-button {
@@ -93,6 +96,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.2s;
+  margin-left: auto;
 }
 
 .delete-meal-button:hover {
@@ -143,12 +147,6 @@
   background-color: #e0a800;
 }
 
-.no-rating {
-  color: #666;
-  font-style: italic;
-  font-size: 0.85rem;
-}
-
 .meal-rating-inline {
   display: flex;
   align-items: center;
@@ -157,10 +155,23 @@
   border-radius: 4px;
 }
 
+.savings-positive {
+  color: #28a745 !important;
+}
+
+.savings-negative {
+  color: #dc3545 !important;
+}
+
+.meal-detail {
+  min-width: 0;
+  flex-shrink: 0;
+}
+
 @media (min-width: 768px) {
   .meal-details {
     flex-direction: row;
-    gap: 2rem;
+    flex-wrap: wrap;
+    gap: 1.5rem;
   }
 }
-

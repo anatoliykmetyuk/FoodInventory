@@ -1,5 +1,5 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import type { StatisticsDataPoint } from '../services/statisticsService';
+import type { StatisticsDataPoint, StatisticsType } from '../services/statisticsService';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency } from '../services/settingsService';
 import './StatisticsChart.css';
@@ -7,10 +7,12 @@ import './StatisticsChart.css';
 interface StatisticsChartProps {
   data: StatisticsDataPoint[];
   onDataPointClick?: (dataPoint: StatisticsDataPoint) => void;
+  type?: StatisticsType;
 }
 
-function StatisticsChart({ data, onDataPointClick }: StatisticsChartProps) {
+function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsChartProps) {
   const currency = getCurrency();
+  const barColor = type === 'savings' ? '#28a745' : '#4a9eff';
 
   const chartData = data.map(point => ({
     date: new Date(point.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
@@ -24,14 +26,16 @@ function StatisticsChart({ data, onDataPointClick }: StatisticsChartProps) {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
+      const periodLabel = type === 'savings' ? 'Period Savings' : 'Period Total';
+      const cumulativeLabel = type === 'savings' ? 'Cumulative Savings' : 'Cumulative Total';
       return (
         <div className="chart-tooltip">
           <p className="tooltip-date">{dataPoint.date}</p>
           <p className="tooltip-total">
-            Period Total: {formatPrice(dataPoint.cost, currency)}
+            {periodLabel}: {formatPrice(dataPoint.cost, currency)}
           </p>
           <p className="tooltip-cumulative">
-            Cumulative Total: {formatPrice(dataPoint.cumulativeTotal, currency)}
+            {cumulativeLabel}: {formatPrice(dataPoint.cumulativeTotal, currency)}
           </p>
         </div>
       );
@@ -57,7 +61,7 @@ function StatisticsChart({ data, onDataPointClick }: StatisticsChartProps) {
         y={y}
         width={width}
         height={height}
-        fill="#4a9eff"
+        fill={barColor}
         style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
         onClick={onDataPointClick ? handleClick : undefined}
       />
@@ -115,7 +119,7 @@ function StatisticsChart({ data, onDataPointClick }: StatisticsChartProps) {
           <Legend />
           <Bar
             dataKey="cost"
-            fill="#4a9eff"
+            fill={barColor}
             shape={CustomBar}
           />
           <Line
