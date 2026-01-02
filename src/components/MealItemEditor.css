@@ -33,6 +33,14 @@
   font-size: 1.1rem;
 }
 
+.total-value.savings-positive {
+  color: #28a745;
+}
+
+.total-value.savings-negative {
+  color: #dc3545;
+}
+
 .add-item-section {
   margin-bottom: 1.5rem;
 }

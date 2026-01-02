@@ -323,6 +323,8 @@ function Meal() {
         mealItems={mealItems}
         onMealItemsChange={handleMealItemsChange}
         isEditable={isEditable}
+        savingsModeEnabled={savingsModeEnabled}
+        mealType={mealType}
       />
 
       {!isEditable && meal && (
