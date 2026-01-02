@@ -8,9 +8,10 @@ import './FridgeItemCard.css';
 interface FridgeItemCardProps {
   item: Item;
   onUpdate?: () => void;
+  onClick?: () => void;
 }
 
-function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
+function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
   const currency = getCurrency();
   const expirationWarningDays = getExpirationWarningDays();
   const [isEditing, setIsEditing] = useState(false);
@@ -83,8 +84,19 @@ function FridgeItemCard({ item, onUpdate }: FridgeItemCardProps) {
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't trigger collapse if clicking on buttons or inputs
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'BUTTON' || target.tagName === 'INPUT' || target.closest('button') || target.closest('input')) {
+      return;
+    }
+    if (onClick && !isEditing) {
+      onClick();
+    }
+  };
+
   return (
-    <div className="fridge-item-card">
+    <div className={`fridge-item-card ${onClick ? 'clickable' : ''}`} onClick={handleCardClick}>
       {isEditing ? (
         <>
           <div className="item-header">

@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary';
 import Navigation from './components/Navigation';
 import Fridge from './pages/Fridge';
-import FridgeItem from './pages/FridgeItem';
 import Cooking from './pages/Cooking';
 import Meal from './pages/Meal';
 import Shopping from './pages/Shopping';
@@ -20,7 +19,6 @@ function App() {
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Fridge />} />
-              <Route path="/fridge/item/:id" element={<FridgeItem />} />
               <Route path="/cooking" element={<Cooking />} />
               <Route path="/cooking/meal/:id" element={<Meal />} />
               <Route path="/shopping" element={<Shopping />} />
