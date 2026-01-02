@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
 import { getItems } from '../services/dataService';
-import type { Item, MealItem } from '../types';
+import type { Item, MealItem, MealType } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
-import { getCurrency } from '../services/settingsService';
+import { getCurrency, getMealTypeCost } from '../services/settingsService';
 import './MealItemEditor.css';
 
 interface MealItemEditorProps {
   mealItems: MealItem[];
   onMealItemsChange: (items: MealItem[]) => void;
   isEditable?: boolean;
+  savingsModeEnabled?: boolean;
+  mealType?: MealType;
 }
 
-function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: MealItemEditorProps) {
+function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savingsModeEnabled = false, mealType = 'unspecified' }: MealItemEditorProps) {
   const [fridgeItems, setFridgeItems] = useState<Item[]>([]);
   const [localMealItems, setLocalMealItems] = useState<MealItem[]>(mealItems);
   const currency = getCurrency();
@@ -87,6 +89,16 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: Mea
   const totalCost = localMealItems.reduce((sum, item) => sum + item.cost, 0);
   const totalCalories = localMealItems.reduce((sum, item) => sum + item.calories, 0);
 
+  // Calculate savings if savings mode is enabled and meal type is specified
+  const calculateSavings = (): number | undefined => {
+    if (!savingsModeEnabled || mealType === 'unspecified') {
+      return undefined;
+    }
+    const normalCost = getMealTypeCost(mealType);
+    return normalCost - totalCost;
+  };
+  const savings = calculateSavings();
+
   const availableItems = fridgeItems
     .filter(item => !localMealItems.find(mi => mi.itemId === item.id))
     .sort((a, b) => {
@@ -105,6 +117,14 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true }: Mea
         <div className="meal-totals">
           <span className="total-label">Total Cost:</span>
           <span className="total-value">{formatPrice(totalCost, currency)}</span>
+          {savings !== undefined && (
+            <>
+              <span className="total-label">Savings:</span>
+              <span className={`total-value ${savings >= 0 ? 'savings-positive' : 'savings-negative'}`}>
+                {savings >= 0 ? '+' : ''}{formatPrice(savings, currency)}
+              </span>
+            </>
+          )}
           <span className="total-label">Total Calories:</span>
           <span className="total-value">{parseFloat(totalCalories.toFixed(2))}</span>
         </div>
