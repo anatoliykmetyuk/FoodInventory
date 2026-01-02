@@ -114,7 +114,7 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
         <ComposedChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
           <XAxis dataKey="date" stroke="#aaa" />
-          <YAxis stroke="#aaa" tickFormatter={formatYAxis} />
+          <YAxis stroke="#aaa" tickFormatter={formatYAxis} width={80} />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Bar
