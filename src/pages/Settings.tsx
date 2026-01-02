@@ -1,5 +1,16 @@
 import { useState, useEffect } from 'react';
-import { getOpenAIApiKey, setOpenAIApiKey, getExpirationWarningDays, setExpirationWarningDays } from '../services/settingsService';
+import { 
+  getOpenAIApiKey, 
+  setOpenAIApiKey, 
+  getExpirationWarningDays, 
+  setExpirationWarningDays,
+  getSavingsMode,
+  setSavingsMode,
+  getMealTypeCost,
+  setMealTypeCost,
+  getCurrency
+} from '../services/settingsService';
+import { formatPrice } from '../utils/currencyFormatter';
 import CurrencySelector from '../components/CurrencySelector';
 import ExportData from '../components/ExportData';
 import ImportData from '../components/ImportData';
@@ -11,6 +22,11 @@ function Settings() {
   const [apiKey, setApiKey] = useState<string>('');
   const [showApiKey, setShowApiKey] = useState(false);
   const [warningDays, setWarningDays] = useState<number>(7);
+  const [savingsModeEnabled, setSavingsModeEnabled] = useState<boolean>(false);
+  const [breakfastCost, setBreakfastCost] = useState<number>(0);
+  const [lunchCost, setLunchCost] = useState<number>(0);
+  const [dinnerCost, setDinnerCost] = useState<number>(0);
+  const currency = getCurrency();
 
   useEffect(() => {
     const savedKey = getOpenAIApiKey();
@@ -18,6 +34,10 @@ function Settings() {
       setApiKey(savedKey);
     }
     setWarningDays(getExpirationWarningDays());
+    setSavingsModeEnabled(getSavingsMode());
+    setBreakfastCost(getMealTypeCost('breakfast'));
+    setLunchCost(getMealTypeCost('lunch'));
+    setDinnerCost(getMealTypeCost('dinner'));
   }, []);
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,6 +51,28 @@ function Settings() {
     if (!isNaN(days) && days >= 0) {
       setWarningDays(days);
       setExpirationWarningDays(days);
+    }
+  };
+
+  const handleSavingsModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const enabled = e.target.checked;
+    setSavingsModeEnabled(enabled);
+    setSavingsMode(enabled);
+  };
+
+  const handleMealTypeCostChange = (mealType: 'breakfast' | 'lunch' | 'dinner', value: string) => {
+    const cost = parseFloat(value) || 0;
+    setMealTypeCost(mealType, cost);
+    switch (mealType) {
+      case 'breakfast':
+        setBreakfastCost(cost);
+        break;
+      case 'lunch':
+        setLunchCost(cost);
+        break;
+      case 'dinner':
+        setDinnerCost(cost);
+        break;
     }
   };
 
@@ -94,6 +136,70 @@ function Settings() {
           />
           <span className="expiration-warning-label">days</span>
         </div>
+      </section>
+
+      <section className="settings-section">
+        <h2>Savings Tracking</h2>
+        <p className="settings-description">
+          Track how much you save by cooking at home compared to eating out.
+        </p>
+        <div className="savings-mode-toggle">
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              checked={savingsModeEnabled}
+              onChange={handleSavingsModeChange}
+              className="savings-checkbox"
+            />
+            <span>Enable Savings Mode</span>
+          </label>
+        </div>
+        {savingsModeEnabled && (
+          <div className="meal-type-costs">
+            <p className="settings-description">
+              Set your typical costs for eating out for each meal type:
+            </p>
+            <div className="meal-cost-input-group">
+              <label htmlFor="breakfast-cost">Breakfast:</label>
+              <input
+                id="breakfast-cost"
+                type="number"
+                min="0"
+                step="0.01"
+                value={breakfastCost || ''}
+                onChange={(e) => handleMealTypeCostChange('breakfast', e.target.value)}
+                placeholder={formatPrice(0, currency)}
+                className="meal-cost-input"
+              />
+            </div>
+            <div className="meal-cost-input-group">
+              <label htmlFor="lunch-cost">Lunch:</label>
+              <input
+                id="lunch-cost"
+                type="number"
+                min="0"
+                step="0.01"
+                value={lunchCost || ''}
+                onChange={(e) => handleMealTypeCostChange('lunch', e.target.value)}
+                placeholder={formatPrice(0, currency)}
+                className="meal-cost-input"
+              />
+            </div>
+            <div className="meal-cost-input-group">
+              <label htmlFor="dinner-cost">Dinner:</label>
+              <input
+                id="dinner-cost"
+                type="number"
+                min="0"
+                step="0.01"
+                value={dinnerCost || ''}
+                onChange={(e) => handleMealTypeCostChange('dinner', e.target.value)}
+                placeholder={formatPrice(0, currency)}
+                className="meal-cost-input"
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="settings-section">

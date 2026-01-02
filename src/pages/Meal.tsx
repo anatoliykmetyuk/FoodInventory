@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked, rateMeal } from '../services/dataService';
 import { updateFridgeAfterMeal } from '../services/dataService';
-import type { Meal as MealType, MealItem } from '../types';
+import type { Meal as MealInterface, MealItem, MealType } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
-import { getCurrency } from '../services/settingsService';
+import { getCurrency, getSavingsMode, getMealTypeCost } from '../services/settingsService';
 import MealItemEditor from '../components/MealItemEditor';
 import StarRating from '../components/StarRating';
 import Toast from '../components/Toast';
@@ -14,7 +14,7 @@ function Meal() {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [meal, setMeal] = useState<MealType | null>(null);
+  const [meal, setMeal] = useState<MealInterface | null>(null);
   const [mealName, setMealName] = useState('');
   const [mealItems, setMealItems] = useState<MealItem[]>([]);
   const [portionsCooked, setPortionsCooked] = useState(1);
@@ -25,11 +25,16 @@ function Meal() {
     return today.toISOString().split('T')[0];
   });
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [mealType, setMealType] = useState<MealType>('unspecified');
+  const [savingsModeEnabled, setSavingsModeEnabled] = useState<boolean>(false);
   const currency = getCurrency();
 
   useEffect(() => {
     const reuseId = searchParams.get('reuse');
     const editMode = searchParams.get('edit') === 'true';
+
+    // Load savings mode setting
+    setSavingsModeEnabled(getSavingsMode());
 
     if (id === 'new') {
       // New meal
@@ -41,6 +46,7 @@ function Meal() {
           setMealName(existingMeal.name);
           setMealItems(existingMeal.items.map(item => ({ ...item })));
           setPortionsCooked(existingMeal.portionsCooked);
+          setMealType(existingMeal.mealType || 'unspecified');
         }
       }
     } else if (id) {
@@ -52,6 +58,7 @@ function Meal() {
         setMealItems(existingMeal.items);
         setPortionsCooked(existingMeal.portionsCooked);
         setIsPlanned(existingMeal.isPlanned || false);
+        setMealType(existingMeal.mealType || 'unspecified');
         // Set planned date from existing meal
         const mealDate = new Date(existingMeal.date);
         setPlannedDate(mealDate.toISOString().split('T')[0]);
@@ -63,6 +70,32 @@ function Meal() {
 
   const handleMealItemsChange = (items: MealItem[]) => {
     setMealItems(items);
+  };
+
+  const calculateSavings = (totalCost: number, type: MealType): number | undefined => {
+    if (type === 'unspecified') {
+      return undefined;
+    }
+    const normalCost = getMealTypeCost(type);
+    return normalCost - totalCost;
+  };
+
+  const handleMealTypeChange = (newMealType: MealType) => {
+    if (!meal || !id) return;
+    
+    setMealType(newMealType);
+    
+    // Calculate new savings based on the selected meal type
+    const newSavings = calculateSavings(meal.totalCost, newMealType);
+    
+    // Update the meal with the new meal type and savings
+    updateMeal(id, {
+      mealType: newMealType,
+      savings: newSavings,
+    });
+    
+    // Reload the meal to reflect changes
+    loadMeal(id);
   };
 
   const handleSave = () => {
@@ -85,6 +118,9 @@ function Meal() {
       // Use planned date for planned meals, current date for regular meals
       const mealDate = isPlanned ? new Date(plannedDate + 'T12:00:00') : new Date();
       
+      // Calculate savings if savings mode is enabled and meal type is specified
+      const savings = savingsModeEnabled ? calculateSavings(totalCost, mealType) : undefined;
+      
       const newMeal = addMeal({
         name: mealName.trim(),
         date: mealDate,
@@ -95,6 +131,8 @@ function Meal() {
         portionsLeft: portionsCooked,
         isActive: true,
         isPlanned,
+        mealType: savingsModeEnabled ? mealType : undefined,
+        savings,
       });
 
       // Only update fridge if not a planned meal
@@ -108,6 +146,9 @@ function Meal() {
       // Update existing planned meal
       const mealDate = new Date(plannedDate + 'T12:00:00');
       
+      // Calculate savings if savings mode is enabled and meal type is specified
+      const savings = savingsModeEnabled ? calculateSavings(totalCost, mealType) : undefined;
+      
       updateMeal(id, {
         name: mealName.trim(),
         date: mealDate,
@@ -116,6 +157,8 @@ function Meal() {
         totalCalories,
         portionsCooked,
         portionsLeft: portionsCooked,
+        mealType: savingsModeEnabled ? mealType : undefined,
+        savings,
       });
 
       // Reload meal and exit edit mode
@@ -187,6 +230,7 @@ function Meal() {
       setMealItems(loadedMeal.items);
       setPortionsCooked(loadedMeal.portionsCooked);
       setIsPlanned(loadedMeal.isPlanned || false);
+      setMealType(loadedMeal.mealType || 'unspecified');
       const mealDate = new Date(loadedMeal.date);
       setPlannedDate(mealDate.toISOString().split('T')[0]);
     }
@@ -231,6 +275,22 @@ function Meal() {
               className="portions-input"
             />
           </div>
+          {savingsModeEnabled && (
+            <div className="meal-type-selector-group">
+              <label htmlFor="meal-type">Meal Type:</label>
+              <select
+                id="meal-type"
+                value={mealType}
+                onChange={(e) => setMealType(e.target.value as MealType)}
+                className="meal-type-select"
+              >
+                <option value="unspecified">Unspecified</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+          )}
           {id === 'new' && (
             <div className="planned-checkbox-group">
               <input
@@ -271,6 +331,29 @@ function Meal() {
             <span className="summary-label">Total Cost:</span>
             <span className="summary-value">{formatPrice(meal.totalCost, currency)}</span>
           </div>
+          {savingsModeEnabled && (
+            <div className="summary-item savings-edit-item">
+              <span className="summary-label">Meal Type:</span>
+              <select
+                value={mealType}
+                onChange={(e) => handleMealTypeChange(e.target.value as MealType)}
+                className="meal-type-select-inline"
+              >
+                <option value="unspecified">Unspecified</option>
+                <option value="breakfast">Breakfast</option>
+                <option value="lunch">Lunch</option>
+                <option value="dinner">Dinner</option>
+              </select>
+            </div>
+          )}
+          {meal.savings !== undefined && (
+            <div className="summary-item">
+              <span className="summary-label">Savings:</span>
+              <span className={`summary-value ${meal.savings >= 0 ? 'savings-positive' : 'savings-negative'}`}>
+                {meal.savings >= 0 ? '+' : ''}{formatPrice(meal.savings, currency)}
+              </span>
+            </div>
+          )}
           <div className="summary-item">
             <span className="summary-label">Total Calories:</span>
             <span className="summary-value">{parseFloat(meal.totalCalories.toFixed(2))}</span>
@@ -359,4 +442,3 @@ function Meal() {
 }
 
 export default Meal;
-

@@ -109,6 +109,7 @@ function Statistics() {
             <StatisticsChart
               data={data}
               onDataPointClick={(dataPoint) => setSelectedDataPoint(dataPoint)}
+              type={type}
             />
             {selectedDataPoint && selectedDataPoint.items.length > 0 && (
               <div className="statistics-items-list">
@@ -131,7 +132,9 @@ function Statistics() {
                       className="statistics-item-button"
                     >
                       <span className="item-name">{item.name}</span>
-                      <span className="item-cost">{formatPrice(item.cost, currency)}</span>
+                      <span className={`item-cost ${type === 'savings' ? (item.cost >= 0 ? 'savings-positive' : 'savings-negative') : ''}`}>
+                        {type === 'savings' && item.cost >= 0 ? '+' : ''}{formatPrice(item.cost, currency)}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -145,4 +148,3 @@ function Statistics() {
 }
 
 export default Statistics;
-

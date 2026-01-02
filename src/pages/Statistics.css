@@ -103,9 +103,16 @@
   margin-top: 0.5rem;
 }
 
+.statistics-item-button .item-cost.savings-positive {
+  color: #28a745;
+}
+
+.statistics-item-button .item-cost.savings-negative {
+  color: #dc3545;
+}
+
 @media (max-width: 768px) {
   .items-grid {
     grid-template-columns: 1fr;
   }
 }
-

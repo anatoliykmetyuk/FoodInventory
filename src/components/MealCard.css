@@ -157,10 +157,17 @@
   border-radius: 4px;
 }
 
+.savings-positive {
+  color: #28a745 !important;
+}
+
+.savings-negative {
+  color: #dc3545 !important;
+}
+
 @media (min-width: 768px) {
   .meal-details {
     flex-direction: row;
     gap: 2rem;
   }
 }
-

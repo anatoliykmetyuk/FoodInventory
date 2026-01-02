@@ -1,3 +1,5 @@
+export type MealType = 'unspecified' | 'breakfast' | 'lunch' | 'dinner';
+
 export interface Item {
   id: string;
   name: string;
@@ -27,6 +29,8 @@ export interface Meal {
   isActive: boolean;
   isPlanned?: boolean;
   rating?: number; // 1-5 stars rating for how your body feels about the meal
+  mealType?: MealType;
+  savings?: number;
 }
 
 export interface ShoppingItem {
@@ -47,6 +51,10 @@ export interface Settings {
   openaiApiKey?: string;
   currency?: string;
   expirationWarningDays?: number;
+  savingsMode?: boolean;
+  breakfastCost?: number;
+  lunchCost?: number;
+  dinnerCost?: number;
 }
 
 export interface AppData {
@@ -55,4 +63,3 @@ export interface AppData {
   shoppingEvents: ShoppingEvent[];
   settings: Settings;
 }
-

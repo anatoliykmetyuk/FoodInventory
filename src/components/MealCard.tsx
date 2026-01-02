@@ -51,6 +51,14 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked, onRate }: Me
             <span className="detail-label">Portions:</span>
             <span className="detail-value">{meal.portionsLeft} / {meal.portionsCooked}</span>
           </div>
+          {meal.savings !== undefined && (
+            <div className="meal-detail">
+              <span className="detail-label">Savings:</span>
+              <span className={`detail-value ${meal.savings >= 0 ? 'savings-positive' : 'savings-negative'}`}>
+                {meal.savings >= 0 ? '+' : ''}{formatPrice(meal.savings, currency)}
+              </span>
+            </div>
+          )}
           {!meal.isPlanned && (
             <div className="meal-detail">
               <span className="detail-label">Rating:</span>
@@ -127,4 +135,3 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked, onRate }: Me
 }
 
 export default MealCard;
-
