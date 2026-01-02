@@ -2,7 +2,7 @@ import type { Meal, ShoppingEvent } from '../types';
 import { getMeals, getShoppingEvents } from './dataService';
 
 export type Granularity = 'day' | 'week';
-export type StatisticsType = 'meals' | 'shopping';
+export type StatisticsType = 'meals' | 'shopping' | 'ratings';
 
 export interface StatisticsDataPoint {
   date: string;
@@ -13,6 +13,17 @@ export interface StatisticsDataPoint {
     name: string;
     cost: number;
     type: 'meal' | 'shopping';
+  }>;
+}
+
+export interface RatingsDataPoint {
+  date: string;
+  averageRating: number;
+  ratingCount: number;
+  meals: Array<{
+    id: string;
+    name: string;
+    rating: number;
   }>;
 }
 
@@ -105,5 +116,55 @@ function getDateKey(date: Date, granularity: Granularity): string {
     const monday = new Date(d.setDate(diff));
     return monday.toISOString().split('T')[0];
   }
+}
+
+/**
+ * Aggregate meal ratings by day or week
+ */
+export function aggregateRatings(
+  startDate: Date,
+  endDate: Date,
+  granularity: Granularity
+): RatingsDataPoint[] {
+  const dateMap = new Map<string, {
+    totalRating: number;
+    count: number;
+    meals: Array<{ id: string; name: string; rating: number }>;
+  }>();
+
+  const meals = getMeals().filter(meal => {
+    const mealDate = new Date(meal.date);
+    // Only include meals with ratings
+    return meal.rating && meal.rating > 0 && mealDate >= startDate && mealDate <= endDate;
+  });
+
+  // Process meals with ratings
+  meals.forEach(meal => {
+    const dateKey = getDateKey(new Date(meal.date), granularity);
+    if (!dateMap.has(dateKey)) {
+      dateMap.set(dateKey, { totalRating: 0, count: 0, meals: [] });
+    }
+    const point = dateMap.get(dateKey)!;
+    point.totalRating += meal.rating!;
+    point.count += 1;
+    point.meals.push({
+      id: meal.id,
+      name: meal.name,
+      rating: meal.rating!,
+    });
+  });
+
+  // Convert map to array with calculated averages
+  const result: RatingsDataPoint[] = Array.from(dateMap.entries()).map(([date, data]) => ({
+    date,
+    averageRating: data.count > 0 ? data.totalRating / data.count : 0,
+    ratingCount: data.count,
+    meals: data.meals,
+  }));
+
+  // Sort by date
+  result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  return result;
 }
 

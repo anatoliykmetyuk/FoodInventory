@@ -23,6 +23,12 @@ function TypeSelector({ type, onTypeChange }: TypeSelectorProps) {
         >
           Shopping Events
         </button>
+        <button
+          className={type === 'ratings' ? 'active' : ''}
+          onClick={() => onTypeChange('ratings')}
+        >
+          Meal Ratings
+        </button>
       </div>
     </div>
   );

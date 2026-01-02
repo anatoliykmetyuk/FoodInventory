@@ -26,6 +26,7 @@ export interface Meal {
   portionsLeft: number;
   isActive: boolean;
   isPlanned?: boolean;
+  rating?: number; // 1-5 stars rating for how your body feels about the meal
 }
 
 export interface ShoppingItem {

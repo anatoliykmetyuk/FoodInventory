@@ -6,6 +6,7 @@ import {
   removeItem,
   getItem,
   getMeals,
+  getMeal,
   addMeal,
   updateMeal,
   deleteMeal,
@@ -17,6 +18,7 @@ import {
   updateFridgeAfterMeal,
   validateMealIngredients,
   markMealAsCooked,
+  rateMeal,
 } from './dataService';
 import type { ShoppingItem } from '../types';
 
@@ -564,6 +566,117 @@ describe('dataService', () => {
       const result = markMealAsCooked(meal.id);
       expect(result.success).toBe(false);
       expect(result.errors).toContain('Meal is already cooked');
+    });
+  });
+
+  describe('rateMeal', () => {
+    it('should rate a meal with valid rating', () => {
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 0,
+        isActive: false,
+      });
+
+      const result = rateMeal(meal.id, 4);
+      expect(result).not.toBeNull();
+      expect(result?.rating).toBe(4);
+
+      // Verify rating is persisted
+      const updatedMeal = getMeal(meal.id);
+      expect(updatedMeal?.rating).toBe(4);
+    });
+
+    it('should update existing rating', () => {
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 0,
+        isActive: false,
+        rating: 3,
+      });
+
+      expect(getMeal(meal.id)?.rating).toBe(3);
+
+      const result = rateMeal(meal.id, 5);
+      expect(result).not.toBeNull();
+      expect(result?.rating).toBe(5);
+
+      // Verify rating is updated
+      const updatedMeal = getMeal(meal.id);
+      expect(updatedMeal?.rating).toBe(5);
+    });
+
+    it('should reject rating below 1', () => {
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 0,
+        isActive: false,
+      });
+
+      const result = rateMeal(meal.id, 0);
+      expect(result).toBeNull();
+
+      // Verify no rating was set
+      const updatedMeal = getMeal(meal.id);
+      expect(updatedMeal?.rating).toBeUndefined();
+    });
+
+    it('should reject rating above 5', () => {
+      const meal = addMeal({
+        name: 'Apple Salad',
+        date: new Date('2024-01-01'),
+        items: [],
+        totalCost: 0.75,
+        totalCalories: 47.5,
+        portionsCooked: 1,
+        portionsLeft: 0,
+        isActive: false,
+      });
+
+      const result = rateMeal(meal.id, 6);
+      expect(result).toBeNull();
+
+      // Verify no rating was set
+      const updatedMeal = getMeal(meal.id);
+      expect(updatedMeal?.rating).toBeUndefined();
+    });
+
+    it('should return null for non-existent meal', () => {
+      const result = rateMeal('non-existent-id', 4);
+      expect(result).toBeNull();
+    });
+
+    it('should accept all valid ratings (1-5)', () => {
+      for (let rating = 1; rating <= 5; rating++) {
+        const meal = addMeal({
+          name: `Test Meal ${rating}`,
+          date: new Date('2024-01-01'),
+          items: [],
+          totalCost: 1,
+          totalCalories: 100,
+          portionsCooked: 1,
+          portionsLeft: 0,
+          isActive: false,
+        });
+
+        const result = rateMeal(meal.id, rating);
+        expect(result).not.toBeNull();
+        expect(result?.rating).toBe(rating);
+      }
     });
   });
 

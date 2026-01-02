@@ -2,6 +2,7 @@ import { Meal } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency } from '../services/settingsService';
 import { Link, useNavigate } from 'react-router-dom';
+import StarRating from './StarRating';
 import './MealCard.css';
 
 interface MealCardProps {
@@ -9,9 +10,10 @@ interface MealCardProps {
   onConsumePortion?: (mealId: string) => void;
   onDelete?: (mealId: string) => void;
   onMarkCooked?: (mealId: string) => void;
+  onRate?: (mealId: string, rating: number) => void;
 }
 
-function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked }: MealCardProps) {
+function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked, onRate }: MealCardProps) {
   const currency = getCurrency();
   const navigate = useNavigate();
   const date = new Date(meal.date);
@@ -49,6 +51,18 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked }: MealCardPr
             <span className="detail-label">Portions:</span>
             <span className="detail-value">{meal.portionsLeft} / {meal.portionsCooked}</span>
           </div>
+          {!meal.isPlanned && (
+            <div className="meal-detail">
+              <span className="detail-label">Rating:</span>
+              <span className="detail-value">
+                {meal.rating ? (
+                  <StarRating rating={meal.rating} readonly size="small" />
+                ) : (
+                  <span className="no-rating">Not rated</span>
+                )}
+              </span>
+            </div>
+          )}
         </div>
       </Link>
       <div className="meal-card-actions">
@@ -73,17 +87,28 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked }: MealCardPr
             </button>
           </>
         ) : (
-          meal.isActive && meal.portionsLeft > 0 && onConsumePortion && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                onConsumePortion(meal.id);
-              }}
-              className="consume-portion-button"
-            >
-              Consume Portion
-            </button>
-          )
+          <>
+            {meal.isActive && meal.portionsLeft > 0 && onConsumePortion && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  onConsumePortion(meal.id);
+                }}
+                className="consume-portion-button"
+              >
+                Consume Portion
+              </button>
+            )}
+            {onRate && (
+              <div className="meal-rating-inline" onClick={(e) => e.preventDefault()}>
+                <StarRating
+                  rating={meal.rating}
+                  onRatingChange={(rating) => onRate(meal.id, rating)}
+                  size="small"
+                />
+              </div>
+            )}
+          </>
         )}
         {onDelete && (
           <button

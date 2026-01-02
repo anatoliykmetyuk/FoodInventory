@@ -1,0 +1,49 @@
+.star-rating {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.star-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.1s, color 0.2s;
+}
+
+.star-button:disabled {
+  cursor: default;
+}
+
+.star-button:not(:disabled):hover {
+  transform: scale(1.2);
+}
+
+.star-filled {
+  color: #ffc107;
+}
+
+.star-empty {
+  color: #444;
+}
+
+.star-rating-readonly .star-button {
+  cursor: default;
+}
+
+.star-rating-readonly .star-button:hover {
+  transform: none;
+}
+
+/* Size variants */
+.star-rating-small .star-button {
+  font-size: 1rem;
+}
+
+.star-rating-medium .star-button {
+  font-size: 1.5rem;
+}
+
+.star-rating-large .star-button {
+  font-size: 2rem;
+}

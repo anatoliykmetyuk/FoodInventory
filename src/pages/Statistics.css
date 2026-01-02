@@ -86,6 +86,23 @@
   font-size: 0.9rem;
 }
 
+.statistics-item-button .item-rating {
+  color: #ffc107;
+  font-size: 0.9rem;
+}
+
+.ratings-summary {
+  color: #ffc107;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+}
+
+.no-data-hint {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .items-grid {
     grid-template-columns: 1fr;

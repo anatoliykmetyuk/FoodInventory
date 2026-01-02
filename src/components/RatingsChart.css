@@ -1,0 +1,71 @@
+.ratings-chart {
+  width: 100%;
+  background-color: #1a1a1a;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.ratings-chart-tooltip {
+  background-color: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  max-width: 250px;
+}
+
+.ratings-chart-tooltip .tooltip-date {
+  color: #fff;
+  font-weight: bold;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.ratings-chart-tooltip .tooltip-rating {
+  color: #ffc107;
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.ratings-chart-tooltip .tooltip-count {
+  color: #aaa;
+  margin: 0 0 0.5rem 0;
+  font-size: 0.85rem;
+}
+
+.ratings-chart-tooltip .tooltip-meals {
+  border-top: 1px solid #444;
+  padding-top: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.ratings-chart-tooltip .tooltip-meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0;
+  gap: 0.5rem;
+}
+
+.ratings-chart-tooltip .meal-name {
+  color: #fff;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.ratings-chart-tooltip .meal-rating {
+  color: #ffc107;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.ratings-chart-tooltip .tooltip-more {
+  color: #666;
+  font-size: 0.8rem;
+  margin: 0.25rem 0 0 0;
+  font-style: italic;
+}
