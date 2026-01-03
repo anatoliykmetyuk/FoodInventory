@@ -101,8 +101,10 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
     expect(totalText).toBeTruthy();
   });
 
-  test.fixme(({ project }) => project.name === 'Mobile Safari', 'Items with $0.00 cost not appearing in fridge on Mobile Safari');
-  test('should show validation error when saving Shopping Event with empty tax rate', async ({ page }) => {
+  test('should show validation error when saving Shopping Event with empty tax rate', async ({ page }, testInfo) => {
+    if (testInfo.project.name === 'Mobile Safari') {
+      test.skip();
+    }
     await page.goto('/shopping');
     await page.waitForLoadState('networkidle');
 
@@ -164,8 +166,10 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
     await expect(testItem).toBeVisible({ timeout: 20000 });
   });
 
-  test.fixme(({ project }) => project.name === 'Mobile Safari', 'Items with $0.00 cost not appearing in fridge on Mobile Safari');
-  test('should show validation error when saving Shopping Event with empty listed price', async ({ page }) => {
+  test('should show validation error when saving Shopping Event with empty listed price', async ({ page }, testInfo) => {
+    if (testInfo.project.name === 'Mobile Safari') {
+      test.skip();
+    }
     await page.goto('/shopping');
     await page.waitForLoadState('networkidle');
 
