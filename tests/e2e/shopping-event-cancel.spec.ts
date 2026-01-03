@@ -16,7 +16,7 @@ test.describe('Shopping Event Cancel and Save', () => {
           {
             id: 'existing-event-1',
             date: new Date().toISOString(),
-            items: [{ name: 'Existing Item', listedPrice: 5.00, taxRate: 10 }],
+            items: [{ name: 'Existing Item', listedPrice: 5.00, finalPrice: 5.50 }],
             totalCost: 5.50,
           },
         ],
@@ -225,7 +225,7 @@ test.describe('Shopping Event Cancel and Save', () => {
     expect(newEvent.items).toHaveLength(1);
     expect(newEvent.items[0].name).toBe('Test Save Item');
     expect(newEvent.items[0].listedPrice).toBe(15.00);
-    expect(newEvent.items[0].taxRate).toBe(10);
+    expect(newEvent.items[0].finalPrice).toBe(16.50); // Saved items have finalPrice, not taxRate
     expect(newEvent.totalCost).toBe(16.50);
   });
 });

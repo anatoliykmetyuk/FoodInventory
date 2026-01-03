@@ -2,53 +2,80 @@
   margin: 1.5rem 0;
 }
 
-.shopping-item-view .table-container {
-  overflow-x: auto;
+.shopping-item-view .items-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
 }
 
-.shopping-item-view table {
-  width: 100%;
-  border-collapse: collapse;
+.shopping-item-view .item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
   background-color: #1a1a1a;
-  border-radius: 8px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.shopping-item-view .item-name {
+  color: #fff;
+  font-size: 1rem;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.shopping-item-view thead {
-  background-color: #2a2a2a;
+.shopping-item-view .item-price {
+  color: #4a9eff;
+  font-size: 1rem;
+  font-weight: 500;
+  flex-shrink: 0;
 }
 
-.shopping-item-view th {
-  color: #fff;
+.shopping-item-view .total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
   padding: 0.75rem;
-  text-align: left;
+  background-color: #2a2a2a;
+  border-radius: 4px;
+  margin-top: 0.5rem;
   font-weight: 600;
-  border-bottom: 2px solid #444;
-}
-
-.shopping-item-view td {
-  padding: 0.75rem;
-  border-bottom: 1px solid #333;
-  color: #fff;
-}
-
-.shopping-item-view tbody tr:hover {
-  background-color: #222;
-}
-
-.shopping-item-view tfoot {
-  background-color: #2a2a2a;
-  font-weight: bold;
+  max-width: 100%;
 }
 
 .shopping-item-view .total-label {
   color: #fff;
-  text-align: right;
-  padding-right: 1rem;
+  font-size: 1rem;
+  flex: 1;
 }
 
 .shopping-item-view .total-value {
   color: #4a9eff;
   font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Desktop: use multiple columns */
+@media (min-width: 769px) {
+  .shopping-item-view .items-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .shopping-item-view .item-row {
+    max-width: 100%;
+  }
+
+  .shopping-item-view .total-row {
+    grid-column: 1 / -1;
+    max-width: 100%;
+  }
 }
 
