@@ -16,6 +16,8 @@ interface MealItemEditorProps {
 function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savingsModeEnabled = false, mealType = 'unspecified' }: MealItemEditorProps) {
   const [fridgeItems, setFridgeItems] = useState<Item[]>([]);
   const [localMealItems, setLocalMealItems] = useState<MealItem[]>(mealItems);
+  // Store raw input values for percentage to allow empty strings
+  const [percentageInputs, setPercentageInputs] = useState<Record<string, string>>({});
   const currency = getCurrency();
 
   useEffect(() => {
@@ -25,6 +27,12 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
 
   useEffect(() => {
     setLocalMealItems(mealItems);
+    // Initialize percentage inputs from mealItems
+    const inputs: Record<string, string> = {};
+    mealItems.forEach(item => {
+      inputs[item.itemId] = item.percentageUsed.toString();
+    });
+    setPercentageInputs(inputs);
   }, [mealItems]);
 
   const addItem = (itemId: string) => {
@@ -45,6 +53,7 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
 
     const updated = [...localMealItems, newMealItem];
     setLocalMealItems(updated);
+    setPercentageInputs(prev => ({ ...prev, [item.id]: '0' }));
     updateMealItems(updated);
   };
 
@@ -54,21 +63,28 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
     updateMealItems(updated);
   };
 
-  const updatePercentage = (itemId: string, percentage: number) => {
+  const updatePercentage = (itemId: string, value: string) => {
     const item = fridgeItems.find(i => i.id === itemId);
     if (!item) return;
 
-    // Validate percentage (0 < p <= available)
-    if (percentage <= 0 || percentage > item.percentageLeft) {
-      return;
-    }
+    // Update the raw input value (allow empty string)
+    setPercentageInputs(prev => ({ ...prev, [itemId]: value }));
 
+    // Empty string is interpreted as 0
+    const percentage = value === '' ? 0 : parseFloat(value);
+
+    // If not a valid number after parsing, treat as 0
+    const validPercentage = isNaN(percentage) ? 0 : percentage;
+
+    // Calculate cost (0% means 0 cost)
+    const cost = (validPercentage / 100) * item.cost;
+
+    // Update the meal item - allow 0 during editing, validation happens on save
     const updated = localMealItems.map(mi => {
       if (mi.itemId === itemId) {
-        const cost = (percentage / 100) * item.cost;
         return {
           ...mi,
-          percentageUsed: percentage,
+          percentageUsed: validPercentage,
           cost,
         };
       }
@@ -83,7 +99,10 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
     onMealItemsChange(items);
   };
 
-  const totalCost = localMealItems.reduce((sum, item) => sum + item.cost, 0);
+  // Calculate total cost - empty string is interpreted as 0, so all items contribute
+  const totalCost = localMealItems.reduce((sum, item) => {
+    return sum + (item.cost ?? 0);
+  }, 0);
 
   // Calculate savings if savings mode is enabled and meal type is specified
   const calculateSavings = (): number | undefined => {
@@ -176,9 +195,10 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
                             min="1"
                             max={maxPercentage}
                             step="1"
-                            value={mealItem.percentageUsed}
-                            onChange={(e) => updatePercentage(mealItem.itemId, parseFloat(e.target.value) || 0)}
+                            value={percentageInputs[mealItem.itemId] ?? mealItem.percentageUsed ?? ''}
+                            onChange={(e) => updatePercentage(mealItem.itemId, e.target.value)}
                             className="percentage-input"
+                            placeholder="0"
                           />
                           <span className="max-hint">(max: {maxPercentage}%)</span>
                         </>

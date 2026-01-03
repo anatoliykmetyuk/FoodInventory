@@ -12,18 +12,44 @@ interface ReceiptReviewTableProps {
 
 function ReceiptReviewTable({ items, onItemsChange, taxRate }: ReceiptReviewTableProps) {
   const [localItems, setLocalItems] = useState<ShoppingItem[]>(items);
+  // Store raw input values for listedPrice to allow empty strings
+  const [priceInputs, setPriceInputs] = useState<Record<number, string>>({});
   const currency = getCurrency();
 
   useEffect(() => {
     setLocalItems(items);
+    // Initialize price inputs from items, but preserve existing user input
+    setPriceInputs(prev => {
+      const inputs: Record<number, string> = { ...prev };
+      items.forEach((item, index) => {
+        // Only initialize if this index doesn't have a value yet
+        if (inputs[index] === undefined) {
+          inputs[index] = item.listedPrice !== undefined && item.listedPrice !== null ? String(item.listedPrice) : '';
+        }
+      });
+      return inputs;
+    });
   }, [items]);
 
   const updateItem = (index: number, field: keyof ShoppingItem, value: string | number) => {
     const updated = [...localItems];
-    updated[index] = {
-      ...updated[index],
-      [field]: field === 'listedPrice' ? parseFloat(String(value)) || 0 : value,
-    };
+    if (field === 'listedPrice') {
+      const stringValue = String(value);
+      // Store raw input value (allow empty string)
+      setPriceInputs(prev => ({ ...prev, [index]: stringValue }));
+
+      // Empty string is interpreted as 0 for calculations
+      const numValue = stringValue === '' ? 0 : parseFloat(stringValue);
+      updated[index] = {
+        ...updated[index],
+        listedPrice: isNaN(numValue) ? 0 : numValue,
+      };
+    } else {
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+    }
     setLocalItems(updated);
     onItemsChange(updated);
   };
@@ -40,13 +66,18 @@ function ReceiptReviewTable({ items, onItemsChange, taxRate }: ReceiptReviewTabl
       listedPrice: 0,
     };
     const updated = [...localItems, newItem];
+    const newIndex = updated.length - 1;
     setLocalItems(updated);
+    // Initialize price input as empty string for new item - set it immediately and preserve it
+    setPriceInputs(prev => ({ ...prev, [newIndex]: '' }));
     onItemsChange(updated);
   };
 
   const calculateTotalCost = (item: ShoppingItem): number => {
+    // Empty string is interpreted as 0, so undefined/null also treated as 0
+    const listedPrice = item.listedPrice ?? 0;
     // Use global tax rate for calculation
-    return (item.listedPrice ?? 0) * (1 + taxRate / 100);
+    return listedPrice * (1 + taxRate / 100);
   };
 
   const totalCost = localItems.reduce((sum, item) => sum + calculateTotalCost(item), 0);
@@ -89,9 +120,10 @@ function ReceiptReviewTable({ items, onItemsChange, taxRate }: ReceiptReviewTabl
                       type="number"
                       step="0.01"
                       min="0"
-                      value={item.listedPrice ?? 0}
+                      value={priceInputs[index] ?? (item.listedPrice !== undefined && item.listedPrice !== null ? String(item.listedPrice) : '')}
                       onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
                       className="table-input"
+                      placeholder="0.00"
                     />
                   </td>
                   <td>
@@ -158,7 +190,7 @@ function ReceiptReviewTable({ items, onItemsChange, taxRate }: ReceiptReviewTabl
                   type="number"
                   step="0.01"
                   min="0"
-                  value={item.listedPrice ?? 0}
+                  value={priceInputs[index] ?? (item.listedPrice !== undefined && item.listedPrice !== null ? String(item.listedPrice) : '')}
                   onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
                   className="item-card-input"
                   placeholder="0.00"
