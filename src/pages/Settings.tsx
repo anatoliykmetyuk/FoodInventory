@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { 
-  getOpenAIApiKey, 
-  setOpenAIApiKey, 
-  getExpirationWarningDays, 
+import {
+  getOpenAIApiKey,
+  setOpenAIApiKey,
+  getExpirationWarningDays,
   setExpirationWarningDays,
   getSavingsMode,
   setSavingsMode,
@@ -23,9 +23,9 @@ function Settings() {
   const [showApiKey, setShowApiKey] = useState(false);
   const [warningDays, setWarningDays] = useState<number>(7);
   const [savingsModeEnabled, setSavingsModeEnabled] = useState<boolean>(false);
-  const [breakfastCost, setBreakfastCost] = useState<number>(0);
-  const [lunchCost, setLunchCost] = useState<number>(0);
-  const [dinnerCost, setDinnerCost] = useState<number>(0);
+  const [breakfastCost, setBreakfastCost] = useState<string>('');
+  const [lunchCost, setLunchCost] = useState<string>('');
+  const [dinnerCost, setDinnerCost] = useState<string>('');
   const currency = getCurrency();
 
   useEffect(() => {
@@ -35,9 +35,12 @@ function Settings() {
     }
     setWarningDays(getExpirationWarningDays());
     setSavingsModeEnabled(getSavingsMode());
-    setBreakfastCost(getMealTypeCost('breakfast'));
-    setLunchCost(getMealTypeCost('lunch'));
-    setDinnerCost(getMealTypeCost('dinner'));
+    const breakfast = getMealTypeCost('breakfast');
+    const lunch = getMealTypeCost('lunch');
+    const dinner = getMealTypeCost('dinner');
+    setBreakfastCost(breakfast > 0 ? breakfast.toString() : '');
+    setLunchCost(lunch > 0 ? lunch.toString() : '');
+    setDinnerCost(dinner > 0 ? dinner.toString() : '');
   }, []);
 
   const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,17 +64,22 @@ function Settings() {
   };
 
   const handleMealTypeCostChange = (mealType: 'breakfast' | 'lunch' | 'dinner', value: string) => {
-    const cost = parseFloat(value) || 0;
-    setMealTypeCost(mealType, cost);
+    // Empty string is interpreted as 0
+    const cost = value === '' ? 0 : parseFloat(value);
+    // Save to settings (0 is valid)
+    if (!isNaN(cost) && cost >= 0) {
+      setMealTypeCost(mealType, cost);
+    }
+    // Update local state to allow empty strings
     switch (mealType) {
       case 'breakfast':
-        setBreakfastCost(cost);
+        setBreakfastCost(value);
         break;
       case 'lunch':
-        setLunchCost(cost);
+        setLunchCost(value);
         break;
       case 'dinner':
-        setDinnerCost(cost);
+        setDinnerCost(value);
         break;
     }
   };
@@ -166,7 +174,7 @@ function Settings() {
                 type="number"
                 min="0"
                 step="0.01"
-                value={breakfastCost || ''}
+                value={breakfastCost}
                 onChange={(e) => handleMealTypeCostChange('breakfast', e.target.value)}
                 placeholder={formatPrice(0, currency)}
                 className="meal-cost-input"
@@ -179,7 +187,7 @@ function Settings() {
                 type="number"
                 min="0"
                 step="0.01"
-                value={lunchCost || ''}
+                value={lunchCost}
                 onChange={(e) => handleMealTypeCostChange('lunch', e.target.value)}
                 placeholder={formatPrice(0, currency)}
                 className="meal-cost-input"
@@ -192,7 +200,7 @@ function Settings() {
                 type="number"
                 min="0"
                 step="0.01"
-                value={dinnerCost || ''}
+                value={dinnerCost}
                 onChange={(e) => handleMealTypeCostChange('dinner', e.target.value)}
                 placeholder={formatPrice(0, currency)}
                 className="meal-cost-input"

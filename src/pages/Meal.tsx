@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked, rateMeal } from '../services/dataService';
+import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked, rateMeal, getItems } from '../services/dataService';
 import { updateFridgeAfterMeal, restoreFridgeAfterMeal } from '../services/dataService';
 import type { Meal as MealInterface, MealItem, MealType } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
@@ -100,12 +100,39 @@ function Meal() {
 
   const handleSave = () => {
     if (!mealName.trim()) {
-      alert('Please enter a meal name');
+      setToast({ message: 'Please enter a meal name', type: 'error' });
       return;
     }
 
     if (mealItems.length === 0) {
-      alert('Please add at least one item to the meal');
+      setToast({ message: 'Please add at least one item to the meal', type: 'error' });
+      return;
+    }
+
+    // Validate all items have valid percentageUsed (empty string = 0, but we need > 0 for actual usage)
+    const invalidItems = mealItems.filter(item => {
+      const percentage = item.percentageUsed;
+      return percentage === undefined || percentage === null || isNaN(percentage) || percentage <= 0;
+    });
+
+    if (invalidItems.length > 0) {
+      setToast({ message: 'Please enter valid percentages for all items (must be numbers > 0).', type: 'error' });
+      return;
+    }
+
+    // Validate percentages don't exceed available amounts
+    const fridgeItems = getItems();
+    const exceededItems: string[] = [];
+
+    mealItems.forEach(mealItem => {
+      const fridgeItem = fridgeItems.find((i: { id: string }) => i.id === mealItem.itemId);
+      if (fridgeItem && mealItem.percentageUsed > fridgeItem.percentageLeft) {
+        exceededItems.push(mealItem.name);
+      }
+    });
+
+    if (exceededItems.length > 0) {
+      setToast({ message: `Not enough items in fridge: ${exceededItems.join(', ')}`, type: 'error' });
       return;
     }
 

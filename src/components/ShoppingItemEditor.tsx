@@ -24,7 +24,9 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true, taxRate =
       return item.finalPrice;
     }
     // Otherwise, calculate from global taxRate (editing item)
-    return (item.listedPrice ?? 0) * (1 + taxRate / 100);
+    // Empty string is interpreted as 0
+    const listedPrice = item.listedPrice ?? 0;
+    return listedPrice * (1 + taxRate / 100);
   };
   const totalCost = items.reduce((sum, item) => sum + getItemPrice(item), 0);
 

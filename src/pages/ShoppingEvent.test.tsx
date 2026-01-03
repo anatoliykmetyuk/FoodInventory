@@ -277,7 +277,8 @@ describe('ShoppingEvent', () => {
     // Tax rate input should be visible
     const taxRateInput = screen.getByLabelText(/tax rate/i);
     expect(taxRateInput).toBeInTheDocument();
-    expect(taxRateInput).toHaveValue(0);
+    // Tax rate should be empty string initially (allows user to clear and type new value)
+    expect(taxRateInput).toHaveValue(null); // Empty number input shows as null
 
     // Reset mock
     mockUseParams.mockReturnValue({ id: 'test-event-id' });

@@ -24,7 +24,7 @@ function ShoppingEvent() {
     }
     return new Date().toISOString().split('T')[0];
   });
-  const [taxRate, setTaxRate] = useState<number>(0);
+  const [taxRate, setTaxRate] = useState<string>('');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
@@ -53,8 +53,7 @@ function ShoppingEvent() {
   };
 
   const handleTaxRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTaxRate = parseFloat(e.target.value) || 0;
-    setTaxRate(newTaxRate);
+    setTaxRate(e.target.value);
   };
 
   const handleSave = () => {
@@ -67,6 +66,24 @@ function ShoppingEvent() {
       return;
     }
 
+    // Validate tax rate (empty string = 0, which is valid)
+    const taxRateNum = taxRate === '' ? 0 : parseFloat(taxRate);
+    if (isNaN(taxRateNum) || taxRateNum < 0) {
+      setToast({ message: 'Please enter a valid tax rate (must be a number >= 0).', type: 'error' });
+      return;
+    }
+
+    // Validate all items have valid listedPrice (empty string = 0, which is valid)
+    const invalidItems = items.filter(item => {
+      const listedPrice = item.listedPrice ?? 0; // Empty string interpreted as 0
+      return isNaN(listedPrice) || listedPrice < 0;
+    });
+
+    if (invalidItems.length > 0) {
+      setToast({ message: 'Please enter valid prices for all items (must be numbers >= 0).', type: 'error' });
+      return;
+    }
+
     // Convert items to saved format: ONLY name and finalPrice (cost after tax)
     // Use global tax rate to calculate finalPrice for all items
     // Saved items MUST ONLY have name and finalPrice - NOTHING ELSE
@@ -74,7 +91,7 @@ function ShoppingEvent() {
       // Calculate finalPrice (cost after tax)
       const finalPrice = item.finalPrice !== undefined
         ? item.finalPrice  // Already calculated (from saved event)
-        : (item.listedPrice ?? 0) * (1 + taxRate / 100);  // Calculate from listedPrice + global tax
+        : (item.listedPrice ?? 0) * (1 + taxRateNum / 100);  // Calculate from listedPrice + global tax
 
       // Return ONLY name and finalPrice (cost) - nothing else
       return {
@@ -187,6 +204,7 @@ function ShoppingEvent() {
                 value={taxRate}
                 onChange={handleTaxRateChange}
                 className="event-date-input"
+                placeholder="0.00"
               />
             </div>
           </div>
@@ -199,7 +217,7 @@ function ShoppingEvent() {
         items={items}
         onItemsChange={handleItemsChange}
         isEditable={isEditable}
-        taxRate={taxRate}
+        taxRate={taxRate === '' ? 0 : (parseFloat(taxRate) || 0)}
       />
 
       <div className="event-actions">
