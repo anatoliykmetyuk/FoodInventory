@@ -78,6 +78,7 @@ export function getMeal(mealId: string): Meal | null {
 
 /**
  * Add a new meal
+ * For planned meals, ingredients are consumed when the meal is created
  */
 export function addMeal(meal: Omit<Meal, 'id'>): Meal {
   const data = getData();
@@ -87,6 +88,12 @@ export function addMeal(meal: Omit<Meal, 'id'>): Meal {
   };
   data.meals.push(newMeal);
   saveData(data);
+
+  // For planned meals, consume ingredients when meal is created
+  if (newMeal.isPlanned) {
+    updateFridgeAfterMeal(newMeal.items);
+  }
+
   return newMeal;
 }
 
@@ -245,9 +252,28 @@ export function updateFridgeAfterMeal(mealItems: Meal['items']): void {
 }
 
 /**
+ * Restore used percentages to fridge items
+ * Only restores if the item still exists in the fridge (by ID)
+ */
+export function restoreFridgeAfterMeal(mealItems: Meal['items']): void {
+  const data = getData();
+
+  for (const mealItem of mealItems) {
+    const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
+    if (fridgeItem) {
+      // Restore the percentage used back to the item
+      fridgeItem.percentageLeft = Math.min(100, fridgeItem.percentageLeft + mealItem.percentageUsed);
+    }
+    // If item doesn't exist in fridge, do nothing (as per requirements)
+  }
+
+  saveData(data);
+}
+
+/**
  * Delete a meal and restore used percentages to fridge items
  * Only restores if the item still exists in the fridge (by ID)
- * For planned meals, no restoration is needed as ingredients were never consumed
+ * Restores for both planned and cooked meals since both consume ingredients
  */
 export function deleteMeal(mealId: string): boolean {
   const data = getData();
@@ -259,21 +285,16 @@ export function deleteMeal(mealId: string): boolean {
 
   const meal = data.meals[mealIndex];
 
-  // Only restore percentages for non-planned meals (planned meals never consumed ingredients)
-  if (!meal.isPlanned) {
-    for (const mealItem of meal.items) {
-      const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
-      if (fridgeItem) {
-        // Restore the percentage used back to the item
-        fridgeItem.percentageLeft = Math.min(100, fridgeItem.percentageLeft + mealItem.percentageUsed);
-      }
-      // If item doesn't exist in fridge, do nothing (as per requirements)
-    }
-  }
+  // Restore percentages for all meals (both planned and cooked meals consume ingredients)
+  restoreFridgeAfterMeal(meal.items);
 
-  // Remove the meal
-  data.meals.splice(mealIndex, 1);
-  saveData(data);
+  // Remove the meal - get fresh data again after restoration
+  const updatedData = getData();
+  const updatedMealIndex = updatedData.meals.findIndex(meal => meal.id === mealId);
+  if (updatedMealIndex !== -1) {
+    updatedData.meals.splice(updatedMealIndex, 1);
+    saveData(updatedData);
+  }
   return true;
 }
 
@@ -287,7 +308,7 @@ export function validateMealIngredients(mealItems: Meal['items']): { valid: bool
 
   for (const mealItem of mealItems) {
     const fridgeItem = data.items.find(item => item.id === mealItem.itemId);
-    
+
     if (!fridgeItem) {
       errors.push(`"${mealItem.name}" is no longer in your fridge`);
     } else if (fridgeItem.percentageLeft < mealItem.percentageUsed) {
@@ -303,11 +324,11 @@ export function validateMealIngredients(mealItems: Meal['items']): { valid: bool
 
 /**
  * Mark a planned meal as cooked
- * This will consume the ingredients from the fridge and mark the meal as no longer planned
+ * This marks the meal as no longer planned (ingredients were already consumed when the meal was planned)
  * Returns an object with success status and error messages
  */
 export function markMealAsCooked(mealId: string): { success: boolean; errors: string[] } {
-  let data = getData();
+  const data = getData();
   const meal = data.meals.find(m => m.id === mealId);
 
   if (!meal) {
@@ -318,17 +339,8 @@ export function markMealAsCooked(mealId: string): { success: boolean; errors: st
     return { success: false, errors: ['Meal is already cooked'] };
   }
 
-  // Validate ingredients are available
-  const validation = validateMealIngredients(meal.items);
-  if (!validation.valid) {
-    return { success: false, errors: validation.errors };
-  }
-
-  // Consume ingredients from fridge
-  updateFridgeAfterMeal(meal.items);
-
-  // Get fresh data after fridge update and update meal
-  data = getData();
+  // No need to validate or consume ingredients - they were already consumed when the meal was planned
+  // Just mark the meal as cooked
   const mealIndex = data.meals.findIndex(m => m.id === mealId);
   data.meals[mealIndex] = {
     ...data.meals[mealIndex],
@@ -351,7 +363,7 @@ export function rateMeal(mealId: string, rating: number): Meal | null {
 
   const data = getData();
   const mealIndex = data.meals.findIndex(meal => meal.id === mealId);
-  
+
   if (mealIndex === -1) {
     return null;
   }
@@ -360,7 +372,7 @@ export function rateMeal(mealId: string, rating: number): Meal | null {
     ...data.meals[mealIndex],
     rating,
   };
-  
+
   saveData(data);
   return data.meals[mealIndex];
 }
