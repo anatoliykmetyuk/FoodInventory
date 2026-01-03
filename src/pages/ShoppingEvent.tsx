@@ -35,7 +35,7 @@ function ShoppingEvent() {
   const handleItemsChange = (newItems: ShoppingItem[]) => {
     setItems(newItems);
     // Recalculate total cost
-    const totalCost = newItems.reduce((sum, item) => sum + item.finalPrice, 0);
+    const totalCost = newItems.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
     if (event && id) {
       updateShoppingEvent(id, {
         items: newItems,
@@ -74,7 +74,7 @@ function ShoppingEvent() {
     addItemsToFridgeFromShopping(items);
 
     // Update shopping event
-    const totalCost = items.reduce((sum, item) => sum + item.finalPrice, 0);
+    const totalCost = items.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
     updateShoppingEvent(id, {
       items,
       totalCost,

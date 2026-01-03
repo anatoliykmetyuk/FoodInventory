@@ -36,7 +36,6 @@
 
 table {
   width: 100%;
-  min-width: 600px; /* Ensure table has reasonable width on mobile */
   border-collapse: collapse;
   background-color: #1a1a1a;
   border-radius: 8px;
@@ -80,6 +79,14 @@ tbody tr:hover {
   border-color: #666;
 }
 
+.table-input-readonly {
+  background-color: #1a1a1a;
+  color: #4a9eff;
+  border-color: #333;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+
 .remove-button {
   padding: 0.4rem 0.8rem;
   background-color: #dc3545;
@@ -109,5 +116,132 @@ tfoot {
 .total-value {
   color: #4a9eff;
   font-size: 1.1rem;
+}
+
+/* Mobile card layout */
+.items-card-container {
+  display: none;
+}
+
+.item-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.item-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #333;
+}
+
+.item-card-title {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.item-card-remove {
+  padding: 0.4rem 0.8rem;
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.item-card-remove:hover {
+  background-color: #c82333;
+}
+
+.item-card-field {
+  margin-bottom: 1rem;
+}
+
+.item-card-field:last-child {
+  margin-bottom: 0;
+}
+
+.item-card-label {
+  display: block;
+  color: #aaa;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.item-card-input {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.item-card-input:focus {
+  outline: none;
+  border-color: #666;
+}
+
+.item-card-input-readonly {
+  background-color: #1a1a1a;
+  color: #4a9eff;
+  border-color: #333;
+  cursor: not-allowed;
+  font-weight: 500;
+}
+
+.mobile-total {
+  background-color: #2a2a2a;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-total-label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.mobile-total-value {
+  color: #4a9eff;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+/* Hide table on mobile, show cards */
+@media (max-width: 768px) {
+  .table-container {
+    display: none;
+  }
+
+  .items-card-container {
+    display: block;
+  }
+}
+
+/* Hide cards on desktop, show table */
+@media (min-width: 769px) {
+  .items-card-container {
+    display: none;
+  }
+
+  .table-container {
+    display: block;
+  }
 }
 

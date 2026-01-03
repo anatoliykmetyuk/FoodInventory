@@ -18,13 +18,13 @@ export async function processReceiptImage(imageFile: File): Promise<OpenAIReceip
   });
 
   // Read the prompt from the resources file
-  const prompt = `Transcribe me everything that I purchased as a list. Prices-wise, you will include both the price listed in the table as well as the final price - after tax and discounts. You see at the bottom there is tax. So, both prices need to be included. And please, the output needs to be in fucking English, alright?
+  const prompt = `Transcribe me everything that I purchased as a list. You need to extract the listed price (the price shown in the item table) and the tax rate (as a percentage number, e.g., 8.5 for 8.5%). Look at the bottom of the receipt to find the tax rate. And please, the output needs to be in fucking English, alright?
 
 The following keys must be present for each item:
 
 - Item - the name of the item, in English.
-- Listed Price - the price of the item as listed on the receipt.
-- Final Price - the price of the item after tax and discounts.
+- Listed Price - the price of the item as listed on the receipt (before tax).
+- Tax Rate - the tax rate as a percentage number (e.g., 8.5 for 8.5%, 0 if no tax).
 
 The output needs to be in JSON format.`;
 
@@ -129,7 +129,7 @@ function normalizeReceiptResponse(response: OpenAIReceiptResponse): OpenAIReceip
   const normalizedItems = items.map((item) => ({
     Item: item.Item || item.item || item.name || '',
     'Listed Price': item['Listed Price'] || item.listedPrice || item.listed_price || 0,
-    'Final Price': item['Final Price'] || item.finalPrice || item.final_price || item['Listed Price'] || item.listedPrice || 0,
+    'Tax Rate': item['Tax Rate'] || item.taxRate || item.tax_rate || 0,
   }));
 
   return { items: normalizedItems };

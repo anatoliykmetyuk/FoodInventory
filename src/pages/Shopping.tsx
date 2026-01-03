@@ -24,7 +24,7 @@ function Shopping() {
   };
 
   const handleScanReceipt = (shoppingItems: ShoppingItem[]) => {
-    const totalCost = shoppingItems.reduce((sum, item) => sum + item.finalPrice, 0);
+    const totalCost = shoppingItems.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
     const shoppingEvent = addShoppingEvent({
       date: new Date(),
       items: shoppingItems,
