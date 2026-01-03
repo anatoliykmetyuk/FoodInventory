@@ -6,10 +6,11 @@ alwaysApply: false
 ## Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
 2. Implement the fix to the issue.
-3. Test the fix via the Verification Procedure below.
-4. If the fix is NOT successuful, go back to step 2 and try again.
-5. If the issue fix was successful, summarize the fix in a message to the user.
-6. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
+3. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
+4. Run the Verification Procedure below to verify the fix.
+5. If the fix is NOT successuful, go back to step 2 and try again.
+6. If the issue fix was successful, summarize the fix in a message to the user.
+7. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
     - Create a new branch with the name "fix/ANA-XX" where XX is the Linear issue number
     - Commit & push the changes to the branch. The commit message should be "Fix: ANA-XX"
     - Push the branch to GitHub
@@ -18,15 +19,15 @@ alwaysApply: false
 1. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
 2. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
 3. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
-4. Use Browser tool to verify the fix for the issue on Desktop browser.
-5. Use Browser tool to verify the fix for the issue on Mobile browser.
-6. If the fix was successful, implement unit tests for all the components that went into the feature in isolation.
-7. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
-8. Also implement integration end-to-end tests for the feature as a whole.
-9. Run the end-to-end tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
+4. If the fix was successful, implement unit tests for all the components that went into the feature in isolation.
+5. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
+6. Also implement integration end-to-end tests for the feature as a whole.
+7. Run the end-to-end tests for the entire matrix of browsers and viewports to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
+    - Browser Matrix: Desktop Chrome, Desktop Firefox, Desktop Safari, Mobile Chrome, Mobile Firefox, Mobile Safari.
 
 ## Guidelines
 - When testing via browser, pay special attention to the formatting and responsiveness issues such as content overflowing their containers etc.
 - IMPORTANT: you must NOT SKIP OR SKIM over any of the steps of the instructions above! If any step fails, debug and try again until you get it EXACTLY right!
 - IMPORTANT: steps are not to be substituted by other similar steps! That is, for example, a step of testing via a browser tool may NOT be substituted by a step of running the unit tests! ALL THE STEPS ARE IMPORTANT!
 - IMPORTANT: you must NOT DISABLE ANY RULES via `// eslint-disable-next-line` comments!
+- VERY IMPORANT: NEVER SKIP ANY OF THE STEPS OF THE INSTRUCTIONS ABOVE! If any step fails, debug and try again until you get it EXACTLY right!

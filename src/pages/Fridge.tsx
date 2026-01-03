@@ -12,6 +12,8 @@ import './Fridge.css';
 
 function Fridge() {
   const [items, setItems] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isScanDialogOpen, setIsScanDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<FridgeViewMode>(getFridgeViewMode());
@@ -55,6 +57,18 @@ function Fridge() {
     });
     setItems(sortedItems);
   };
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredItems(items);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = items.filter(item =>
+        item.name.toLowerCase().includes(query)
+      );
+      setFilteredItems(filtered);
+    }
+  }, [searchQuery, items]);
 
   const handleAddItem = () => {
     loadItems();
@@ -124,15 +138,31 @@ function Fridge() {
         </div>
       </div>
 
+      <div className="fridge-search-container">
+        <input
+          type="text"
+          placeholder="Search items..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="fridge-search-input"
+        />
+      </div>
+
       {items.length === 0 ? (
         <EmptyState
           message="Your fridge is empty. Add items to get started!"
           actionLabel="Add Item"
           onAction={() => setIsAddDialogOpen(true)}
         />
+      ) : filteredItems.length === 0 ? (
+        <EmptyState
+          message="No items found matching your search."
+          actionLabel="Clear Search"
+          onAction={() => setSearchQuery('')}
+        />
       ) : viewMode === 'compact' ? (
         <div className="fridge-items fridge-items-compact">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             expandedItemId === item.id ? (
               <FridgeItemCard
                 key={item.id}
@@ -151,7 +181,7 @@ function Fridge() {
         </div>
       ) : (
         <div className="fridge-items">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <FridgeItemCard key={item.id} item={item} onUpdate={loadItems} />
           ))}
         </div>
