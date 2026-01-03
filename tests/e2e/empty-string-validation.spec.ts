@@ -41,12 +41,6 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
     await taxRateInput.clear();
     await expect(taxRateInput).toHaveValue('');
 
-    // Get the listed price input
-    const listedPriceInput = page.locator('input[type="number"]').filter({ hasText: '' }).first();
-    // Try to find the listed price input more specifically
-    const listedPriceInputs = page.locator('input[type="number"]');
-    const listedPriceCount = await listedPriceInputs.count();
-
     // The listed price input should be one of the number inputs
     // Let's find it by its position or label
     const priceInput = page.locator('input[type="number"]').nth(1); // Second number input (first is tax rate)
