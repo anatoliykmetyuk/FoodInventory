@@ -7,9 +7,10 @@ import './ReceiptReviewTable.css';
 interface ReceiptReviewTableProps {
   items: ShoppingItem[];
   onItemsChange: (items: ShoppingItem[]) => void;
+  taxRate: number;
 }
 
-function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
+function ReceiptReviewTable({ items, onItemsChange, taxRate }: ReceiptReviewTableProps) {
   const [localItems, setLocalItems] = useState<ShoppingItem[]>(items);
   const currency = getCurrency();
 
@@ -21,8 +22,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
     const updated = [...localItems];
     updated[index] = {
       ...updated[index],
-      [field]: (field === 'listedPrice' || field === 'taxRate') ? parseFloat(String(value)) || 0 :
-               value,
+      [field]: field === 'listedPrice' ? parseFloat(String(value)) || 0 : value,
     };
     setLocalItems(updated);
     onItemsChange(updated);
@@ -38,7 +38,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
     const newItem: ShoppingItem = {
       name: '',
       listedPrice: 0,
-      taxRate: 0,
     };
     const updated = [...localItems, newItem];
     setLocalItems(updated);
@@ -46,8 +45,8 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
   };
 
   const calculateTotalCost = (item: ShoppingItem): number => {
-    // For editing, items should have taxRate
-    return (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
+    // Use global tax rate for calculation
+    return (item.listedPrice ?? 0) * (1 + taxRate / 100);
   };
 
   const totalCost = localItems.reduce((sum, item) => sum + calculateTotalCost(item), 0);
@@ -68,7 +67,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
             <tr>
               <th>Item</th>
               <th>Listed Price</th>
-              <th>Tax Rate (%)</th>
               <th>Total Cost</th>
               <th>Actions</th>
             </tr>
@@ -98,16 +96,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                   </td>
                   <td>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={item.taxRate ?? 0}
-                      onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
-                      className="table-input"
-                    />
-                  </td>
-                  <td>
-                    <input
                       type="text"
                       value={formatPrice(itemTotalCost, currency)}
                       readOnly
@@ -129,7 +117,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={3} className="total-label">Total Cost:</td>
+              <td colSpan={2} className="total-label">Total Cost:</td>
               <td className="total-value" colSpan={2}>
                 {formatPrice(totalCost, currency)}
               </td>
@@ -172,18 +160,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                   min="0"
                   value={item.listedPrice ?? 0}
                   onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
-                  className="item-card-input"
-                  placeholder="0.00"
-                />
-              </div>
-              <div className="item-card-field">
-                <label className="item-card-label">Tax Rate (%)</label>
-                <input
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={item.taxRate ?? 0}
-                  onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
                   className="item-card-input"
                   placeholder="0.00"
                 />

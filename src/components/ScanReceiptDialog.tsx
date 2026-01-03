@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { processReceiptImage } from '../services/openaiService';
 import { getOpenAIApiKey } from '../services/settingsService';
-import { parseReceiptItems, toShoppingItems } from '../utils/receiptParser';
+import { parseReceiptItems, toShoppingItems, extractGlobalTaxRate } from '../utils/receiptParser';
 import type { ShoppingItem } from '../types';
 import ReceiptReviewTable from './ReceiptReviewTable';
 import ErrorMessage from './ErrorMessage';
@@ -10,12 +10,13 @@ import './ScanReceiptDialog.css';
 interface ScanReceiptDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (items: ShoppingItem[]) => void;
+  onSave: (items: ShoppingItem[], taxRate: number) => void;
 }
 
 function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) {
   const [step, setStep] = useState<'upload' | 'review' | 'loading'>('upload');
   const [items, setItems] = useState<ShoppingItem[]>([]);
+  const [taxRate, setTaxRate] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -45,8 +46,10 @@ function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) 
       const response = await processReceiptImage(file);
       const parsedItems = parseReceiptItems(response);
       const shoppingItems = toShoppingItems(parsedItems);
+      const globalTaxRate = extractGlobalTaxRate(parsedItems);
 
       setItems(shoppingItems);
+      setTaxRate(globalTaxRate);
       setStep('review');
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Unknown error');
@@ -61,13 +64,14 @@ function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) 
       setError('Please add at least one item');
       return;
     }
-    onSave(items);
+    onSave(items, taxRate);
     handleClose();
   };
 
   const handleClose = () => {
     setStep('upload');
     setItems([]);
+    setTaxRate(0);
     setError(null);
     setImagePreview(null);
     onClose();
@@ -124,7 +128,7 @@ function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) 
 
         {step === 'review' && (
           <div className="review-step">
-            <ReceiptReviewTable items={items} onItemsChange={setItems} />
+            <ReceiptReviewTable items={items} onItemsChange={setItems} taxRate={taxRate} />
             {error && <ErrorMessage message={error} onDismiss={() => setError(null)} />}
             <div className="dialog-actions">
               <button onClick={handleClose} className="cancel-button">

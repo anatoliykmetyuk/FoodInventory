@@ -8,11 +8,12 @@ interface ShoppingItemEditorProps {
   items: ShoppingItem[];
   onItemsChange: (items: ShoppingItem[]) => void;
   isEditable?: boolean;
+  taxRate?: number;
 }
 
-function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: ShoppingItemEditorProps) {
+function ShoppingItemEditor({ items, onItemsChange, isEditable = true, taxRate = 0 }: ShoppingItemEditorProps) {
   if (isEditable) {
-    return <ReceiptReviewTable items={items} onItemsChange={onItemsChange} />;
+    return <ReceiptReviewTable items={items} onItemsChange={onItemsChange} taxRate={taxRate} />;
   }
 
   // Read-only view
@@ -22,8 +23,8 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
     if (item.finalPrice !== undefined) {
       return item.finalPrice;
     }
-    // Otherwise, calculate from taxRate (editing item)
-    return (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
+    // Otherwise, calculate from global taxRate (editing item)
+    return (item.listedPrice ?? 0) * (1 + taxRate / 100);
   };
   const totalCost = items.reduce((sum, item) => sum + getItemPrice(item), 0);
 

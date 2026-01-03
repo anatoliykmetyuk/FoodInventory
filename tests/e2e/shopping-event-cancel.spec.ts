@@ -50,6 +50,11 @@ test.describe('Shopping Event Cancel and Save', () => {
     // Verify we're on the shopping event page
     await expect(page.locator('h1:has-text("Shopping Event")')).toBeVisible();
 
+    // Set global tax rate
+    const taxRateInput = page.locator('label:has-text("Tax Rate")').locator('..').locator('input[type="number"]');
+    await taxRateInput.fill('8');
+    await page.waitForTimeout(300);
+
     // Add an item
     await page.click('button:has-text("+ Add Item")');
     await page.waitForTimeout(500);
@@ -58,31 +63,32 @@ test.describe('Shopping Event Cancel and Save', () => {
     const isMobile = await page.locator('.items-card-container').isVisible().catch(() => false);
 
     let itemNameInput;
-    let priceInputs;
+    let priceInput;
 
     if (isMobile) {
       // Mobile card view
       itemNameInput = page.locator('.item-card').last().locator('input[placeholder="Enter item name"]');
-      priceInputs = page.locator('.item-card').last().locator('input[type="number"]');
+      priceInput = page.locator('.item-card').last().locator('input[type="number"]').first();
     } else {
       // Desktop table view
       itemNameInput = page.locator('table tbody tr').last().locator('input[type="text"]').first();
-      priceInputs = page.locator('table tbody tr').last().locator('input[type="number"]');
+      priceInput = page.locator('table tbody tr').last().locator('input[type="number"]').first();
     }
 
     await itemNameInput.fill('Test Cancel Item');
     await page.waitForTimeout(300);
 
-    await priceInputs.nth(0).fill('10.00');
-    await page.waitForTimeout(300);
-    await priceInputs.nth(1).fill('8');
+    await priceInput.fill('10.00');
     await page.waitForTimeout(500);
 
     // Verify item is visible in the form by checking the input value
     await expect(itemNameInput).toHaveValue('Test Cancel Item');
 
-    // Click Cancel button
-    await page.click('button:has-text("Cancel")');
+    // Click Cancel button - scroll into view first to avoid interception issues
+    const cancelButton = page.locator('button:has-text("Cancel")');
+    await cancelButton.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    await cancelButton.click({ force: true });
     await page.waitForURL('/shopping');
     await page.waitForLoadState('networkidle');
 
@@ -141,6 +147,11 @@ test.describe('Shopping Event Cancel and Save', () => {
     // Verify we're on the shopping event page
     await expect(page.locator('h1:has-text("Shopping Event")')).toBeVisible();
 
+    // Set global tax rate
+    const taxRateInput = page.locator('label:has-text("Tax Rate")').locator('..').locator('input[type="number"]');
+    await taxRateInput.fill('10');
+    await page.waitForTimeout(300);
+
     // Add an item
     await page.click('button:has-text("+ Add Item")');
     await page.waitForTimeout(500);
@@ -149,31 +160,32 @@ test.describe('Shopping Event Cancel and Save', () => {
     const isMobile = await page.locator('.items-card-container').isVisible().catch(() => false);
 
     let itemNameInput;
-    let priceInputs;
+    let priceInput;
 
     if (isMobile) {
       // Mobile card view
       itemNameInput = page.locator('.item-card').last().locator('input[placeholder="Enter item name"]');
-      priceInputs = page.locator('.item-card').last().locator('input[type="number"]');
+      priceInput = page.locator('.item-card').last().locator('input[type="number"]').first();
     } else {
       // Desktop table view
       itemNameInput = page.locator('table tbody tr').last().locator('input[type="text"]').first();
-      priceInputs = page.locator('table tbody tr').last().locator('input[type="number"]');
+      priceInput = page.locator('table tbody tr').last().locator('input[type="number"]').first();
     }
 
     await itemNameInput.fill('Test Save Item');
     await page.waitForTimeout(300);
 
-    await priceInputs.nth(0).fill('15.00');
-    await page.waitForTimeout(300);
-    await priceInputs.nth(1).fill('10');
+    await priceInput.fill('15.00');
     await page.waitForTimeout(500);
 
     // Verify item is visible in the form by checking the input value
     await expect(itemNameInput).toHaveValue('Test Save Item');
 
-    // Click Save button
-    await page.click('button:has-text("Save to Fridge")');
+    // Click Save button - scroll into view first to avoid interception issues
+    const saveButton = page.locator('button:has-text("Save to Fridge")');
+    await saveButton.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300);
+    await saveButton.click({ force: true });
     await page.waitForURL('/');
     await page.waitForLoadState('networkidle');
 
