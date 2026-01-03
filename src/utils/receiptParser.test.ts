@@ -4,20 +4,19 @@ import type { OpenAIReceiptResponse } from '../types';
 
 describe('receiptParser', () => {
   describe('parseReceiptItems', () => {
-    it('should parse receipt items with tax rate', () => {
+    it('should parse receipt items without tax rate', () => {
       const data: OpenAIReceiptResponse = {
         items: [
           {
             Item: 'Apple',
             'Listed Price': 1.00,
-            'Tax Rate': 8.5,
           },
           {
             Item: 'Banana',
             'Listed Price': 0.75,
-            'Tax Rate': 8.5,
           },
         ],
+        taxRate: 8.5,
       };
 
       const result = parseReceiptItems(data);
@@ -25,12 +24,10 @@ describe('receiptParser', () => {
       expect(result[0]).toEqual({
         name: 'Apple',
         listedPrice: 1.00,
-        taxRate: 8.5,
       });
       expect(result[1]).toEqual({
         name: 'Banana',
         listedPrice: 0.75,
-        taxRate: 8.5,
       });
     });
 
@@ -40,14 +37,13 @@ describe('receiptParser', () => {
           {
             item: 'Apple',
             listedPrice: 1.00,
-            taxRate: 10,
           },
           {
             name: 'Banana',
             listed_price: 0.75,
-            tax_rate: 5,
           },
         ],
+        taxRate: 10,
       };
 
       const result = parseReceiptItems(data);
@@ -55,27 +51,11 @@ describe('receiptParser', () => {
       expect(result[0]).toEqual({
         name: 'Apple',
         listedPrice: 1.00,
-        taxRate: 10,
       });
       expect(result[1]).toEqual({
         name: 'Banana',
         listedPrice: 0.75,
-        taxRate: 5,
       });
-    });
-
-    it('should default tax rate to 0 if not provided', () => {
-      const data: OpenAIReceiptResponse = {
-        items: [
-          {
-            Item: 'Apple',
-            'Listed Price': 1.00,
-          },
-        ],
-      };
-
-      const result = parseReceiptItems(data);
-      expect(result[0].taxRate).toBe(0);
     });
 
     it('should trim item names', () => {
@@ -84,9 +64,9 @@ describe('receiptParser', () => {
           {
             Item: '  Apple  ',
             'Listed Price': 1.00,
-            'Tax Rate': 8.5,
           },
         ],
+        taxRate: 8.5,
       };
 
       const result = parseReceiptItems(data);
@@ -103,9 +83,9 @@ describe('receiptParser', () => {
         items: [
           {
             'Listed Price': 1.00,
-            'Tax Rate': 8.5,
           },
         ],
+        taxRate: 8.5,
       };
 
       expect(() => parseReceiptItems(data)).toThrow('Item name is required');
@@ -117,26 +97,12 @@ describe('receiptParser', () => {
           {
             Item: 'Apple',
             'Listed Price': -1,
-            'Tax Rate': 8.5,
           },
         ],
+        taxRate: 8.5,
       };
 
       expect(() => parseReceiptItems(data)).toThrow('Invalid listed price for item: Apple');
-    });
-
-    it('should throw error for invalid tax rate', () => {
-      const data: OpenAIReceiptResponse = {
-        items: [
-          {
-            Item: 'Apple',
-            'Listed Price': 1.00,
-            'Tax Rate': -1,
-          },
-        ],
-      };
-
-      expect(() => parseReceiptItems(data)).toThrow('Invalid tax rate for item: Apple');
     });
 
     it('should handle string numbers', () => {
@@ -145,29 +111,26 @@ describe('receiptParser', () => {
           {
             Item: 'Apple',
             'Listed Price': '1.50' as unknown as number,
-            'Tax Rate': '8.5' as unknown as number,
           },
         ],
+        taxRate: 8.5,
       };
 
       const result = parseReceiptItems(data);
       expect(result[0].listedPrice).toBe(1.50);
-      expect(result[0].taxRate).toBe(8.5);
     });
   });
 
   describe('toShoppingItems', () => {
-    it('should convert parsed items to ShoppingItem format (without taxRate)', () => {
+    it('should convert parsed items to ShoppingItem format', () => {
       const parsedItems = [
         {
           name: 'Apple',
           listedPrice: 1.00,
-          taxRate: 8.5,
         },
         {
           name: 'Banana',
           listedPrice: 0.75,
-          taxRate: 5,
         },
       ];
 
@@ -185,68 +148,67 @@ describe('receiptParser', () => {
   });
 
   describe('extractGlobalTaxRate', () => {
-    it('should extract first non-zero tax rate', () => {
-      const parsedItems = [
-        {
-          name: 'Apple',
-          listedPrice: 1.00,
-          taxRate: 8.5,
-        },
-        {
-          name: 'Banana',
-          listedPrice: 0.75,
-          taxRate: 5,
-        },
-      ];
+    it('should extract tax rate from response', () => {
+      const data: OpenAIReceiptResponse = {
+        items: [
+          {
+            Item: 'Apple',
+            'Listed Price': 1.00,
+          },
+        ],
+        taxRate: 8.5,
+      };
 
-      const result = extractGlobalTaxRate(parsedItems);
+      const result = extractGlobalTaxRate(data);
       expect(result).toBe(8.5);
     });
 
-    it('should return 0 for empty array', () => {
-      const result = extractGlobalTaxRate([]);
+    it('should handle different tax rate field names', () => {
+      const data1: OpenAIReceiptResponse = {
+        items: [],
+        tax_rate: 10,
+      };
+      expect(extractGlobalTaxRate(data1)).toBe(10);
+
+      const data2: OpenAIReceiptResponse = {
+        items: [],
+        'Tax Rate': 5,
+      };
+      expect(extractGlobalTaxRate(data2)).toBe(5);
+    });
+
+    it('should return 0 when tax rate is not provided', () => {
+      const data: OpenAIReceiptResponse = {
+        items: [
+          {
+            Item: 'Apple',
+            'Listed Price': 1.00,
+          },
+        ],
+      };
+
+      const result = extractGlobalTaxRate(data);
       expect(result).toBe(0);
     });
 
-    it('should return 0 when all tax rates are zero', () => {
-      const parsedItems = [
-        {
-          name: 'Apple',
-          listedPrice: 1.00,
-          taxRate: 0,
-        },
-        {
-          name: 'Banana',
-          listedPrice: 0.75,
-          taxRate: 0,
-        },
-      ];
+    it('should return 0 when tax rate is zero', () => {
+      const data: OpenAIReceiptResponse = {
+        items: [],
+        taxRate: 0,
+      };
 
-      const result = extractGlobalTaxRate(parsedItems);
+      const result = extractGlobalTaxRate(data);
       expect(result).toBe(0);
     });
 
-    it('should find first non-zero tax rate even if later items have different rates', () => {
-      const parsedItems = [
-        {
-          name: 'Apple',
-          listedPrice: 1.00,
-          taxRate: 0,
-        },
-        {
-          name: 'Banana',
-          listedPrice: 0.75,
-          taxRate: 8.5,
-        },
-        {
-          name: 'Orange',
-          listedPrice: 1.25,
-          taxRate: 10,
-        },
-      ];
+    it('should handle invalid tax rate values', () => {
+      const data: OpenAIReceiptResponse = {
+        items: [],
+        taxRate: -5,
+      };
 
-      const result = extractGlobalTaxRate(parsedItems);
-      expect(result).toBe(8.5);
+      const result = extractGlobalTaxRate(data);
+      expect(result).toBe(0);
     });
   });
 });

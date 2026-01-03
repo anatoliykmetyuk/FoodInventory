@@ -1,10 +1,10 @@
-Transcribe me everything that I purchased as a list. Prices-wise, you will include both the price listed in the table as well as the final price - after tax and discounts. You see at the bottom there is tax. So, both prices need to be included. And please, the output needs to be in fucking English, alright?
+Transcribe me everything that I purchased as a list. Extract the listed price (the price shown in the item table) for each item. Also extract the tax rate for the entire receipt (as a percentage number, e.g., 8.5 for 8.5%). Look at the bottom of the receipt to find the tax rate. And please, the output needs to be in English, alright?
 
-The following keys must be present for each item:
+The output must be a JSON object with the following structure:
 
-- Item - the name of the item, in English.
-- Listed Price - the price of the item as listed on the receipt.
-- Final Price - the price of the item after tax and discounts.
-- Estimated Calories - the estimated calories of the item.
+- "items" - an array of objects, each with:
+  - "Item" - the name of the item, in English.
+  - "Listed Price" - the price of the item as listed on the receipt (before tax).
+- "taxRate" - a single number representing the tax rate for the entire receipt as a percentage (e.g., 8.5 for 8.5%, 0 if no tax).
 
 The output needs to be in JSON format.

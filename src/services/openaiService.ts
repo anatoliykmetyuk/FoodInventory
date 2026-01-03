@@ -18,13 +18,14 @@ export async function processReceiptImage(imageFile: File): Promise<OpenAIReceip
   });
 
   // Read the prompt from the resources file
-  const prompt = `Transcribe me everything that I purchased as a list. You need to extract the listed price (the price shown in the item table) and the tax rate (as a percentage number, e.g., 8.5 for 8.5%). Look at the bottom of the receipt to find the tax rate. And please, the output needs to be in fucking English, alright?
+  const prompt = `Transcribe me everything that I purchased as a list. Extract the listed price (the price shown in the item table) for each item. Also extract the tax rate for the entire receipt (as a percentage number, e.g., 8.5 for 8.5%). Look at the bottom of the receipt to find the tax rate. And please, the output needs to be in English, alright?
 
-The following keys must be present for each item:
+The output must be a JSON object with the following structure:
 
-- Item - the name of the item, in English.
-- Listed Price - the price of the item as listed on the receipt (before tax).
-- Tax Rate - the tax rate as a percentage number (e.g., 8.5 for 8.5%, 0 if no tax).
+- "items" - an array of objects, each with:
+  - "Item" - the name of the item, in English.
+  - "Listed Price" - the price of the item as listed on the receipt (before tax).
+- "taxRate" - a single number representing the tax rate for the entire receipt as a percentage (e.g., 8.5 for 8.5%, 0 if no tax).
 
 The output needs to be in JSON format.`;
 
@@ -99,39 +100,24 @@ function fileToBase64(file: File): Promise<string> {
  * Normalize the receipt response to ensure it has the expected structure
  */
 function normalizeReceiptResponse(response: OpenAIReceiptResponse): OpenAIReceiptResponse {
-  // The response might have items in different formats
-  // Try to extract items array
-  let items: OpenAIReceiptResponse['items'] = [];
+  // Items must be under the 'items' key
+  const items = Array.isArray(response.items) ? response.items : [];
 
-  if (Array.isArray(response.items)) {
-    items = response.items;
-  } else if (Array.isArray(response)) {
-    items = response;
-  } else if (response.data && Array.isArray(response.data)) {
-    items = response.data;
-  } else {
-    // Try to find any array in the response
-    const keys = Object.keys(response);
-    for (const key of keys) {
-      if (Array.isArray(response[key])) {
-        items = response[key];
-        break;
-      }
-    }
-  }
+  // Extract tax rate from top level
+  const taxRateValue = response.taxRate ?? response.tax_rate ?? response['Tax Rate'] ?? 0;
+  const taxRate = typeof taxRateValue === 'number' ? taxRateValue : parseFloat(String(taxRateValue || '0'));
 
-  // If no items found, return empty array
+  // If no items found, return empty array with tax rate
   if (items.length === 0) {
-    return { items: [] };
+    return { items: [], taxRate: isNaN(taxRate) ? 0 : taxRate };
   }
 
-  // Normalize each item to ensure it has all required fields
+  // Normalize each item to ensure it has all required fields (only name and listed price)
   const normalizedItems = items.map((item) => ({
     Item: item.Item || item.item || item.name || '',
     'Listed Price': item['Listed Price'] || item.listedPrice || item.listed_price || 0,
-    'Tax Rate': item['Tax Rate'] || item.taxRate || item.tax_rate || 0,
   }));
 
-  return { items: normalizedItems };
+  return { items: normalizedItems, taxRate: isNaN(taxRate) ? 0 : taxRate };
 }
 

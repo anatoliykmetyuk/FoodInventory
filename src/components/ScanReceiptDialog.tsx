@@ -46,7 +46,7 @@ function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) 
       const response = await processReceiptImage(file);
       const parsedItems = parseReceiptItems(response);
       const shoppingItems = toShoppingItems(parsedItems);
-      const globalTaxRate = extractGlobalTaxRate(parsedItems);
+      const globalTaxRate = extractGlobalTaxRate(response);
 
       setItems(shoppingItems);
       setTaxRate(globalTaxRate);
