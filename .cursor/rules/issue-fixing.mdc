@@ -35,4 +35,5 @@ alwaysApply: false
 ## D. Non-normal Checklists
 Execute the following checklists only if explicitly asked by the user.
 
-1. Fix your TODO list so that it EXACTLY matches this procedure. Include the step numbers, e.g. "A.2.1." before each TODO step. Refer to A.2. details on how it should be implemented.
+1. Fix your TODO list so that it EXACTLY matches this procedure. If necessary, expand B.1. to include the actual fix steps. Include the step numbers, e.g. "A.2.1." before each TODO step. Refer to A.2. details on how it should be implemented.
+2. Cleanup proceuder after the issue was fixed: `git checkout main`, `git pull --prune`, then delete the local branch where you were working on the issue.
