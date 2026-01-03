@@ -82,18 +82,18 @@ function Meal() {
 
   const handleMealTypeChange = (newMealType: MealType) => {
     if (!meal || !id) return;
-    
+
     setMealType(newMealType);
-    
+
     // Calculate new savings based on the selected meal type
     const newSavings = calculateSavings(meal.totalCost, newMealType);
-    
+
     // Update the meal with the new meal type and savings
     updateMeal(id, {
       mealType: newMealType,
       savings: newSavings,
     });
-    
+
     // Reload the meal to reflect changes
     loadMeal(id);
   };
@@ -117,10 +117,10 @@ function Meal() {
       // Create new meal
       // Use planned date for planned meals, current date for regular meals
       const mealDate = isPlanned ? new Date(plannedDate + 'T12:00:00') : new Date();
-      
+
       // Calculate savings if savings mode is enabled and meal type is specified
       const savings = savingsModeEnabled ? calculateSavings(totalCost, mealType) : undefined;
-      
+
       const newMeal = addMeal({
         name: mealName.trim(),
         date: mealDate,
@@ -145,10 +145,10 @@ function Meal() {
     } else if (id && meal?.isPlanned) {
       // Update existing planned meal
       const mealDate = new Date(plannedDate + 'T12:00:00');
-      
+
       // Calculate savings if savings mode is enabled and meal type is specified
       const savings = savingsModeEnabled ? calculateSavings(totalCost, mealType) : undefined;
-      
+
       updateMeal(id, {
         name: mealName.trim(),
         date: mealDate,
@@ -187,7 +187,7 @@ function Meal() {
     if (!meal || !id) return;
 
     const result = markMealAsCooked(id);
-    
+
     if (result.success) {
       setToast({ message: 'Meal marked as cooked!', type: 'success' });
       loadMeal(id);
@@ -300,7 +300,7 @@ function Meal() {
                 onChange={(e) => setIsPlanned(e.target.checked)}
                 className="planned-checkbox"
               />
-              <label htmlFor="planned">Plan this meal (don't consume ingredients yet)</label>
+              <label htmlFor="planned">Plan this meal (don&apos;t consume ingredients yet)</label>
             </div>
           )}
         </>

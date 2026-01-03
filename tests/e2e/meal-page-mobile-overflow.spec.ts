@@ -6,10 +6,6 @@ test.describe('Meal Page Mobile Overflow', () => {
     await page.goto('/settings');
     await page.waitForLoadState('networkidle');
 
-    // Enable savings mode toggle
-    const savingsToggle = page.locator('input[type="checkbox"]').filter({ hasText: /savings/i }).or(page.locator('label:has-text("Savings Mode")')).locator('..').locator('input[type="checkbox"]');
-    const savingsToggleAlt = page.locator('input[type="checkbox"]').first();
-
     // Try to find and enable savings mode
     const checkboxes = page.locator('input[type="checkbox"]');
     const count = await checkboxes.count();

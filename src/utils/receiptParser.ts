@@ -1,4 +1,5 @@
 import type { ShoppingItem } from '../types';
+import type { OpenAIReceiptResponse, OpenAIReceiptItem } from '../types';
 
 export interface ParsedReceiptItem {
   name: string;
@@ -10,16 +11,20 @@ export interface ParsedReceiptItem {
 /**
  * Parse and validate receipt items from OpenAI response
  */
-export function parseReceiptItems(data: any): ParsedReceiptItem[] {
+export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptItem[] {
   if (!data || !data.items || !Array.isArray(data.items)) {
     throw new Error('Invalid receipt data format');
   }
 
-  return data.items.map((item: any) => {
+  return data.items.map((item: OpenAIReceiptItem) => {
     const name = item.Item || item.item || item.name || '';
-    const listedPrice = parseFloat(item['Listed Price'] || item.listedPrice || item.listed_price || '0');
-    const finalPrice = parseFloat(item['Final Price'] || item.finalPrice || item.final_price || item['Listed Price'] || item.listedPrice || '0');
-    const estimatedCalories = parseInt(item['Estimated Calories'] || item.estimatedCalories || item.estimated_calories || '0', 10);
+    const listedPriceValue = item['Listed Price'] ?? item.listedPrice ?? item.listed_price ?? 0;
+    const finalPriceValue = item['Final Price'] ?? item.finalPrice ?? item.final_price ?? item['Listed Price'] ?? item.listedPrice ?? 0;
+    const estimatedCaloriesValue = item['Estimated Calories'] ?? item.estimatedCalories ?? item.estimated_calories ?? 0;
+
+    const listedPrice = typeof listedPriceValue === 'number' ? listedPriceValue : parseFloat(String(listedPriceValue || '0'));
+    const finalPrice = typeof finalPriceValue === 'number' ? finalPriceValue : parseFloat(String(finalPriceValue || '0'));
+    const estimatedCalories = typeof estimatedCaloriesValue === 'number' ? estimatedCaloriesValue : parseInt(String(estimatedCaloriesValue || '0'), 10);
 
     if (!name.trim()) {
       throw new Error('Item name is required');

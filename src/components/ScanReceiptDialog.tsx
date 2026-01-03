@@ -48,8 +48,9 @@ function ScanReceiptDialog({ isOpen, onClose, onSave }: ScanReceiptDialogProps) 
 
       setItems(shoppingItems);
       setStep('review');
-    } catch (err: any) {
-      setError(err.message || 'Failed to process receipt image');
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Unknown error');
+      setError(error.message || 'Failed to process receipt image');
       setStep('upload');
       setImagePreview(null);
     }

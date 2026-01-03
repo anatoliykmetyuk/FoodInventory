@@ -1,6 +1,6 @@
 import { getSettings, updateSettings } from './dataService';
 import { getData, clearData, saveData } from './storage';
-import type { FridgeViewMode } from '../types';
+import type { FridgeViewMode, AppData, Item, Meal, ShoppingEvent } from '../types';
 
 /**
  * Get OpenAI API key from settings
@@ -126,36 +126,55 @@ export function wipeData(): void {
 
 /**
  * Import data from JSON object
+ * Accepts data with date strings that will be converted to Date objects
  */
-export function importData(data: any): void {
+export function importData(data: Partial<Omit<AppData, 'items' | 'meals' | 'shoppingEvents'> & {
+  items?: Array<Omit<Item, 'expirationDate'> & { expirationDate?: Date | string }>;
+  meals?: Array<Omit<Meal, 'date'> & { date?: Date | string }>;
+  shoppingEvents?: Array<Omit<ShoppingEvent, 'date'> & { date?: Date | string }>;
+}> & Record<string, unknown>): void {
   // Validate data structure
   if (!data || typeof data !== 'object') {
     throw new Error('Invalid data format');
   }
 
   // Ensure required fields exist
-  const importedData = {
-    items: Array.isArray(data.items) ? data.items : [],
-    meals: Array.isArray(data.meals) ? data.meals : [],
-    shoppingEvents: Array.isArray(data.shoppingEvents) ? data.shoppingEvents : [],
-    settings: data.settings || { currency: 'USD' },
-  };
+  const rawItems = Array.isArray(data.items) ? data.items : [];
+  const rawMeals = Array.isArray(data.meals) ? data.meals : [];
+  const rawShoppingEvents = Array.isArray(data.shoppingEvents) ? data.shoppingEvents : [];
 
   // Convert date strings to Date objects
-  importedData.items = importedData.items.map((item: any) => ({
+  const importedData: AppData = {
+    items: (rawItems as Array<Partial<Item> & Record<string, unknown>>).map((item) => ({
     ...item,
-    expirationDate: item.expirationDate ? new Date(item.expirationDate) : undefined,
-  }));
-
-  importedData.meals = importedData.meals.map((meal: any) => ({
+    id: typeof item.id === 'string' ? item.id : '',
+    name: typeof item.name === 'string' ? item.name : '',
+    cost: typeof item.cost === 'number' ? item.cost : 0,
+    estimatedCalories: typeof item.estimatedCalories === 'number' ? item.estimatedCalories : 0,
+    percentageLeft: typeof item.percentageLeft === 'number' ? item.percentageLeft : 0,
+    expirationDate: item.expirationDate ? (item.expirationDate instanceof Date ? item.expirationDate : new Date(String(item.expirationDate as unknown))) : undefined,
+    } as Item)),
+    meals: (rawMeals as Array<Partial<Meal> & Record<string, unknown>>).map((meal) => ({
     ...meal,
-    date: meal.date ? new Date(meal.date) : new Date(),
-  }));
-
-  importedData.shoppingEvents = importedData.shoppingEvents.map((event: any) => ({
+    id: typeof meal.id === 'string' ? meal.id : '',
+    name: typeof meal.name === 'string' ? meal.name : '',
+    date: meal.date ? (meal.date instanceof Date ? meal.date : new Date(String(meal.date as unknown))) : new Date(),
+    items: Array.isArray(meal.items) ? meal.items : [],
+    totalCost: typeof meal.totalCost === 'number' ? meal.totalCost : 0,
+    totalCalories: typeof meal.totalCalories === 'number' ? meal.totalCalories : 0,
+    portionsCooked: typeof meal.portionsCooked === 'number' ? meal.portionsCooked : 0,
+    portionsLeft: typeof meal.portionsLeft === 'number' ? meal.portionsLeft : 0,
+    isActive: typeof meal.isActive === 'boolean' ? meal.isActive : false,
+    } as Meal)),
+    shoppingEvents: (rawShoppingEvents as Array<Partial<ShoppingEvent> & Record<string, unknown>>).map((event) => ({
     ...event,
-    date: event.date ? new Date(event.date) : new Date(),
-  }));
+    id: typeof event.id === 'string' ? event.id : '',
+    date: event.date ? new Date(String(event.date)) : new Date(),
+    items: Array.isArray(event.items) ? event.items : [],
+    totalCost: typeof event.totalCost === 'number' ? event.totalCost : 0,
+    } as ShoppingEvent)),
+    settings: data.settings || { currency: 'USD' },
+  };
 
   // Save the imported data
   saveData(importedData);

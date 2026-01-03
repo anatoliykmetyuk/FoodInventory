@@ -32,8 +32,9 @@ function ImportData() {
         setTimeout(() => {
           window.location.reload();
         }, 1000);
-      } catch (err: any) {
-        setError(err.message || 'Failed to import data. Please check the file format.');
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Unknown error');
+        setError(error.message || 'Failed to import data. Please check the file format.');
       }
     };
 

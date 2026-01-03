@@ -66,3 +66,74 @@ export interface AppData {
   shoppingEvents: ShoppingEvent[];
   settings: Settings;
 }
+
+// Types for OpenAI receipt response
+export interface OpenAIReceiptItem {
+  Item?: string;
+  item?: string;
+  name?: string;
+  'Listed Price'?: number;
+  listedPrice?: number;
+  listed_price?: number;
+  'Final Price'?: number;
+  finalPrice?: number;
+  final_price?: number;
+  'Estimated Calories'?: number;
+  estimatedCalories?: number;
+  estimated_calories?: number;
+}
+
+export interface OpenAIReceiptResponse {
+  items?: OpenAIReceiptItem[];
+  data?: OpenAIReceiptItem[];
+  [key: string]: unknown;
+}
+
+// Types for Recharts components
+export interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: {
+      date: string;
+      averageRating?: number;
+      ratingCount?: number;
+      meals?: Array<{ name: string; rating: number }>;
+      cost?: number;
+      cumulativeTotal?: number;
+      [key: string]: unknown;
+    };
+    [key: string]: unknown;
+  }>;
+  [key: string]: unknown;
+}
+
+export interface DotProps {
+  cx?: number;
+  cy?: number;
+  payload?: {
+    originalDataPoint?: unknown;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+export interface BarProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  payload?: {
+    originalDataPoint?: unknown;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
+// Types for window.navigator extensions
+export interface NavigatorStandalone extends Navigator {
+  standalone?: boolean;
+}
+
+export interface WindowWithMSStream extends Window {
+  MSStream?: unknown;
+}
