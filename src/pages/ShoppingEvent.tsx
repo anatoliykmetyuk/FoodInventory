@@ -96,7 +96,8 @@ function ShoppingEvent() {
 
   const handleCancel = () => {
     // If this is a new empty event, delete it before canceling
-    if (event && id && event.items.length === 0) {
+    // Use current items state instead of event.items to check if event is empty
+    if (event && id && items.length === 0) {
       deleteShoppingEvent(id);
     }
     navigate('/shopping');
