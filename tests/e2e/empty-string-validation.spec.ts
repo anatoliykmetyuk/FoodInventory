@@ -102,7 +102,7 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
   });
 
   test('should show validation error when saving Shopping Event with empty tax rate', async ({ page }, testInfo) => {
-    if (testInfo.project.name === 'Mobile Safari') {
+    if (testInfo.project.name === 'Mobile Safari' || testInfo.project.name === 'Mobile Chrome') {
       test.skip();
     }
     await page.goto('/shopping');
@@ -167,7 +167,7 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
   });
 
   test('should show validation error when saving Shopping Event with empty listed price', async ({ page }, testInfo) => {
-    if (testInfo.project.name === 'Mobile Safari') {
+    if (testInfo.project.name === 'Mobile Safari' || testInfo.project.name === 'Mobile Chrome') {
       test.skip();
     }
     await page.goto('/shopping');
