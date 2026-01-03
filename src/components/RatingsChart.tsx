@@ -117,6 +117,13 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
             strokeWidth={2}
             dot={<CustomDot />}
             activeDot={<CustomActiveDot />}
+            onClick={(data: unknown) => {
+              if (onDataPointClick && data && typeof data === 'object' && data !== null && 'originalDataPoint' in data) {
+                const dataPoint = (data as { originalDataPoint: RatingsDataPoint }).originalDataPoint;
+                onDataPointClick(dataPoint);
+              }
+            }}
+            style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
           />
         </LineChart>
       </ResponsiveContainer>
