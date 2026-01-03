@@ -13,7 +13,6 @@ interface Item {
   id: string;                    // Unique identifier
   name: string;                  // Item name
   cost: number;                  // Purchase cost (final price after tax/discounts)
-  estimatedCalories: number;     // Estimated calories
   percentageLeft: number;         // Percentage remaining (0-100)
 }
 ```
@@ -30,7 +29,6 @@ interface MealItem {
   name: string;                  // Item name (for display)
   percentageUsed: number;        // Percentage of item used (0-100)
   cost: number;                  // Calculated cost: (percentageUsed / 100) * item.cost
-  calories: number;              // Calculated calories: (percentageUsed / 100) * item.estimatedCalories
 }
 ```
 
@@ -47,7 +45,6 @@ interface Meal {
   date: Date;                    // Date meal was cooked
   items: MealItem[];             // Items used in the meal
   totalCost: number;             // Sum of all MealItem.cost
-  totalCalories: number;         // Sum of all MealItem.calories
   portionsCooked: number;       // Number of portions cooked
   portionsLeft: number;         // Number of portions remaining
   isActive: boolean;             // true if portionsLeft > 0
@@ -66,7 +63,6 @@ interface ShoppingItem {
   name: string;                   // Item name
   listedPrice: number;           // Price as listed on receipt
   finalPrice: number;            // Price after tax and discounts
-  estimatedCalories: number;     // Estimated calories
 }
 ```
 
@@ -113,22 +109,10 @@ Where:
 - `percentageUsed` is the percentage of the item used (0-100)
 - `totalItemCost` is the Item.cost
 
-### Meal Item Calories
-
-```
-itemCalories = (percentageUsed / 100) * itemEstimatedCalories
-```
-
 ### Meal Total Cost
 
 ```
 mealTotalCost = sum(mealItem.cost for all mealItems)
-```
-
-### Meal Total Calories
-
-```
-mealTotalCalories = sum(mealItem.calories for all mealItems)
 ```
 
 ### Shopping Event Total Cost
@@ -160,11 +144,9 @@ Where:
    - If exists: Update existing item
      - Set `percentageLeft = 100` (reset to full)
      - Update `cost = shoppingItem.finalPrice`
-     - Update `estimatedCalories = shoppingItem.estimatedCalories`
    - If not exists: Create new Item
      - `cost = shoppingItem.finalPrice`
      - `percentageLeft = 100`
-     - `estimatedCalories = shoppingItem.estimatedCalories`
 
 ### When Cooking a Meal
 

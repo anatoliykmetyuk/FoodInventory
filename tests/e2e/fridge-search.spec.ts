@@ -31,7 +31,6 @@ test.describe('Fridge Search', () => {
     // Add Apple
     await page.fill('#item-name', 'Apple');
     await page.fill('#item-cost', '1.50');
-    await page.fill('#item-calories', '95');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -40,7 +39,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name');
     await page.fill('#item-name', 'Banana');
     await page.fill('#item-cost', '0.75');
-    await page.fill('#item-calories', '105');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -49,7 +47,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name');
     await page.fill('#item-name', 'Milk');
     await page.fill('#item-cost', '3.00');
-    await page.fill('#item-calories', '150');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -78,7 +75,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Milk');
     await page.fill('#item-cost', '3.00');
-    await page.fill('#item-calories', '150');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -100,7 +96,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Apple');
     await page.fill('#item-cost', '1.50');
-    await page.fill('#item-calories', '95');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -123,7 +118,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Apple');
     await page.fill('#item-cost', '1.50');
-    await page.fill('#item-calories', '95');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -131,7 +125,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name');
     await page.fill('#item-name', 'Banana');
     await page.fill('#item-cost', '0.75');
-    await page.fill('#item-calories', '105');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -157,7 +150,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Banana');
     await page.fill('#item-cost', '0.75');
-    await page.fill('#item-calories', '105');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -165,7 +157,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name');
     await page.fill('#item-name', 'Bread');
     await page.fill('#item-cost', '2.50');
-    await page.fill('#item-calories', '200');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -191,7 +182,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Bread');
     await page.fill('#item-cost', '2.50');
-    await page.fill('#item-calories', '200');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 
@@ -214,7 +204,6 @@ test.describe('Fridge Search', () => {
     await page.waitForSelector('#item-name', { timeout: 10000 });
     await page.fill('#item-name', 'Apple');
     await page.fill('#item-cost', '1.50');
-    await page.fill('#item-calories', '95');
     await page.click('button.save-button:has-text("Add Item")');
     await page.waitForTimeout(500);
 

@@ -25,7 +25,6 @@ The following keys must be present for each item:
 - Item - the name of the item, in English.
 - Listed Price - the price of the item as listed on the receipt.
 - Final Price - the price of the item after tax and discounts.
-- Estimated Calories - the estimated calories of the item.
 
 The output needs to be in JSON format.`;
 
@@ -131,7 +130,6 @@ function normalizeReceiptResponse(response: OpenAIReceiptResponse): OpenAIReceip
     Item: item.Item || item.item || item.name || '',
     'Listed Price': item['Listed Price'] || item.listedPrice || item.listed_price || 0,
     'Final Price': item['Final Price'] || item.finalPrice || item.final_price || item['Listed Price'] || item.listedPrice || 0,
-    'Estimated Calories': item['Estimated Calories'] || item.estimatedCalories || item.estimated_calories || 0,
   }));
 
   return { items: normalizedItems };

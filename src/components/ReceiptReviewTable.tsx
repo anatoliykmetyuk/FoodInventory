@@ -21,8 +21,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
     const updated = [...localItems];
     updated[index] = {
       ...updated[index],
-      [field]: field === 'estimatedCalories' ? parseInt(String(value), 10) || 0 :
-               (field === 'listedPrice' || field === 'finalPrice') ? parseFloat(String(value)) || 0 :
+      [field]: (field === 'listedPrice' || field === 'finalPrice') ? parseFloat(String(value)) || 0 :
                value,
     };
     setLocalItems(updated);
@@ -40,7 +39,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
       name: '',
       listedPrice: 0,
       finalPrice: 0,
-      estimatedCalories: 0,
     };
     const updated = [...localItems, newItem];
     setLocalItems(updated);
@@ -64,7 +62,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
               <th>Item</th>
               <th>Listed Price</th>
               <th>Final Price</th>
-              <th>Estimated Calories</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -100,15 +97,6 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                   />
                 </td>
                 <td>
-                  <input
-                    type="number"
-                    min="0"
-                    value={item.estimatedCalories}
-                    onChange={(e) => updateItem(index, 'estimatedCalories', e.target.value)}
-                    className="table-input"
-                  />
-                </td>
-                <td>
                   <button
                     onClick={() => removeItem(index)}
                     className="remove-button"
@@ -123,7 +111,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
           <tfoot>
             <tr>
               <td colSpan={2} className="total-label">Total Cost:</td>
-              <td className="total-value" colSpan={3}>
+              <td className="total-value" colSpan={2}>
                 {formatPrice(totalCost, currency)}
               </td>
             </tr>

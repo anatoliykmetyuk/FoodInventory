@@ -41,7 +41,6 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
       name: item.name,
       percentageUsed: 0,
       cost: 0,
-      calories: 0,
     };
 
     const updated = [...localMealItems, newMealItem];
@@ -67,12 +66,10 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
     const updated = localMealItems.map(mi => {
       if (mi.itemId === itemId) {
         const cost = (percentage / 100) * item.cost;
-        const calories = (percentage / 100) * item.estimatedCalories;
         return {
           ...mi,
           percentageUsed: percentage,
           cost,
-          calories,
         };
       }
       return mi;
@@ -87,7 +84,6 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
   };
 
   const totalCost = localMealItems.reduce((sum, item) => sum + item.cost, 0);
-  const totalCalories = localMealItems.reduce((sum, item) => sum + item.calories, 0);
 
   // Calculate savings if savings mode is enabled and meal type is specified
   const calculateSavings = (): number | undefined => {
@@ -125,8 +121,6 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
               </span>
             </>
           )}
-          <span className="total-label">Total Calories:</span>
-          <span className="total-value">{parseFloat(totalCalories.toFixed(2))}</span>
         </div>
       </div>
 
@@ -163,7 +157,6 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
                 <th>Item</th>
                 <th>Percentage Used</th>
                 <th>Cost</th>
-                <th>Calories</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -194,7 +187,6 @@ function MealItemEditor({ mealItems, onMealItemsChange, isEditable = true, savin
                       )}
                     </td>
                     <td>{formatPrice(mealItem.cost, currency)}</td>
-                    <td>{parseFloat(mealItem.calories.toFixed(2))}</td>
                     <td>
                       {isEditable && (
                         <button

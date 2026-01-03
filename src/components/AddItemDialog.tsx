@@ -11,7 +11,6 @@ interface AddItemDialogProps {
 function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
   const [name, setName] = useState('');
   const [cost, setCost] = useState('');
-  const [calories, setCalories] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
 
   useEffect(() => {
@@ -19,7 +18,6 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
       // Reset form when dialog closes
       setName('');
       setCost('');
-      setCalories('');
       setExpirationDate('');
     }
   }, [isOpen]);
@@ -28,16 +26,14 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
     e.preventDefault();
 
     const costNum = parseFloat(cost);
-    const caloriesNum = parseInt(calories, 10);
 
-    if (!name.trim() || isNaN(costNum) || costNum <= 0 || isNaN(caloriesNum) || caloriesNum < 0) {
+    if (!name.trim() || isNaN(costNum) || costNum <= 0) {
       return;
     }
 
     const newItem: Parameters<typeof addItem>[0] = {
       name: name.trim(),
       cost: costNum,
-      estimatedCalories: caloriesNum,
       percentageLeft: 100,
     };
 
@@ -78,17 +74,6 @@ function AddItemDialog({ isOpen, onClose, onSave }: AddItemDialogProps) {
               min="0"
               value={cost}
               onChange={(e) => setCost(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="item-calories">Estimated Calories:</label>
-            <input
-              id="item-calories"
-              type="number"
-              min="0"
-              value={calories}
-              onChange={(e) => setCalories(e.target.value)}
               required
             />
           </div>
