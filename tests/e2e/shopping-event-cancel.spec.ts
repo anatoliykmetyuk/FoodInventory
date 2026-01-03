@@ -224,8 +224,9 @@ test.describe('Shopping Event Cancel and Save', () => {
     expect(newEvent).toBeDefined();
     expect(newEvent.items).toHaveLength(1);
     expect(newEvent.items[0].name).toBe('Test Save Item');
-    expect(newEvent.items[0].listedPrice).toBe(15.00);
-    expect(newEvent.items[0].finalPrice).toBe(16.50); // Saved items have finalPrice, not taxRate
+    // Saved items only have name and finalPrice (no listedPrice)
+    expect(newEvent.items[0].finalPrice).toBe(16.50);
+    expect(newEvent.items[0].listedPrice).toBeUndefined(); // listedPrice should not exist on saved items
     expect(newEvent.totalCost).toBe(16.50);
   });
 });
