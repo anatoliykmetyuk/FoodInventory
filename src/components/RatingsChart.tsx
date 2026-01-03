@@ -1,5 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
 import type { RatingsDataPoint } from '../services/statisticsService';
+import type { TooltipProps, DotProps } from '../types';
 import './RatingsChart.css';
 
 interface RatingsChartProps {
@@ -17,27 +18,29 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
     originalDataPoint: point,
   }));
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
+      const ratingCount = dataPoint.ratingCount ?? 0;
+      const meals = dataPoint.meals ?? [];
       return (
         <div className="ratings-chart-tooltip">
           <p className="tooltip-date">{dataPoint.date}</p>
           <p className="tooltip-rating">
-            Average Rating: {dataPoint.averageRating} ★
+            Average Rating: {dataPoint.averageRating ?? 0} ★
           </p>
           <p className="tooltip-count">
-            Based on {dataPoint.ratingCount} meal{dataPoint.ratingCount > 1 ? 's' : ''}
+            Based on {ratingCount} meal{ratingCount > 1 ? 's' : ''}
           </p>
           <div className="tooltip-meals">
-            {dataPoint.meals.slice(0, 5).map((meal: any, index: number) => (
+            {meals.slice(0, 5).map((meal: { name: string; rating: number }, index: number) => (
               <div key={index} className="tooltip-meal-item">
                 <span className="meal-name">{meal.name}</span>
                 <span className="meal-rating">{'★'.repeat(meal.rating)}</span>
               </div>
             ))}
-            {dataPoint.meals.length > 5 && (
-              <p className="tooltip-more">...and {dataPoint.meals.length - 5} more</p>
+            {meals.length > 5 && (
+              <p className="tooltip-more">...and {meals.length - 5} more</p>
             )}
           </div>
         </div>
@@ -50,7 +53,7 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
     return `${value}★`;
   };
 
-  const CustomDot = (props: any) => {
+  const CustomDot = (props: DotProps) => {
     const { cx, cy, payload } = props;
     if (!onDataPointClick) return <circle cx={cx} cy={cy} r={4} fill="#ffc107" />;
 
@@ -63,14 +66,15 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
         style={{ cursor: 'pointer' }}
         onClick={() => {
           if (onDataPointClick && payload && payload.originalDataPoint) {
-            onDataPointClick(payload.originalDataPoint);
+            const dataPoint = payload.originalDataPoint as RatingsDataPoint;
+            onDataPointClick(dataPoint);
           }
         }}
       />
     );
   };
 
-  const CustomActiveDot = (props: any) => {
+  const CustomActiveDot = (props: DotProps) => {
     const { cx, cy, payload } = props;
 
     return (
@@ -82,7 +86,8 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
         style={{ cursor: onDataPointClick ? 'pointer' : 'default' }}
         onClick={() => {
           if (onDataPointClick && payload && payload.originalDataPoint) {
-            onDataPointClick(payload.originalDataPoint);
+            const dataPoint = payload.originalDataPoint as RatingsDataPoint;
+            onDataPointClick(dataPoint);
           }
         }}
       />
@@ -95,10 +100,10 @@ function RatingsChart({ data, onDataPointClick }: RatingsChartProps) {
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" stroke="#444" />
           <XAxis dataKey="date" stroke="#aaa" />
-          <YAxis 
-            stroke="#aaa" 
-            tickFormatter={formatYAxis} 
-            domain={[0, 5]} 
+          <YAxis
+            stroke="#aaa"
+            tickFormatter={formatYAxis}
+            domain={[0, 5]}
             ticks={[1, 2, 3, 4, 5]}
           />
           <Tooltip content={<CustomTooltip />} />

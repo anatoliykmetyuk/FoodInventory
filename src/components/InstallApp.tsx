@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { NavigatorStandalone, WindowWithMSStream } from '../types';
 import './InstallApp.css';
 
 interface BeforeInstallPromptEvent extends Event {
@@ -16,7 +17,7 @@ function InstallApp() {
   useEffect(() => {
     // Check if app is already installed (standalone mode)
     const standalone = window.matchMedia('(display-mode: standalone)').matches;
-    const isStandaloneMode = (window.navigator as any).standalone === true || standalone;
+    const isStandaloneMode = (window.navigator as NavigatorStandalone).standalone === true || standalone;
     setIsStandalone(isStandaloneMode);
 
     if (isStandaloneMode) {
@@ -25,7 +26,7 @@ function InstallApp() {
     }
 
     // Detect iOS
-    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as WindowWithMSStream).MSStream;
     setIsIOS(iOS);
 
     // Listen for the beforeinstallprompt event (Chrome/Edge)
@@ -114,8 +115,8 @@ function InstallApp() {
                   <h3>Install on iOS (Safari)</h3>
                   <ol>
                     <li>Tap the Share button (square with arrow) at the bottom of the screen</li>
-                    <li>Scroll down and tap "Add to Home Screen"</li>
-                    <li>Tap "Add" to confirm</li>
+                    <li>Scroll down and tap &quot;Add to Home Screen&quot;</li>
+                    <li>Tap &quot;Add&quot; to confirm</li>
                     <li>The app icon will appear on your home screen</li>
                   </ol>
                 </div>
@@ -134,10 +135,10 @@ function InstallApp() {
                 <div className="install-instructions">
                   <h3>Install this App</h3>
                   <p>
-                    <strong>Chrome/Edge:</strong> Look for the install icon (⊕) in the address bar, or use the browser menu (⋮) → "Install app"
+                    <strong>Chrome/Edge:</strong> Look for the install icon (⊕) in the address bar, or use the browser menu (⋮) → &quot;Install app&quot;
                   </p>
                   <p>
-                    <strong>Safari (macOS):</strong> Use File → "Add to Dock" or check the address bar for an install option
+                    <strong>Safari (macOS):</strong> Use File → &quot;Add to Dock&quot; or check the address bar for an install option
                   </p>
                 </div>
               )}

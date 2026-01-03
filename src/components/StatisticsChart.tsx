@@ -1,5 +1,6 @@
 import { ComposedChart, Bar, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import type { StatisticsDataPoint, StatisticsType } from '../services/statisticsService';
+import type { TooltipProps, DotProps, BarProps } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency } from '../services/settingsService';
 import './StatisticsChart.css';
@@ -23,19 +24,21 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
     originalDataPoint: point, // Keep reference to original data point
   }));
 
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({ active, payload }: TooltipProps) => {
     if (active && payload && payload.length) {
       const dataPoint = payload[0].payload;
       const periodLabel = type === 'savings' ? 'Period Savings' : 'Period Total';
       const cumulativeLabel = type === 'savings' ? 'Cumulative Savings' : 'Cumulative Total';
+      const cost = dataPoint.cost ?? 0;
+      const cumulativeTotal = dataPoint.cumulativeTotal ?? 0;
       return (
         <div className="chart-tooltip">
           <p className="tooltip-date">{dataPoint.date}</p>
           <p className="tooltip-total">
-            {periodLabel}: {formatPrice(dataPoint.cost, currency)}
+            {periodLabel}: {formatPrice(cost, currency)}
           </p>
           <p className="tooltip-cumulative">
-            {cumulativeLabel}: {formatPrice(dataPoint.cumulativeTotal, currency)}
+            {cumulativeLabel}: {formatPrice(cumulativeTotal, currency)}
           </p>
         </div>
       );
@@ -47,11 +50,12 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
     return formatPrice(value, currency);
   };
 
-  const CustomBar = (props: any) => {
+  const CustomBar = (props: BarProps) => {
     const { x, y, width, height, payload } = props;
     const handleClick = () => {
       if (onDataPointClick && payload && payload.originalDataPoint) {
-        onDataPointClick(payload.originalDataPoint);
+        const dataPoint = payload.originalDataPoint as StatisticsDataPoint;
+        onDataPointClick(dataPoint);
       }
     };
 
@@ -68,7 +72,7 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
     );
   };
 
-  const CustomDot = (props: any) => {
+  const CustomDot = (props: DotProps) => {
     const { cx, cy, payload } = props;
     if (!onDataPointClick) return null;
 
@@ -81,14 +85,15 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
         style={{ cursor: 'pointer' }}
         onClick={() => {
           if (onDataPointClick && payload && payload.originalDataPoint) {
-            onDataPointClick(payload.originalDataPoint);
+            const dataPoint = payload.originalDataPoint as StatisticsDataPoint;
+            onDataPointClick(dataPoint);
           }
         }}
       />
     );
   };
 
-  const CustomActiveDot = (props: any) => {
+  const CustomActiveDot = (props: DotProps) => {
     const { cx, cy, payload } = props;
     if (!onDataPointClick) return null;
 
@@ -101,7 +106,8 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
         style={{ cursor: 'pointer' }}
         onClick={() => {
           if (onDataPointClick && payload && payload.originalDataPoint) {
-            onDataPointClick(payload.originalDataPoint);
+            const dataPoint = payload.originalDataPoint as StatisticsDataPoint;
+            onDataPointClick(dataPoint);
           }
         }}
       />
@@ -120,7 +126,7 @@ function StatisticsChart({ data, onDataPointClick, type = 'meals' }: StatisticsC
           <Bar
             dataKey="cost"
             fill={barColor}
-            shape={CustomBar}
+            shape={CustomBar as never}
           />
           <Line
             type="monotone"

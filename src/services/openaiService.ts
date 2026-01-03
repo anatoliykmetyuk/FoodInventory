@@ -1,10 +1,11 @@
 import OpenAI from 'openai';
 import { getOpenAIApiKey } from './settingsService';
+import type { OpenAIReceiptResponse } from '../types';
 
 /**
  * Process a receipt image using OpenAI Vision API
  */
-export async function processReceiptImage(imageFile: File): Promise<any> {
+export async function processReceiptImage(imageFile: File): Promise<OpenAIReceiptResponse> {
   const apiKey = getOpenAIApiKey();
 
   if (!apiKey) {
@@ -62,16 +63,19 @@ The output needs to be in JSON format.`;
 
     // Validate and normalize the response structure
     return normalizeReceiptResponse(parsed);
-  } catch (error: any) {
-    if (error.response?.status === 401) {
-      throw new Error('Invalid OpenAI API key. Please check your API key in Settings.');
-    } else if (error.response?.status === 429) {
-      throw new Error('OpenAI API rate limit exceeded. Please try again later.');
-    } else if (error.message) {
-      throw new Error(`OpenAI API error: ${error.message}`);
-    } else {
-      throw new Error('Failed to process receipt image. Please try again.');
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'response' in error) {
+      const err = error as { response?: { status?: number }; message?: string };
+      if (err.response?.status === 401) {
+        throw new Error('Invalid OpenAI API key. Please check your API key in Settings.');
+      } else if (err.response?.status === 429) {
+        throw new Error('OpenAI API rate limit exceeded. Please try again later.');
+      }
     }
+    if (error instanceof Error) {
+      throw new Error(`OpenAI API error: ${error.message}`);
+    }
+    throw new Error('Failed to process receipt image. Please try again.');
   }
 }
 
@@ -95,10 +99,10 @@ function fileToBase64(file: File): Promise<string> {
 /**
  * Normalize the receipt response to ensure it has the expected structure
  */
-function normalizeReceiptResponse(response: any): any {
+function normalizeReceiptResponse(response: OpenAIReceiptResponse): OpenAIReceiptResponse {
   // The response might have items in different formats
   // Try to extract items array
-  let items: any[] = [];
+  let items: OpenAIReceiptResponse['items'] = [];
 
   if (Array.isArray(response.items)) {
     items = response.items;
@@ -123,7 +127,7 @@ function normalizeReceiptResponse(response: any): any {
   }
 
   // Normalize each item to ensure it has all required fields
-  const normalizedItems = items.map((item: any) => ({
+  const normalizedItems = items.map((item) => ({
     Item: item.Item || item.item || item.name || '',
     'Listed Price': item['Listed Price'] || item.listedPrice || item.listed_price || 0,
     'Final Price': item['Final Price'] || item.finalPrice || item.final_price || item['Listed Price'] || item.listedPrice || 0,
