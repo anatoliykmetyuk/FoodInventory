@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import MealReuseSelector from './MealReuseSelector';
 import { addMeal } from '../services/dataService';
-import type { Meal } from '../types';
 
 describe('MealReuseSelector', () => {
   const mockOnSelect = vi.fn();
