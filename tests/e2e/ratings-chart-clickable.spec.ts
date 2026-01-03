@@ -93,13 +93,8 @@ test.describe('Ratings Chart Clickable', () => {
       const circles = document.querySelectorAll('.ratings-chart circle[fill="#ffc107"]');
       if (circles.length > 0) {
         const circle = circles[0] as SVGCircleElement;
-        // Create and dispatch a click event
-        const clickEvent = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        });
-        circle.dispatchEvent(clickEvent);
+        // Use .click() method which works better with React event handlers
+        (circle as any).click();
       }
     });
     // Safari may need more time for the click to register and the list to render
@@ -199,13 +194,8 @@ test.describe('Ratings Chart Clickable', () => {
       const circles = document.querySelectorAll('.ratings-chart circle[fill="#ffc107"]');
       if (circles.length > 0) {
         const circle = circles[0] as SVGCircleElement;
-        // Create and dispatch a click event
-        const clickEvent = new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-          view: window
-        });
-        circle.dispatchEvent(clickEvent);
+        // Use .click() method which works better with React event handlers
+        (circle as any).click();
       }
     });
     // Safari may need more time for the click to register and the list to render
