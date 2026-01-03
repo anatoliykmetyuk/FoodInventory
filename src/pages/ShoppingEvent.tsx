@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getShoppingEvent, updateShoppingEvent, addItemsToFridgeFromShopping, deleteShoppingEvent } from '../services/dataService';
+import { getShoppingEvent, updateShoppingEvent, addShoppingEvent, addItemsToFridgeFromShopping, deleteShoppingEvent } from '../services/dataService';
 import type { ShoppingItem } from '../types';
 import ShoppingItemEditor from '../components/ShoppingItemEditor';
 import Toast from '../components/Toast';
@@ -9,8 +9,14 @@ import './ShoppingEvent.css';
 function ShoppingEvent() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [event, setEvent] = useState(() => id ? getShoppingEvent(id) : null);
-  const [isEditable, setIsEditable] = useState(!event || event.items.length === 0);
+  const isNewEvent = id === 'new';
+  const [event, setEvent] = useState(() => {
+    if (isNewEvent) {
+      return null; // New event - no event object yet
+    }
+    return id ? getShoppingEvent(id) : null;
+  });
+  const [isEditable, setIsEditable] = useState(isNewEvent || !event || event.items.length === 0);
   const [items, setItems] = useState<ShoppingItem[]>(event?.items || []);
   const [eventDate, setEventDate] = useState(() => {
     if (event) {
@@ -21,7 +27,7 @@ function ShoppingEvent() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
-    if (id) {
+    if (id && !isNewEvent) {
       const shoppingEvent = getShoppingEvent(id);
       if (shoppingEvent) {
         setEvent(shoppingEvent);
@@ -30,39 +36,24 @@ function ShoppingEvent() {
         setEventDate(new Date(shoppingEvent.date).toISOString().split('T')[0]);
       }
     }
-  }, [id]);
+  }, [id, isNewEvent]);
 
   const handleItemsChange = (newItems: ShoppingItem[]) => {
     setItems(newItems);
-    // Recalculate total cost
-    const totalCost = newItems.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
-    if (event && id) {
-      updateShoppingEvent(id, {
-        items: newItems,
-        totalCost,
-      });
-      setEvent({ ...event, items: newItems, totalCost });
-    }
+    // Don't persist changes immediately - only update local state
+    // Changes will be persisted only when Save is clicked
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = e.target.value;
     setEventDate(newDate);
-    if (event && id) {
-      updateShoppingEvent(id, {
-        date: new Date(newDate),
-      });
-      setEvent({ ...event, date: new Date(newDate) });
-    }
+    // Don't persist changes immediately - only update local state
+    // Changes will be persisted only when Save is clicked
   };
 
   const handleSave = () => {
-    if (!event || !id) return;
-
     if (items.length === 0) {
       setToast({ message: 'Shopping event was not saved because it is empty.', type: 'error' });
-      // Delete the empty event if it exists
-      deleteShoppingEvent(id);
       // Navigate back to shopping page
       setTimeout(() => {
         navigate('/shopping');
@@ -70,22 +61,46 @@ function ShoppingEvent() {
       return;
     }
 
+    // Calculate total cost
+    const totalCost = items.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
+
+    if (isNewEvent) {
+      // CREATE the shopping event - this is the ONLY place events are created
+      const newEvent = addShoppingEvent({
+        date: new Date(eventDate),
+        items,
+        totalCost,
+      });
+      setEvent(newEvent);
+    } else {
+      // UPDATE existing shopping event
+      if (!event || !id) return;
+
+      const updatedEvent = updateShoppingEvent(id, {
+        items,
+        totalCost,
+        date: new Date(eventDate),
+      });
+
+      if (updatedEvent) {
+        setEvent(updatedEvent);
+      }
+    }
+
     // Add items to fridge
     addItemsToFridgeFromShopping(items);
-
-    // Update shopping event
-    const totalCost = items.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
-    updateShoppingEvent(id, {
-      items,
-      totalCost,
-      date: new Date(eventDate),
-    });
 
     // Navigate to fridge
     navigate('/');
   };
 
   const handleDelete = () => {
+    if (isNewEvent) {
+      // Nothing to delete for new events
+      navigate('/shopping');
+      return;
+    }
+
     if (!event || !id) return;
 
     if (window.confirm(`Are you sure you want to delete this shopping event from ${formattedDate}?`)) {
@@ -95,27 +110,34 @@ function ShoppingEvent() {
   };
 
   const handleCancel = () => {
-    // If this is a new empty event, delete it before canceling
-    if (event && id && event.items.length === 0) {
-      deleteShoppingEvent(id);
-    }
+    // For new events, just navigate away - nothing was created so nothing to delete
+    // For existing events, just navigate away - we don't delete on cancel
     navigate('/shopping');
   };
 
-  if (!event) {
+  // For new events, we don't have an event object yet, so we can't show formatted date
+  // For existing events, show the formatted date
+  const formattedDate = event
+    ? new Date(event.date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : new Date(eventDate).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+  // For new events, event is null but that's expected - don't show error
+  // For existing events, if event is null and id is not 'new', show error
+  if (!event && !isNewEvent && id) {
     return (
       <div className="shopping-event-page">
         <p>Shopping event not found</p>
       </div>
     );
   }
-
-  const date = new Date(event.date);
-  const formattedDate = date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
 
   return (
     <div className="shopping-event-page">
@@ -159,9 +181,11 @@ function ShoppingEvent() {
         )}
         {!isEditable && (
           <>
-            <button onClick={handleDelete} className="delete-button">
-              Delete
-            </button>
+            {!isNewEvent && (
+              <button onClick={handleDelete} className="delete-button">
+                Delete
+              </button>
+            )}
             <button onClick={handleCancel} className="back-button">
               Back to Shopping
             </button>

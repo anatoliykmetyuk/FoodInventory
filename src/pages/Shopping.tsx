@@ -36,13 +36,9 @@ function Shopping() {
   };
 
   const handleAddShoppingEvent = () => {
-    // Create empty shopping event and navigate to edit page
-    const shoppingEvent = addShoppingEvent({
-      date: new Date(),
-      items: [],
-      totalCost: 0,
-    });
-    navigate(`/shopping/event/${shoppingEvent.id}`);
+    // Navigate to new event page without creating the event
+    // Event will only be created when user clicks "Save to Fridge"
+    navigate('/shopping/event/new');
   };
 
   return (
