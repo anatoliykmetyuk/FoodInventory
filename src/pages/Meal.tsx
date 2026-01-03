@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMeal, addMeal, updateMeal, deleteMeal, markMealAsCooked, rateMeal } from '../services/dataService';
-import { updateFridgeAfterMeal } from '../services/dataService';
+import { updateFridgeAfterMeal, restoreFridgeAfterMeal } from '../services/dataService';
 import type { Meal as MealInterface, MealItem, MealType } from '../types';
 import { formatPrice } from '../utils/currencyFormatter';
 import { getCurrency, getSavingsMode, getMealTypeCost } from '../services/settingsService';
@@ -135,10 +135,8 @@ function Meal() {
         savings,
       });
 
-      // Only update fridge if not a planned meal
-      if (!isPlanned) {
-        updateFridgeAfterMeal(mealItems);
-      }
+      // Update fridge for all meals (including planned meals)
+      updateFridgeAfterMeal(mealItems);
 
       // Navigate to view mode
       navigate(`/cooking/meal/${newMeal.id}`);
@@ -149,6 +147,10 @@ function Meal() {
       // Calculate savings if savings mode is enabled and meal type is specified
       const savings = savingsModeEnabled ? calculateSavings(totalCost, mealType) : undefined;
 
+      // Restore old items to fridge before updating
+      restoreFridgeAfterMeal(meal.items);
+
+      // Update the meal
       updateMeal(id, {
         name: mealName.trim(),
         date: mealDate,
@@ -160,6 +162,9 @@ function Meal() {
         mealType: savingsModeEnabled ? mealType : undefined,
         savings,
       });
+
+      // Subtract new items from fridge
+      updateFridgeAfterMeal(mealItems);
 
       // Reload meal and exit edit mode
       loadMeal(id);

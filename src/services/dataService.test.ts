@@ -297,7 +297,7 @@ describe('dataService', () => {
       expect(deleted).toBe(false);
     });
 
-    it('should not restore percentages when deleting a planned meal', () => {
+    it('should restore percentages when deleting a planned meal', () => {
       // Create a fridge item
       const item = addItem({
         name: 'Apple',
@@ -306,7 +306,7 @@ describe('dataService', () => {
         percentageLeft: 100,
       });
 
-      // Create a planned meal (ingredients not consumed)
+      // Create a planned meal (ingredients ARE consumed when planned)
       const meal = addMeal({
         name: 'Apple Salad',
         date: new Date('2024-01-01'),
@@ -327,17 +327,55 @@ describe('dataService', () => {
         isPlanned: true,
       });
 
-      // Verify item percentage is still 100% (not consumed)
+      // Verify item percentage was reduced when meal was created (planned meals consume ingredients)
       const itemBeforeDelete = getItem(item.id);
-      expect(itemBeforeDelete?.percentageLeft).toBe(100);
+      expect(itemBeforeDelete?.percentageLeft).toBe(50);
 
       // Delete the planned meal
       const deleted = deleteMeal(meal.id);
       expect(deleted).toBe(true);
 
-      // Verify item percentage is still 100% (no restoration needed)
+      // Verify item percentage was restored
       const itemAfterDelete = getItem(item.id);
       expect(itemAfterDelete?.percentageLeft).toBe(100);
+    });
+
+    it('should subtract ingredients from fridge when creating a planned meal', () => {
+      // Create a fridge item
+      const item = addItem({
+        name: 'Banana',
+        cost: 0.75,
+        estimatedCalories: 105,
+        percentageLeft: 100,
+      });
+
+      // Verify initial state
+      expect(getItem(item.id)?.percentageLeft).toBe(100);
+
+      // Create a planned meal - should consume ingredients
+      addMeal({
+        name: 'Banana Smoothie',
+        date: new Date('2024-01-01'),
+        items: [
+          {
+            itemId: item.id,
+            name: 'Banana',
+            percentageUsed: 50,
+            cost: 0.38,
+            calories: 52.5,
+          },
+        ],
+        totalCost: 0.38,
+        totalCalories: 52.5,
+        portionsCooked: 1,
+        portionsLeft: 1,
+        isActive: true,
+        isPlanned: true,
+      });
+
+      // Verify item percentage was reduced when planned meal was created
+      const itemAfterPlanned = getItem(item.id);
+      expect(itemAfterPlanned?.percentageLeft).toBe(50);
     });
   });
 
@@ -406,7 +444,7 @@ describe('dataService', () => {
   });
 
   describe('markMealAsCooked', () => {
-    it('should mark a planned meal as cooked and consume ingredients', () => {
+    it('should mark a planned meal as cooked without affecting fridge (already consumed when planned)', () => {
       // Create a fridge item
       const item = addItem({
         name: 'Apple',
@@ -415,7 +453,7 @@ describe('dataService', () => {
         percentageLeft: 100,
       });
 
-      // Create a planned meal
+      // Create a planned meal (ingredients are consumed when meal is created)
       const meal = addMeal({
         name: 'Apple Salad',
         date: new Date('2024-01-01'),
@@ -436,14 +474,18 @@ describe('dataService', () => {
         isPlanned: true,
       });
 
-      // Mark as cooked
+      // Verify item percentage was already reduced when meal was planned
+      const itemAfterPlanned = getItem(item.id);
+      expect(itemAfterPlanned?.percentageLeft).toBe(50);
+
+      // Mark as cooked - should NOT affect fridge (already consumed)
       const result = markMealAsCooked(meal.id);
       expect(result.success).toBe(true);
       expect(result.errors).toHaveLength(0);
 
-      // Verify item percentage was reduced
-      const itemAfter = getItem(item.id);
-      expect(itemAfter?.percentageLeft).toBe(50);
+      // Verify item percentage did NOT change (still 50%)
+      const itemAfterCooked = getItem(item.id);
+      expect(itemAfterCooked?.percentageLeft).toBe(50);
 
       // Verify meal is no longer planned
       const meals = getMeals();
@@ -451,7 +493,7 @@ describe('dataService', () => {
       expect(updatedMeal?.isPlanned).toBe(false);
     });
 
-    it('should fail when ingredient is no longer available', () => {
+    it('should succeed when marking planned meal as cooked even if ingredient is no longer available (ingredients already consumed)', () => {
       // Create a fridge item
       const item = addItem({
         name: 'Apple',
@@ -460,7 +502,7 @@ describe('dataService', () => {
         percentageLeft: 100,
       });
 
-      // Create a planned meal
+      // Create a planned meal (ingredients are consumed when meal is created)
       const meal = addMeal({
         name: 'Apple Salad',
         date: new Date('2024-01-01'),
@@ -481,21 +523,25 @@ describe('dataService', () => {
         isPlanned: true,
       });
 
-      // Remove item from fridge
+      // Verify ingredients were consumed when meal was created
+      const itemAfterPlanned = getItem(item.id);
+      expect(itemAfterPlanned?.percentageLeft).toBe(50);
+
+      // Remove item from fridge (simulating it was used up)
       removeItem(item.id);
 
-      // Try to mark as cooked
+      // Mark as cooked - should succeed because ingredients were already consumed
       const result = markMealAsCooked(meal.id);
-      expect(result.success).toBe(false);
-      expect(result.errors).toContain('"Apple" is no longer in your fridge');
+      expect(result.success).toBe(true);
+      expect(result.errors).toHaveLength(0);
 
-      // Verify meal is still planned
+      // Verify meal is no longer planned
       const meals = getMeals();
-      const unchangedMeal = meals.find(m => m.id === meal.id);
-      expect(unchangedMeal?.isPlanned).toBe(true);
+      const updatedMeal = meals.find(m => m.id === meal.id);
+      expect(updatedMeal?.isPlanned).toBe(false);
     });
 
-    it('should fail when not enough ingredient percentage', () => {
+    it('should succeed when marking planned meal as cooked even if ingredient percentage is low (ingredients already consumed)', () => {
       // Create a fridge item
       const item = addItem({
         name: 'Apple',
@@ -504,7 +550,7 @@ describe('dataService', () => {
         percentageLeft: 100,
       });
 
-      // Create a planned meal
+      // Create a planned meal (ingredients are consumed when meal is created)
       const meal = addMeal({
         name: 'Apple Salad',
         date: new Date('2024-01-01'),
@@ -525,22 +571,26 @@ describe('dataService', () => {
         isPlanned: true,
       });
 
-      // Reduce item percentage
+      // Verify ingredients were consumed when meal was created
+      const itemAfterPlanned = getItem(item.id);
+      expect(itemAfterPlanned?.percentageLeft).toBe(50);
+
+      // Reduce item percentage further (simulating other usage)
       updateItem(item.id, { percentageLeft: 30 });
 
-      // Try to mark as cooked
+      // Mark as cooked - should succeed because ingredients were already consumed when planned
       const result = markMealAsCooked(meal.id);
-      expect(result.success).toBe(false);
-      expect(result.errors[0]).toContain('Not enough "Apple"');
+      expect(result.success).toBe(true);
+      expect(result.errors).toHaveLength(0);
 
-      // Verify item percentage was not changed
+      // Verify item percentage was not changed by marking as cooked
       const itemAfter = getItem(item.id);
       expect(itemAfter?.percentageLeft).toBe(30);
 
-      // Verify meal is still planned
+      // Verify meal is no longer planned
       const meals = getMeals();
-      const unchangedMeal = meals.find(m => m.id === meal.id);
-      expect(unchangedMeal?.isPlanned).toBe(true);
+      const updatedMeal = meals.find(m => m.id === meal.id);
+      expect(updatedMeal?.isPlanned).toBe(false);
     });
 
     it('should fail for non-existent meal', () => {
