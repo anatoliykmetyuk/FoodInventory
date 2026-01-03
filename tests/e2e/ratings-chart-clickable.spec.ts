@@ -87,17 +87,21 @@ test.describe('Ratings Chart Clickable', () => {
     const dots = page.locator('.ratings-chart circle[fill="#ffc107"]');
     await expect(dots.first()).toBeVisible({ timeout: 10000 });
 
-    // Click on the first dot - try force click first, if that doesn't work, use mouse coordinates
-    const firstDot = dots.first();
-    try {
-      await firstDot.click({ force: true, timeout: 5000 });
-    } catch {
-      // If force click fails (e.g., in Safari), use mouse coordinates
-      const box = await firstDot.boundingBox();
-      if (box) {
-        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    // Click on the first dot - use JavaScript click for better Safari compatibility
+    // Directly find and click the circle element to avoid Safari SVG click issues
+    await page.evaluate(() => {
+      const circles = document.querySelectorAll('.ratings-chart circle[fill="#ffc107"]');
+      if (circles.length > 0) {
+        const circle = circles[0] as SVGCircleElement;
+        // Create and dispatch a click event
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        circle.dispatchEvent(clickEvent);
       }
-    }
+    });
     // Safari may need more time for the click to register and the list to render
     await page.waitForTimeout(3000);
 
@@ -189,17 +193,21 @@ test.describe('Ratings Chart Clickable', () => {
     const dots = page.locator('.ratings-chart circle[fill="#ffc107"]');
     await expect(dots.first()).toBeVisible({ timeout: 10000 });
 
-    // Click on the first dot - try force click first, if that doesn't work, use mouse coordinates
-    const firstDot = dots.first();
-    try {
-      await firstDot.click({ force: true, timeout: 5000 });
-    } catch {
-      // If force click fails (e.g., in Safari), use mouse coordinates
-      const box = await firstDot.boundingBox();
-      if (box) {
-        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    // Click on the first dot - use JavaScript click for better Safari compatibility
+    // Directly find and click the circle element to avoid Safari SVG click issues
+    await page.evaluate(() => {
+      const circles = document.querySelectorAll('.ratings-chart circle[fill="#ffc107"]');
+      if (circles.length > 0) {
+        const circle = circles[0] as SVGCircleElement;
+        // Create and dispatch a click event
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+          view: window
+        });
+        circle.dispatchEvent(clickEvent);
       }
-    }
+    });
     // Safari may need more time for the click to register and the list to render
     await page.waitForTimeout(3000);
 
