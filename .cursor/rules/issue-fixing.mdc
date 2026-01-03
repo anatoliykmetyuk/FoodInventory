@@ -3,7 +3,7 @@ description: Apply this rule when the user requests to fix an issue, or specifie
 alwaysApply: false
 ---
 
-## Implementation Procedure
+## A. Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
 2. Create a DETAILED to-do list to follow this procedure PRECISELY, and use it to execute the steps. IMPORTANT: DO NOT SKIP ANY STEPS! DO NOT MAKE UP STEPS THAT ARE NOT IN THIS PROCEDURE! Translate all steps VERBATIM into the to-do list!
 4. Implement the fix to the issue.
@@ -18,7 +18,7 @@ alwaysApply: false
     - Open a pull request using the following command: `gh pr create --title "Fix: ANA-XX: brief description of the fix" --body "Brief description of the fix" --base main --head fix/ANA-XX`.
     - Open the web page of the pull request in the browser: `gh pr view --web`.
 
-## Verification Procedure
+## B. Verification Procedure
 1. Implement unit tests for all the components that went into the feature in isolation.
 2. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
 3. Also implement integration end-to-end tests for the feature as a whole.
@@ -27,7 +27,7 @@ alwaysApply: false
 6. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
 7. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
 
-## Guidelines
+## C. Guidelines
 - When testing via browser, pay special attention to the formatting and responsiveness issues such as content overflowing their containers etc.
 - VERY IMPORTANT: you must NOT SKIP OR SKIM over any of the steps of the instructions above! If any step fails, debug and try again until you get it EXACTLY right!
 - IMPORTANT: steps are not to be substituted by other similar steps! That is, for example, a step of testing via a browser tool may NOT be substituted by a step of running the unit tests! ALL THE STEPS ARE IMPORTANT!
