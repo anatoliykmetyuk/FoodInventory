@@ -2,31 +2,29 @@
 description: Apply this rule when the user requests to fix an issue, or specifies a Linear issue number of an issue to fix, such as "ANA-93"
 alwaysApply: false
 ---
-To start working on the issue, execute steps A.1-A.2. below, then wait for the user's confirmation to start going through the composed TODO list.
 
-## A. Implementation Procedure
+## A. Planning Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
 2. Create a DETAILED to-do list to follow this procedure PRECISELY, and use it to execute the steps. IMPORTANT: DO NOT SKIP ANY STEPS! DO NOT MAKE UP STEPS THAT ARE NOT IN THIS PROCEDURE! Translate all steps VERBATIM into the to-do list!
-4. Implement the fix to the issue.
-5. Run the Verification Procedure below to verify the fix.
-6. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
-8. If the fix is NOT successuful, go back to step 5 and try again.
-9. If the issue fix was successful, summarize the fix in a message to the user.
-10. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
-    - Create a new branch with the name "fix/ANA-XX" where XX is the Linear issue number
-    - Commit & push the changes to the branch. The commit message should be "Fix: ANA-XX: brief description of the fix".
-    - Push the branch to GitHub.
-    - Open a pull request using the following command: `gh pr create --title "Fix: ANA-XX: brief description of the fix" --body "Brief description of the fix" --base main --head fix/ANA-XX`.
-    - Open the web page of the pull request in the browser: `gh pr view --web`.
 
-## B. Verification Procedure
-1. Implement unit tests for all the components that went into the feature in isolation.
-2. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
-3. Also implement integration end-to-end tests for the feature as a whole.
-4. Run the end-to-end tests for the entire matrix of browsers and viewports to verify the tests are successful. If not, change the code or tests and try again until the tests are successful. Browser Matrix: Desktop Chrome, Desktop Firefox, Desktop Safari, Mobile Chrome, Mobile Firefox, Mobile Safari.
-5. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
-6. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
-7. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
+## B. Implementation Procedure
+1. Implement the fix to the issue.
+2. Run the Verification Procedure.
+    1. Implement unit tests for all the components that went into the feature in isolation.
+    2. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
+    3. If necessary, also implement integration end-to-end tests for the feature as a whole.
+    4. Run the end-to-end tests for the entire matrix of browsers and viewports to verify the tests are successful. If not, change the code or tests and try again until the tests are successful. Browser Matrix: Desktop Chrome, Desktop Firefox, Desktop Safari, Mobile Chrome, Mobile Firefox, Mobile Safari.
+    5. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
+    6. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
+    7. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
+3. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports. If the behavior is not correct, fix it.
+4. If the issue fix was successful, summarize the fix in a message to the user, and wait for the confirmation that the fix is successful. Proceed with the next steps only after the confirmation.
+5. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
+    1. Create a new branch with the name "fix/ANA-XX" where XX is the Linear issue number
+    2. Commit & push the changes to the branch. The commit message should be "Fix: ANA-XX: brief description of the fix".
+    3. Push the branch to GitHub.
+    4. Open a pull request using the following command: `gh pr create --title "Fix: ANA-XX: brief description of the fix" --body "Brief description of the fix" --base main --head fix/ANA-XX`.
+    5. Open the web page of the pull request in the browser: `gh pr view --web`.
 
 ## C. Guidelines
 - When testing via browser, pay special attention to the formatting and responsiveness issues such as content overflowing their containers etc.
@@ -37,4 +35,4 @@ To start working on the issue, execute steps A.1-A.2. below, then wait for the u
 ## D. Non-normal Checklists
 Execute the following checklists only if explicitly asked by the user.
 
-1. Fix your TODO list so that it EXACTLY matches this procedure. Refer to A.2. details on how it should be implemented.
+1. Fix your TODO list so that it EXACTLY matches this procedure. Include the step numbers, e.g. "A.2.1." before each TODO step. Refer to A.2. details on how it should be implemented.
