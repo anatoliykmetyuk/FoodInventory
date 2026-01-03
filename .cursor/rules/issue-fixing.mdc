@@ -5,13 +5,11 @@ alwaysApply: false
 
 ## Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
-2. Create a DETAILED to-do list to follow this procedure PRECISELY, and use it to execute the steps. DO NOT SKIP ANY STEPS! Translate all steps VERBATIM into the to-do list!
-3. Reproduce the issue using the Browser tool. Make sure to reproduce the conditions described in the issue, such as the viewport, the user actions, the data, etc.
+2. Create a DETAILED to-do list to follow this procedure PRECISELY, and use it to execute the steps. IMPORTANT: DO NOT SKIP ANY STEPS! DO NOT MAKE UP STEPS THAT ARE NOT IN THIS PROCEDURE! Translate all steps VERBATIM into the to-do list!
 4. Implement the fix to the issue.
-5. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
-6. Run the Verification Procedure below to verify the fix.
-7. If any changes were made, run the Sanity Check step (5) above AGAIN to verify the changes visually.
-8. If the fix is NOT successuful, go back to step 3 and try again.
+5. Run the Verification Procedure below to verify the fix.
+6. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
+8. If the fix is NOT successuful, go back to step 5 and try again.
 9. If the issue fix was successful, summarize the fix in a message to the user.
 10. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
     - Create a new branch with the name "fix/ANA-XX" where XX is the Linear issue number
@@ -21,14 +19,13 @@ alwaysApply: false
     - Open the web page of the pull request in the browser: `gh pr view --web`.
 
 ## Verification Procedure
-1. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
-2. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
-3. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
-4. If the fix was successful, implement unit tests for all the components that went into the feature in isolation.
-5. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
-6. Also implement integration end-to-end tests for the feature as a whole.
-7. Run the end-to-end tests for the entire matrix of browsers and viewports to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
-    - Browser Matrix: Desktop Chrome, Desktop Firefox, Desktop Safari, Mobile Chrome, Mobile Firefox, Mobile Safari.
+1. Implement unit tests for all the components that went into the feature in isolation.
+2. Run the unit tests to verify the tests are successful. If not, change the code or tests and try again until the tests are successful.
+3. Also implement integration end-to-end tests for the feature as a whole.
+4. Run the end-to-end tests for the entire matrix of browsers and viewports to verify the tests are successful. If not, change the code or tests and try again until the tests are successful. Browser Matrix: Desktop Chrome, Desktop Firefox, Desktop Safari, Mobile Chrome, Mobile Firefox, Mobile Safari.
+5. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
+6. Run the Typescript compiler with `npx tsc --noEmit`. If there are any errors, fix them and run this step again until there are no errors.
+7. Build the project with `npm run build`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings.
 
 ## Guidelines
 - When testing via browser, pay special attention to the formatting and responsiveness issues such as content overflowing their containers etc.
