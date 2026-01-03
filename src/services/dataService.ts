@@ -206,7 +206,6 @@ export function addItemsToFridgeFromShopping(shoppingItems: ShoppingEvent['items
       // Update existing item: add to percentage left (up to 100%)
       existingItem.percentageLeft = Math.min(100, existingItem.percentageLeft + 100);
       existingItem.cost = shoppingItem.finalPrice;
-      existingItem.estimatedCalories = shoppingItem.estimatedCalories;
       addedItems.push(existingItem);
     } else {
       // Create new item
@@ -214,7 +213,6 @@ export function addItemsToFridgeFromShopping(shoppingItems: ShoppingEvent['items
         id: generateId(),
         name: shoppingItem.name,
         cost: shoppingItem.finalPrice,
-        estimatedCalories: shoppingItem.estimatedCalories,
         percentageLeft: 100,
       };
       data.items.push(newItem);

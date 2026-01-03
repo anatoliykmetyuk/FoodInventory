@@ -35,7 +35,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -52,7 +51,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Milk',
         cost: 3.00,
-        estimatedCalories: 150,
         percentageLeft: 100,
         expirationDate,
       });
@@ -68,7 +66,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Rice',
         cost: 5.00,
-        estimatedCalories: 200,
         percentageLeft: 100,
       });
 
@@ -79,7 +76,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -94,7 +90,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Yogurt',
         cost: 2.00,
-        estimatedCalories: 100,
         percentageLeft: 100,
       });
 
@@ -111,7 +106,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Cheese',
         cost: 4.00,
-        estimatedCalories: 200,
         percentageLeft: 100,
         expirationDate,
       });
@@ -126,14 +120,12 @@ describe('dataService', () => {
       const item1 = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
       const item2 = addItem({
         name: 'Banana',
         cost: 0.75,
-        estimatedCalories: 105,
         percentageLeft: 100,
       });
 
@@ -165,7 +157,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 10,
-        totalCalories: 500,
         portionsCooked: 2,
         portionsLeft: 2,
         isActive: true,
@@ -184,7 +175,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 10,
-        totalCalories: 500,
         portionsCooked: 2,
         portionsLeft: 2,
         isActive: true,
@@ -199,7 +189,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -210,7 +199,6 @@ describe('dataService', () => {
           name: 'Apple',
           percentageUsed: 50,
           cost: 0.75,
-          calories: 47.5,
         },
       ];
 
@@ -220,7 +208,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: mealItems,
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -253,7 +240,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -267,11 +253,9 @@ describe('dataService', () => {
             name: 'Apple',
             percentageUsed: 50,
             cost: 0.75,
-            calories: 47.5,
           },
         ],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -302,7 +286,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -316,11 +299,9 @@ describe('dataService', () => {
             name: 'Apple',
             percentageUsed: 50,
             cost: 0.75,
-            calories: 47.5,
           },
         ],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -345,7 +326,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Banana',
         cost: 0.75,
-        estimatedCalories: 105,
         percentageLeft: 100,
       });
 
@@ -362,11 +342,9 @@ describe('dataService', () => {
             name: 'Banana',
             percentageUsed: 50,
             cost: 0.38,
-            calories: 52.5,
           },
         ],
         totalCost: 0.38,
-        totalCalories: 52.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -384,7 +362,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -394,7 +371,6 @@ describe('dataService', () => {
           name: 'Apple',
           percentageUsed: 50,
           cost: 0.75,
-          calories: 47.5,
         },
       ];
 
@@ -410,7 +386,6 @@ describe('dataService', () => {
           name: 'Missing Item',
           percentageUsed: 50,
           cost: 0.75,
-          calories: 47.5,
         },
       ];
 
@@ -423,7 +398,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 30,
       });
 
@@ -433,7 +407,6 @@ describe('dataService', () => {
           name: 'Apple',
           percentageUsed: 50,
           cost: 0.75,
-          calories: 47.5,
         },
       ];
 
@@ -449,7 +422,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -463,11 +435,9 @@ describe('dataService', () => {
             name: 'Apple',
             percentageUsed: 50,
             cost: 0.75,
-            calories: 47.5,
           },
         ],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -498,7 +468,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -512,11 +481,9 @@ describe('dataService', () => {
             name: 'Apple',
             percentageUsed: 50,
             cost: 0.75,
-            calories: 47.5,
           },
         ],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -546,7 +513,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -560,11 +526,9 @@ describe('dataService', () => {
             name: 'Apple',
             percentageUsed: 50,
             cost: 0.75,
-            calories: 47.5,
           },
         ],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -606,7 +570,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 1,
         isActive: true,
@@ -626,7 +589,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 0,
         isActive: false,
@@ -647,7 +609,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 0,
         isActive: false,
@@ -671,7 +632,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 0,
         isActive: false,
@@ -691,7 +651,6 @@ describe('dataService', () => {
         date: new Date('2024-01-01'),
         items: [],
         totalCost: 0.75,
-        totalCalories: 47.5,
         portionsCooked: 1,
         portionsLeft: 0,
         isActive: false,
@@ -717,7 +676,6 @@ describe('dataService', () => {
           date: new Date('2024-01-01'),
           items: [],
           totalCost: 1,
-          totalCalories: 100,
           portionsCooked: 1,
           portionsLeft: 0,
           isActive: false,
@@ -766,7 +724,6 @@ describe('dataService', () => {
           name: 'Apple',
           listedPrice: 1.00,
           finalPrice: 1.50,
-          estimatedCalories: 95,
         },
       ];
 
@@ -781,7 +738,6 @@ describe('dataService', () => {
       addItem({
         name: 'Apple',
         cost: 1.00,
-        estimatedCalories: 90,
         percentageLeft: 50,
       });
 
@@ -790,7 +746,6 @@ describe('dataService', () => {
           name: 'Apple',
           listedPrice: 1.00,
           finalPrice: 1.50,
-          estimatedCalories: 95,
         },
       ];
 
@@ -806,7 +761,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 100,
       });
 
@@ -816,7 +770,6 @@ describe('dataService', () => {
           name: 'Apple',
           percentageUsed: 30,
           cost: 0.45,
-          calories: 28.5,
         },
       ];
 
@@ -830,7 +783,6 @@ describe('dataService', () => {
       const item = addItem({
         name: 'Apple',
         cost: 1.50,
-        estimatedCalories: 95,
         percentageLeft: 50,
       });
 
@@ -840,7 +792,6 @@ describe('dataService', () => {
           name: 'Apple',
           percentageUsed: 50,
           cost: 0.75,
-          calories: 47.5,
         },
       ];
 

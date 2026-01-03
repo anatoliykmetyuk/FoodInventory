@@ -41,14 +41,12 @@ describe('Fridge', () => {
     addItem({
       name: 'Apple',
       cost: 1.50,
-      estimatedCalories: 95,
       percentageLeft: 100,
     });
 
     addItem({
       name: 'Banana',
       cost: 0.75,
-      estimatedCalories: 105,
       percentageLeft: 100,
     });
 
@@ -79,14 +77,12 @@ describe('Fridge', () => {
     addItem({
       name: 'Apple',
       cost: 1.50,
-      estimatedCalories: 95,
       percentageLeft: 100,
     });
 
     addItem({
       name: 'Banana',
       cost: 0.75,
-      estimatedCalories: 105,
       percentageLeft: 100,
     });
 
@@ -125,7 +121,6 @@ describe('Fridge', () => {
     addItem({
       name: 'Apple',
       cost: 1.50,
-      estimatedCalories: 95,
       percentageLeft: 100,
     });
 

@@ -44,10 +44,6 @@ function MealCard({ meal, onConsumePortion, onDelete, onMarkCooked, onRate }: Me
             <span className="detail-value">{formatPrice(meal.totalCost, currency)}</span>
           </div>
           <div className="meal-detail">
-            <span className="detail-label">Calories:</span>
-            <span className="detail-value">{parseFloat(meal.totalCalories.toFixed(2))}</span>
-          </div>
-          <div className="meal-detail">
             <span className="detail-label">Portions:</span>
             <span className="detail-value">{meal.portionsLeft} / {meal.portionsCooked}</span>
           </div>

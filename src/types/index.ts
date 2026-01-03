@@ -4,7 +4,6 @@ export interface Item {
   id: string;
   name: string;
   cost: number;
-  estimatedCalories: number;
   percentageLeft: number;
   expirationDate?: Date;
 }
@@ -14,7 +13,6 @@ export interface MealItem {
   name: string;
   percentageUsed: number;
   cost: number;
-  calories: number;
 }
 
 export interface Meal {
@@ -23,7 +21,6 @@ export interface Meal {
   date: Date;
   items: MealItem[];
   totalCost: number;
-  totalCalories: number;
   portionsCooked: number;
   portionsLeft: number;
   isActive: boolean;
@@ -37,7 +34,6 @@ export interface ShoppingItem {
   name: string;
   listedPrice: number;
   finalPrice: number;
-  estimatedCalories: number;
 }
 
 export interface ShoppingEvent {
@@ -78,9 +74,6 @@ export interface OpenAIReceiptItem {
   'Final Price'?: number;
   finalPrice?: number;
   final_price?: number;
-  'Estimated Calories'?: number;
-  estimatedCalories?: number;
-  estimated_calories?: number;
 }
 
 export interface OpenAIReceiptResponse {

@@ -17,7 +17,6 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(item.name);
   const [cost, setCost] = useState(item.cost.toString());
-  const [calories, setCalories] = useState(item.estimatedCalories.toString());
   const [percentageLeft, setPercentageLeft] = useState(item.percentageLeft.toString());
   const [expirationDate, setExpirationDate] = useState(
     item.expirationDate ? new Date(item.expirationDate).toISOString().split('T')[0] : ''
@@ -39,10 +38,9 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
 
   const handleSave = () => {
     const costNum = parseFloat(cost);
-    const caloriesNum = parseFloat(calories);
     const percentageNum = parseFloat(percentageLeft);
 
-    if (!name.trim() || isNaN(costNum) || costNum < 0 || isNaN(caloriesNum) || caloriesNum < 0 ||
+    if (!name.trim() || isNaN(costNum) || costNum < 0 ||
         isNaN(percentageNum) || percentageNum < 0 || percentageNum > 100) {
       return;
     }
@@ -50,7 +48,6 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
     const updates: Partial<Omit<Item, 'id'>> = {
       name: name.trim(),
       cost: costNum,
-      estimatedCalories: caloriesNum,
       percentageLeft: percentageNum,
     };
 
@@ -69,7 +66,6 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
   const handleCancel = () => {
     setName(item.name);
     setCost(item.cost.toString());
-    setCalories(item.estimatedCalories.toString());
     setPercentageLeft(item.percentageLeft.toString());
     setExpirationDate(
       item.expirationDate ? new Date(item.expirationDate).toISOString().split('T')[0] : ''
@@ -130,16 +126,6 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
               />
             </div>
             <div className="item-detail">
-              <span className="detail-label">Calories:</span>
-              <input
-                type="number"
-                min="0"
-                value={calories}
-                onChange={(e) => setCalories(e.target.value)}
-                className="item-value-input"
-              />
-            </div>
-            <div className="item-detail">
               <span className="detail-label">Expires:</span>
               <input
                 type="date"
@@ -164,10 +150,6 @@ function FridgeItemCard({ item, onUpdate, onClick }: FridgeItemCardProps) {
             <div className="item-detail">
               <span className="detail-label">Cost:</span>
               <span className="detail-value">{formatPrice(item.cost, currency)}</span>
-            </div>
-            <div className="item-detail">
-              <span className="detail-label">Calories:</span>
-              <span className="detail-value">{parseFloat(item.estimatedCalories.toFixed(2))}</span>
             </div>
             {item.expirationDate && (
               <div className="item-detail">

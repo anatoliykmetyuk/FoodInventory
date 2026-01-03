@@ -5,7 +5,6 @@ export interface ParsedReceiptItem {
   name: string;
   listedPrice: number;
   finalPrice: number;
-  estimatedCalories: number;
 }
 
 /**
@@ -20,11 +19,9 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
     const name = item.Item || item.item || item.name || '';
     const listedPriceValue = item['Listed Price'] ?? item.listedPrice ?? item.listed_price ?? 0;
     const finalPriceValue = item['Final Price'] ?? item.finalPrice ?? item.final_price ?? item['Listed Price'] ?? item.listedPrice ?? 0;
-    const estimatedCaloriesValue = item['Estimated Calories'] ?? item.estimatedCalories ?? item.estimated_calories ?? 0;
 
     const listedPrice = typeof listedPriceValue === 'number' ? listedPriceValue : parseFloat(String(listedPriceValue || '0'));
     const finalPrice = typeof finalPriceValue === 'number' ? finalPriceValue : parseFloat(String(finalPriceValue || '0'));
-    const estimatedCalories = typeof estimatedCaloriesValue === 'number' ? estimatedCaloriesValue : parseInt(String(estimatedCaloriesValue || '0'), 10);
 
     if (!name.trim()) {
       throw new Error('Item name is required');
@@ -38,15 +35,10 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
       throw new Error(`Invalid final price for item: ${name}`);
     }
 
-    if (isNaN(estimatedCalories) || estimatedCalories < 0) {
-      throw new Error(`Invalid calories for item: ${name}`);
-    }
-
     return {
       name: name.trim(),
       listedPrice,
       finalPrice,
-      estimatedCalories,
     };
   });
 }
@@ -59,7 +51,6 @@ export function toShoppingItems(parsedItems: ParsedReceiptItem[]): ShoppingItem[
     name: item.name,
     listedPrice: item.listedPrice,
     finalPrice: item.finalPrice,
-    estimatedCalories: item.estimatedCalories,
   }));
 }
 

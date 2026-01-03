@@ -28,7 +28,6 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
               <th>Item</th>
               <th>Listed Price</th>
               <th>Final Price</th>
-              <th>Estimated Calories</th>
             </tr>
           </thead>
           <tbody>
@@ -37,14 +36,13 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
                 <td>{item.name}</td>
                 <td>{formatPrice(item.listedPrice, currency)}</td>
                 <td>{formatPrice(item.finalPrice, currency)}</td>
-                <td>{item.estimatedCalories}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr>
               <td colSpan={2} className="total-label">Total Cost:</td>
-              <td className="total-value" colSpan={2}>
+              <td className="total-value" colSpan={1}>
                 {formatPrice(totalCost, currency)}
               </td>
             </tr>

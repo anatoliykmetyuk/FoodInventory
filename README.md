@@ -5,7 +5,7 @@ A modern web application that helps you manage your fridge inventory, track meal
 ## 🎯 Overview
 
 Food Inventory is a comprehensive food management system that allows you to:
-- **Track fridge items** with cost, calories, and remaining quantity
+- **Track fridge items** with cost and remaining quantity
 - **Calculate meal costs** by tracking ingredients used from your fridge
 - **Scan receipts** using AI-powered image recognition
 - **Analyze spending patterns** with interactive statistics and charts
@@ -16,14 +16,14 @@ All data is stored locally in your browser for privacy and security.
 ## ✨ Features
 
 ### 📦 Fridge Management
-- View all items in your fridge with cost, calories, and percentage remaining
+- View all items in your fridge with cost and percentage remaining
 - Add items manually or via receipt scanning
 - Edit and delete items (CRUD operations)
 - Track item usage as you cook meals
 
 ### 🍳 Meal Tracking
 - Create meals by selecting items from your fridge
-- Calculate total meal cost and calories based on ingredients used
+- Calculate total meal cost based on ingredients used
 - Track portions cooked and portions remaining
 - Reuse previous meal recipes
 - Meals are immutable after creation to maintain accurate cost tracking
@@ -43,7 +43,7 @@ All data is stored locally in your browser for privacy and security.
 
 ### 🤖 AI-Powered Receipt Scanning
 - Upload or take a photo of your receipt
-- Automatically extract items, prices, and calories using OpenAI Vision API
+- Automatically extract items and prices using OpenAI Vision API
 - Review and edit recognized items before saving
 - Supports multiple currencies and formats
 
@@ -106,7 +106,7 @@ The production build will be in the `dist` directory.
 #### Option 1: Manual Entry
 1. Go to the **Fridge** page
 2. Click **"Add Item"**
-3. Enter item name, cost, and estimated calories
+3. Enter item name and cost
 4. Click **"Add Item"** to save
 
 #### Option 2: Scan Receipt (AI)
@@ -115,13 +115,13 @@ The production build will be in the `dist` directory.
 3. If prompted, enter your OpenAI API key (get one from [OpenAI](https://platform.openai.com/api-keys))
 4. Upload or take a photo of your receipt
 5. Review the recognized items in the table
-6. Edit any items if needed (prices, calories, names)
+6. Edit any items if needed (prices, names)
 7. Click **"Save to Fridge"** to add items
 
 #### Option 3: Add Shopping Event
 1. Go to the **Shopping** page
 2. Click **"Add Shopping Event"**
-3. Add items manually with listed price, final price, and calories
+3. Add items manually with listed price and final price
 4. Click **"Save"** to create the event and add items to fridge
 
 ### Cooking a Meal
@@ -135,7 +135,7 @@ The production build will be in the `dist` directory.
 7. Set the number of portions cooked
 8. Click **"Save Meal"**
 
-The meal cost and calories are calculated automatically based on the items and percentages used. Your fridge will be updated to reflect the items consumed.
+The meal cost is calculated automatically based on the items and percentages used. Your fridge will be updated to reflect the items consumed.
 
 ### Consuming Meal Portions
 

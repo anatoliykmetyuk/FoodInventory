@@ -30,7 +30,6 @@ describe('storage', () => {
           id: '1',
           name: 'Apple',
           cost: 1.50,
-          estimatedCalories: 95,
           percentageLeft: 100,
         },
       ],
@@ -57,7 +56,6 @@ describe('storage', () => {
           date: new Date('2024-01-01'),
           items: [],
           totalCost: 10,
-          totalCalories: 500,
           portionsCooked: 2,
           portionsLeft: 1,
           isActive: true,
@@ -83,7 +81,7 @@ describe('storage', () => {
 
   it('should clear data', () => {
     const testData: AppData = {
-      items: [{ id: '1', name: 'Test', cost: 1, estimatedCalories: 100, percentageLeft: 100 }],
+      items: [{ id: '1', name: 'Test', cost: 1, percentageLeft: 100 }],
       meals: [],
       shoppingEvents: [],
       settings: {},

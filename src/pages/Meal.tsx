@@ -111,7 +111,6 @@ function Meal() {
 
     // Calculate totals
     const totalCost = mealItems.reduce((sum, item) => sum + item.cost, 0);
-    const totalCalories = mealItems.reduce((sum, item) => sum + item.calories, 0);
 
     if (id === 'new') {
       // Create new meal
@@ -126,7 +125,6 @@ function Meal() {
         date: mealDate,
         items: mealItems,
         totalCost,
-        totalCalories,
         portionsCooked,
         portionsLeft: portionsCooked,
         isActive: true,
@@ -156,7 +154,6 @@ function Meal() {
         date: mealDate,
         items: mealItems,
         totalCost,
-        totalCalories,
         portionsCooked,
         portionsLeft: portionsCooked,
         mealType: savingsModeEnabled ? mealType : undefined,
@@ -361,10 +358,6 @@ function Meal() {
               </span>
             </div>
           )}
-          <div className="summary-item">
-            <span className="summary-label">Total Calories:</span>
-            <span className="summary-value">{parseFloat(meal.totalCalories.toFixed(2))}</span>
-          </div>
           <div className="summary-item">
             <span className="summary-label">Portions:</span>
             <span className="summary-value">{meal.portionsLeft} / {meal.portionsCooked} left</span>

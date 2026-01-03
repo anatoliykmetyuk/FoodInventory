@@ -57,7 +57,6 @@ describe('settingsService', () => {
     addItem({
       name: 'Test Item',
       cost: 10,
-      estimatedCalories: 100,
       percentageLeft: 100,
     });
 
@@ -94,7 +93,6 @@ describe('settingsService', () => {
           id: 'item-1',
           name: 'Milk',
           cost: 3.00,
-          estimatedCalories: 150,
           percentageLeft: 100,
           expirationDate: '2024-12-31T00:00:00.000Z',
         },
@@ -102,7 +100,6 @@ describe('settingsService', () => {
           id: 'item-2',
           name: 'Rice',
           cost: 5.00,
-          estimatedCalories: 200,
           percentageLeft: 100,
         },
       ],
@@ -131,7 +128,6 @@ describe('settingsService', () => {
     addItem({
       name: 'Yogurt',
       cost: 2.00,
-      estimatedCalories: 100,
       percentageLeft: 100,
       expirationDate: new Date('2024-06-15'),
     });
