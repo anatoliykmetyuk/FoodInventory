@@ -1,6 +1,10 @@
 .meal-page {
   max-width: 1200px;
   margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .meal-header {
@@ -75,23 +79,32 @@
   border: 1px solid #333;
   border-radius: 8px;
   flex-wrap: wrap;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .summary-item {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .summary-label {
   color: #aaa;
   font-size: 0.9rem;
+  white-space: nowrap;
 }
 
 .summary-value {
   color: #fff;
   font-size: 1.2rem;
   font-weight: bold;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .meal-actions {
@@ -313,6 +326,8 @@
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .meal-type-select-inline:focus {
@@ -324,6 +339,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+  min-width: 0;
+  flex: 0 1 auto;
 }
 
 .meal-type-badge {
@@ -336,4 +353,29 @@
 
 .savings-negative {
   color: #dc3545 !important;
+}
+
+@media (max-width: 768px) {
+  .meal-summary {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .summary-item {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .summary-value {
+    font-size: 1rem;
+  }
+
+  .meal-type-select-inline {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .meal-page {
+    padding: 0 0.5rem;
+  }
 }
