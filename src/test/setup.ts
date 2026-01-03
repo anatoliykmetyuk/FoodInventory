@@ -1,6 +1,12 @@
 import { afterEach } from 'vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import '@testing-library/jest-dom/vitest'
+
+// Configure global defaults for testing library
+configure({
+  testIdAttribute: 'data-testid',
+  asyncUtilTimeout: 5000, // 5 second default timeout for waitFor, waitForElementToBeRemoved, etc.
+})
 
 // Setup localStorage mock
 function createLocalStorageMock() {

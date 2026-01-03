@@ -5,18 +5,20 @@ alwaysApply: false
 
 ## Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
-2. Implement the fix to the issue.
-3. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
-4. Run the Verification Procedure below to verify the fix.
-5. If any changes were made, run the Sanity Check step (3) above AGAIN to verify the changes visually.
-6. If the fix is NOT successuful, go back to step 2 and try again.
-7. If the issue fix was successful, summarize the fix in a message to the user.
-8. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
+2. Create a to-do list to follow this procedure, and use it to execute the steps.
+3. Reproduce the issue using the Browser tool. Make sure to reproduce the conditions described in the issue, such as the viewport, the user actions, the data, etc.
+4. Implement the fix to the issue.
+5. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
+6. Run the Verification Procedure below to verify the fix.
+7. If any changes were made, run the Sanity Check step (5) above AGAIN to verify the changes visually.
+8. If the fix is NOT successuful, go back to step 3 and try again.
+9. If the issue fix was successful, summarize the fix in a message to the user.
+10. Upon the confirmation by the user of a successful fix (i.e. "fixed locally"):
     - Create a new branch with the name "fix/ANA-XX" where XX is the Linear issue number
-    - Commit & push the changes to the branch. The commit message should be "Fix: ANA-XX: brief description of the fix"
-    - Push the branch to GitHub
-    - Open a pull request using the following command: `gh pr create --title "Fix: ANA-XX: brief description of the fix" --body "Brief description of the fix" --base main --head fix/ANA-XX`
-    - Open the web page of the pull request in the browser: `gh pr view --web`
+    - Commit & push the changes to the branch. The commit message should be "Fix: ANA-XX: brief description of the fix".
+    - Push the branch to GitHub.
+    - Open a pull request using the following command: `gh pr create --title "Fix: ANA-XX: brief description of the fix" --body "Brief description of the fix" --base main --head fix/ANA-XX`.
+    - Open the web page of the pull request in the browser: `gh pr view --web`.
 
 ## Verification Procedure
 1. Lint the project with `npm run lint`. If there are any errors or warnings, fix them and run this step again until there are no errors or warnings. You are NOT ALLOWED TO DISABLE RULES via `// eslint-disable-next-line` comments!
