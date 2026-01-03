@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseReceiptItems, toShoppingItems } from './receiptParser';
+import { parseReceiptItems, toShoppingItems, extractGlobalTaxRate } from './receiptParser';
 import type { OpenAIReceiptResponse } from '../types';
 
 describe('receiptParser', () => {
@@ -157,7 +157,7 @@ describe('receiptParser', () => {
   });
 
   describe('toShoppingItems', () => {
-    it('should convert parsed items to ShoppingItem format', () => {
+    it('should convert parsed items to ShoppingItem format (without taxRate)', () => {
       const parsedItems = [
         {
           name: 'Apple',
@@ -176,13 +176,77 @@ describe('receiptParser', () => {
       expect(result[0]).toEqual({
         name: 'Apple',
         listedPrice: 1.00,
-        taxRate: 8.5,
       });
       expect(result[1]).toEqual({
         name: 'Banana',
         listedPrice: 0.75,
-        taxRate: 5,
       });
+    });
+  });
+
+  describe('extractGlobalTaxRate', () => {
+    it('should extract first non-zero tax rate', () => {
+      const parsedItems = [
+        {
+          name: 'Apple',
+          listedPrice: 1.00,
+          taxRate: 8.5,
+        },
+        {
+          name: 'Banana',
+          listedPrice: 0.75,
+          taxRate: 5,
+        },
+      ];
+
+      const result = extractGlobalTaxRate(parsedItems);
+      expect(result).toBe(8.5);
+    });
+
+    it('should return 0 for empty array', () => {
+      const result = extractGlobalTaxRate([]);
+      expect(result).toBe(0);
+    });
+
+    it('should return 0 when all tax rates are zero', () => {
+      const parsedItems = [
+        {
+          name: 'Apple',
+          listedPrice: 1.00,
+          taxRate: 0,
+        },
+        {
+          name: 'Banana',
+          listedPrice: 0.75,
+          taxRate: 0,
+        },
+      ];
+
+      const result = extractGlobalTaxRate(parsedItems);
+      expect(result).toBe(0);
+    });
+
+    it('should find first non-zero tax rate even if later items have different rates', () => {
+      const parsedItems = [
+        {
+          name: 'Apple',
+          listedPrice: 1.00,
+          taxRate: 0,
+        },
+        {
+          name: 'Banana',
+          listedPrice: 0.75,
+          taxRate: 8.5,
+        },
+        {
+          name: 'Orange',
+          listedPrice: 1.25,
+          taxRate: 10,
+        },
+      ];
+
+      const result = extractGlobalTaxRate(parsedItems);
+      expect(result).toBe(8.5);
     });
   });
 });

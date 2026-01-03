@@ -199,10 +199,9 @@ export function addItemsToFridgeFromShopping(shoppingItems: ShoppingEvent['items
   const addedItems: Item[] = [];
 
   for (const shoppingItem of shoppingItems) {
-    // Use finalPrice if available (saved items), otherwise calculate from taxRate (editing items)
-    const finalPrice = shoppingItem.finalPrice !== undefined
-      ? shoppingItem.finalPrice
-      : (shoppingItem.listedPrice ?? 0) * (1 + (shoppingItem.taxRate ?? 0) / 100);
+    // Items should have finalPrice already calculated (tax rate is applied globally before saving)
+    // Fallback to listedPrice if finalPrice is not available (shouldn't happen in normal flow)
+    const finalPrice = shoppingItem.finalPrice ?? (shoppingItem.listedPrice ?? 0);
 
     // Check if item with same name already exists
     const existingItem = data.items.find(item => item.name.toLowerCase() === shoppingItem.name.toLowerCase());

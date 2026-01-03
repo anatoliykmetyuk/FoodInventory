@@ -718,19 +718,17 @@ describe('dataService', () => {
   });
 
   describe('addItemsToFridgeFromShopping', () => {
-    it('should add new items to fridge with computed final price from listed price and tax rate', () => {
+    it('should add new items to fridge with finalPrice', () => {
       const shoppingItems: ShoppingItem[] = [
         {
           name: 'Apple',
-          listedPrice: 1.00,
-          taxRate: 8.5,
+          finalPrice: 1.085, // Already calculated with tax
         },
       ];
 
       const addedItems = addItemsToFridgeFromShopping(shoppingItems);
       expect(addedItems).toHaveLength(1);
       expect(addedItems[0].name).toBe('Apple');
-      // Final price should be 1.00 * (1 + 8.5/100) = 1.085
       expect(addedItems[0].cost).toBe(1.085);
       expect(addedItems[0].percentageLeft).toBe(100);
     });
@@ -745,24 +743,21 @@ describe('dataService', () => {
       const shoppingItems: ShoppingItem[] = [
         {
           name: 'Apple',
-          listedPrice: 1.00,
-          taxRate: 8.5,
+          finalPrice: 1.085, // Already calculated with tax
         },
       ];
 
       const addedItems = addItemsToFridgeFromShopping(shoppingItems);
       expect(addedItems).toHaveLength(1);
       expect(addedItems[0].percentageLeft).toBe(100); // Reset to 100%
-      // Final price should be 1.00 * (1 + 8.5/100) = 1.085
       expect(addedItems[0].cost).toBe(1.085);
     });
 
-    it('should handle zero tax rate', () => {
+    it('should fallback to listedPrice if finalPrice is not available', () => {
       const shoppingItems: ShoppingItem[] = [
         {
           name: 'Apple',
           listedPrice: 1.00,
-          taxRate: 0,
         },
       ];
 

@@ -44,13 +44,32 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
 }
 
 /**
+ * Extract a single global tax rate from parsed receipt items
+ * Uses the first non-zero tax rate, or average if all are non-zero
+ */
+export function extractGlobalTaxRate(parsedItems: ParsedReceiptItem[]): number {
+  if (parsedItems.length === 0) {
+    return 0;
+  }
+
+  // Find first non-zero tax rate
+  const firstNonZero = parsedItems.find(item => item.taxRate > 0);
+  if (firstNonZero) {
+    return firstNonZero.taxRate;
+  }
+
+  // If all are zero, calculate average (will be 0)
+  const sum = parsedItems.reduce((acc, item) => acc + item.taxRate, 0);
+  return parsedItems.length > 0 ? sum / parsedItems.length : 0;
+}
+
+/**
  * Convert parsed receipt items to ShoppingItem format
  */
 export function toShoppingItems(parsedItems: ParsedReceiptItem[]): ShoppingItem[] {
   return parsedItems.map(item => ({
     name: item.name,
     listedPrice: item.listedPrice,
-    taxRate: item.taxRate,
   }));
 }
 

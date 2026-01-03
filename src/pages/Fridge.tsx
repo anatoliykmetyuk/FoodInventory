@@ -74,25 +74,23 @@ function Fridge() {
     loadItems();
   };
 
-  const handleScanReceipt = (shoppingItems: ShoppingItem[]) => {
-    // Convert items with taxRate to items with finalPrice before saving
-    // Saved items only have name and finalPrice (price) - no listedPrice
+  const handleScanReceipt = (shoppingItems: ShoppingItem[], taxRate: number) => {
+    // Convert items to saved format: ONLY name and finalPrice (cost after tax)
+    // Use global tax rate to calculate finalPrice for all items
+    // Saved items MUST ONLY have name and finalPrice - NOTHING ELSE
     const itemsToSave: ShoppingItem[] = shoppingItems.map(item => {
-      if (item.finalPrice !== undefined) {
-        return {
-          name: item.name,
-          finalPrice: item.finalPrice,
-        };
-      } else {
-        const finalPrice = (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
-        return {
-          name: item.name,
-          finalPrice,
-        };
-      }
+      const finalPrice = item.finalPrice !== undefined
+        ? item.finalPrice  // Already calculated
+        : (item.listedPrice ?? 0) * (1 + taxRate / 100);  // Calculate from listedPrice + global tax
+
+      // Return ONLY name and finalPrice (cost) - nothing else
+      return {
+        name: item.name,
+        finalPrice,
+      };
     });
 
-    // Add items to fridge (addItemsToFridgeFromShopping handles both finalPrice and taxRate)
+    // Add items to fridge
     addItemsToFridgeFromShopping(itemsToSave);
     // Create shopping event
     const totalCost = itemsToSave.reduce((sum, item) => sum + (item.finalPrice ?? 0), 0);

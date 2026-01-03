@@ -24,6 +24,7 @@ function ShoppingEvent() {
     }
     return new Date().toISOString().split('T')[0];
   });
+  const [taxRate, setTaxRate] = useState<number>(0);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
@@ -51,6 +52,11 @@ function ShoppingEvent() {
     // Changes will be persisted only when Save is clicked
   };
 
+  const handleTaxRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTaxRate = parseFloat(e.target.value) || 0;
+    setTaxRate(newTaxRate);
+  };
+
   const handleSave = () => {
     if (items.length === 0) {
       setToast({ message: 'Shopping event was not saved because it is empty.', type: 'error' });
@@ -61,23 +67,20 @@ function ShoppingEvent() {
       return;
     }
 
-    // Convert items with taxRate to items with finalPrice before saving
-    // Saved items only have name and finalPrice (price) - no listedPrice
+    // Convert items to saved format: ONLY name and finalPrice (cost after tax)
+    // Use global tax rate to calculate finalPrice for all items
+    // Saved items MUST ONLY have name and finalPrice - NOTHING ELSE
     const itemsToSave: ShoppingItem[] = items.map(item => {
-      if (item.finalPrice !== undefined) {
-        // Item already has finalPrice (from saved event), keep only name and finalPrice
-        return {
-          name: item.name,
-          finalPrice: item.finalPrice,
-        };
-      } else {
-        // Item has taxRate (from editing), calculate finalPrice
-        const finalPrice = (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
-        return {
-          name: item.name,
-          finalPrice,
-        };
-      }
+      // Calculate finalPrice (cost after tax)
+      const finalPrice = item.finalPrice !== undefined
+        ? item.finalPrice  // Already calculated (from saved event)
+        : (item.listedPrice ?? 0) * (1 + taxRate / 100);  // Calculate from listedPrice + global tax
+
+      // Return ONLY name and finalPrice (cost) - nothing else
+      return {
+        name: item.name,
+        finalPrice,  // This is the cost after tax
+      };
     });
 
     // Calculate total cost from finalPrice
@@ -163,15 +166,29 @@ function ShoppingEvent() {
       <div className="event-header">
         <h1>Shopping Event</h1>
         {isEditable ? (
-          <div className="event-date-input-group">
-            <label htmlFor="event-date">Date:</label>
-            <input
-              id="event-date"
-              type="date"
-              value={eventDate}
-              onChange={handleDateChange}
-              className="event-date-input"
-            />
+          <div className="event-header-inputs">
+            <div className="event-date-input-group">
+              <label htmlFor="event-date">Date:</label>
+              <input
+                id="event-date"
+                type="date"
+                value={eventDate}
+                onChange={handleDateChange}
+                className="event-date-input"
+              />
+            </div>
+            <div className="event-date-input-group">
+              <label htmlFor="event-tax-rate">Tax Rate (%):</label>
+              <input
+                id="event-tax-rate"
+                type="number"
+                step="0.01"
+                min="0"
+                value={taxRate}
+                onChange={handleTaxRateChange}
+                className="event-date-input"
+              />
+            </div>
           </div>
         ) : (
           <span className="event-date">{formattedDate}</span>
@@ -182,6 +199,7 @@ function ShoppingEvent() {
         items={items}
         onItemsChange={handleItemsChange}
         isEditable={isEditable}
+        taxRate={taxRate}
       />
 
       <div className="event-actions">
