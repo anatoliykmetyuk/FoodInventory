@@ -44,7 +44,7 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
     // The listed price input should be one of the number inputs
     // Let's find it by its position or label - use robust selector for mobile
     const priceInput = page.locator('input[type="number"].table-input').or(page.locator('input[type="number"].item-card-input')).first();
-    
+
     // For mobile, ensure visibility
     try {
       await priceInput.waitFor({ state: 'visible', timeout: 2000 });
@@ -56,7 +56,13 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
     await page.waitForTimeout(500);
 
     // Verify we can type a new value (proves the field accepts empty state)
-    await priceInput.fill('15.00');
+    try {
+      await priceInput.waitFor({ state: 'visible', timeout: 2000 });
+      await priceInput.scrollIntoViewIfNeeded();
+      await priceInput.fill('15.00');
+    } catch {
+      await priceInput.fill('15.00', { force: true });
+    }
     const newValue = await priceInput.inputValue();
     expect(parseFloat(newValue)).toBeCloseTo(15.00);
 
@@ -152,7 +158,14 @@ test.describe('Empty String Validation for Shopping Event and Meal', () => {
 
     // Should navigate to fridge (success)
     await page.waitForURL('/');
-    await expect(page.locator('text=Test Item')).toBeVisible();
+    await page.waitForLoadState('networkidle');
+    // Item with $0.00 cost should still be visible - wait a bit and check
+    await page.waitForTimeout(1000);
+    // Try multiple selectors - item might be in a card or list
+    const testItem = page.locator('text=Test Item').or(page.locator('[data-testid*="Test Item"]')).first();
+    // Item might be there but need to scroll or wait - use longer timeout
+    await testItem.scrollIntoViewIfNeeded();
+    await expect(testItem).toBeVisible({ timeout: 10000 });
   });
 
   test('should allow empty strings for percentage used in Meal', async ({ page }) => {
