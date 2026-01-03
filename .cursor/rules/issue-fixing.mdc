@@ -5,7 +5,7 @@ alwaysApply: false
 
 ## Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
-2. Create a to-do list to follow this procedure, and use it to execute the steps.
+2. Create a DETAILED to-do list to follow this procedure PRECISELY, and use it to execute the steps. DO NOT SKIP ANY STEPS! Translate all steps VERBATIM into the to-do list!
 3. Reproduce the issue using the Browser tool. Make sure to reproduce the conditions described in the issue, such as the viewport, the user actions, the data, etc.
 4. Implement the fix to the issue.
 5. Sanity check: use Browser tool to verify the fix for the issue on Desktop and Mobile viewports.
