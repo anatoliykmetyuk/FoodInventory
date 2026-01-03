@@ -225,5 +225,57 @@ test.describe('Fridge Search', () => {
     await searchInput.fill('Apple');
     await expect(page.locator('text=Apple')).toBeVisible();
   });
+
+  test('should have proper styling on mobile iOS PWA viewport', async ({ page }) => {
+    // Set mobile viewport (iPhone size)
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    await page.waitForSelector('input[placeholder="Search items..."]', { timeout: 10000 });
+
+    const searchInput = page.locator('.fridge-search-input');
+    const searchContainer = page.locator('.fridge-search-container');
+
+    // Verify search container exists
+    await expect(searchContainer).toBeVisible();
+
+    // Verify search input has correct classes
+    await expect(searchInput).toHaveClass('fridge-search-input');
+
+    // Verify search input has proper styling on mobile
+    const inputStyles = await searchInput.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+      return {
+        fontSize: styles.fontSize,
+        padding: styles.padding,
+        minHeight: styles.minHeight,
+        borderRadius: styles.borderRadius,
+        width: styles.width,
+        boxSizing: styles.boxSizing,
+      };
+    });
+
+    const containerWidth = await searchContainer.evaluate((el) => {
+      return window.getComputedStyle(el).width;
+    });
+
+    // Verify mobile-specific styling
+    expect(inputStyles.fontSize).toBe('16px'); // Prevents zoom on iOS
+    expect(parseInt(inputStyles.minHeight)).toBeGreaterThanOrEqual(44); // Better touch target
+    // Width should match container width (computed as pixels, not percentage)
+    expect(inputStyles.width).toBe(containerWidth);
+    expect(inputStyles.boxSizing).toBe('border-box');
+
+    // Verify container styling - container should be visible and have proper margin
+    const containerStyles = await searchContainer.evaluate((el) => {
+      const styles = window.getComputedStyle(el);
+      return {
+        marginBottom: styles.marginBottom,
+      };
+    });
+
+    // Container should have margin-bottom for spacing
+    expect(parseFloat(containerStyles.marginBottom)).toBeGreaterThan(0);
+  });
 });
 
