@@ -7,7 +7,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+}
+
+.fridge-search-container {
+  margin-bottom: 1.5rem;
+}
+
+.fridge-search-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.fridge-search-input:focus {
+  outline: none;
+  border-color: #4a9eff;
 }
 
 .fridge-title-row {
