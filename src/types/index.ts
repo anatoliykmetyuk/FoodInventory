@@ -71,9 +71,6 @@ export interface OpenAIReceiptItem {
   'Listed Price'?: number;
   listedPrice?: number;
   listed_price?: number;
-  'Tax Rate'?: number;
-  taxRate?: number;
-  tax_rate?: number;
   'Final Price'?: number;
   finalPrice?: number;
   final_price?: number;
@@ -82,6 +79,9 @@ export interface OpenAIReceiptItem {
 export interface OpenAIReceiptResponse {
   items?: OpenAIReceiptItem[];
   data?: OpenAIReceiptItem[];
+  taxRate?: number;
+  tax_rate?: number;
+  'Tax Rate'?: number;
   [key: string]: unknown;
 }
 

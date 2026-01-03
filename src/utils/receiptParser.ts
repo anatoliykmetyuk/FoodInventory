@@ -4,7 +4,6 @@ import type { OpenAIReceiptResponse, OpenAIReceiptItem } from '../types';
 export interface ParsedReceiptItem {
   name: string;
   listedPrice: number;
-  taxRate: number;
 }
 
 /**
@@ -18,10 +17,8 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
   return data.items.map((item: OpenAIReceiptItem) => {
     const name = item.Item || item.item || item.name || '';
     const listedPriceValue = item['Listed Price'] ?? item.listedPrice ?? item.listed_price ?? 0;
-    const taxRateValue = item['Tax Rate'] ?? item.taxRate ?? item.tax_rate ?? 0;
 
     const listedPrice = typeof listedPriceValue === 'number' ? listedPriceValue : parseFloat(String(listedPriceValue || '0'));
-    const taxRate = typeof taxRateValue === 'number' ? taxRateValue : parseFloat(String(taxRateValue || '0'));
 
     if (!name.trim()) {
       throw new Error('Item name is required');
@@ -31,36 +28,20 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
       throw new Error(`Invalid listed price for item: ${name}`);
     }
 
-    if (isNaN(taxRate) || taxRate < 0) {
-      throw new Error(`Invalid tax rate for item: ${name}`);
-    }
-
     return {
       name: name.trim(),
       listedPrice,
-      taxRate,
     };
   });
 }
 
 /**
- * Extract a single global tax rate from parsed receipt items
- * Uses the first non-zero tax rate, or average if all are non-zero
+ * Extract the tax rate from the OpenAI receipt response
  */
-export function extractGlobalTaxRate(parsedItems: ParsedReceiptItem[]): number {
-  if (parsedItems.length === 0) {
-    return 0;
-  }
-
-  // Find first non-zero tax rate
-  const firstNonZero = parsedItems.find(item => item.taxRate > 0);
-  if (firstNonZero) {
-    return firstNonZero.taxRate;
-  }
-
-  // If all are zero, calculate average (will be 0)
-  const sum = parsedItems.reduce((acc, item) => acc + item.taxRate, 0);
-  return parsedItems.length > 0 ? sum / parsedItems.length : 0;
+export function extractGlobalTaxRate(data: OpenAIReceiptResponse): number {
+  const taxRateValue = data.taxRate ?? data.tax_rate ?? data['Tax Rate'] ?? 0;
+  const taxRate = typeof taxRateValue === 'number' ? taxRateValue : parseFloat(String(taxRateValue || '0'));
+  return isNaN(taxRate) || taxRate < 0 ? 0 : taxRate;
 }
 
 /**
