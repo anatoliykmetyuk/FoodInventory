@@ -24,10 +24,26 @@ function Shopping() {
   };
 
   const handleScanReceipt = (shoppingItems: ShoppingItem[]) => {
-    const totalCost = shoppingItems.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
+    // Convert items with taxRate to items with finalPrice before saving
+    // Saved items only have name and finalPrice (price) - no listedPrice
+    const itemsToSave: ShoppingItem[] = shoppingItems.map(item => {
+      if (item.finalPrice !== undefined) {
+        return {
+          name: item.name,
+          finalPrice: item.finalPrice,
+        };
+      } else {
+        const finalPrice = (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
+        return {
+          name: item.name,
+          finalPrice,
+        };
+      }
+    });
+    const totalCost = itemsToSave.reduce((sum, item) => sum + (item.finalPrice ?? 0), 0);
     const shoppingEvent = addShoppingEvent({
       date: new Date(),
-      items: shoppingItems,
+      items: itemsToSave,
       totalCost,
     });
 

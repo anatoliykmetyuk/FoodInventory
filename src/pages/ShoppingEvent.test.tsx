@@ -77,7 +77,7 @@ describe('ShoppingEvent', () => {
         {
           name: 'Apple',
           listedPrice: 1.50,
-          taxRate: 10,
+          finalPrice: 1.65, // Saved items have finalPrice, not taxRate
         },
       ],
       totalCost: 1.65,

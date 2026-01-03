@@ -16,7 +16,7 @@ function ShoppingEvent() {
     }
     return id ? getShoppingEvent(id) : null;
   });
-  const [isEditable, setIsEditable] = useState(isNewEvent || !event || event.items.length === 0);
+  const [isEditable, setIsEditable] = useState(isNewEvent || !event || (event?.items?.length ?? 0) === 0);
   const [items, setItems] = useState<ShoppingItem[]>(event?.items || []);
   const [eventDate, setEventDate] = useState(() => {
     if (event) {
@@ -61,14 +61,33 @@ function ShoppingEvent() {
       return;
     }
 
-    // Calculate total cost
-    const totalCost = items.reduce((sum, item) => sum + (item.listedPrice * (1 + item.taxRate / 100)), 0);
+    // Convert items with taxRate to items with finalPrice before saving
+    // Saved items only have name and finalPrice (price) - no listedPrice
+    const itemsToSave: ShoppingItem[] = items.map(item => {
+      if (item.finalPrice !== undefined) {
+        // Item already has finalPrice (from saved event), keep only name and finalPrice
+        return {
+          name: item.name,
+          finalPrice: item.finalPrice,
+        };
+      } else {
+        // Item has taxRate (from editing), calculate finalPrice
+        const finalPrice = (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
+        return {
+          name: item.name,
+          finalPrice,
+        };
+      }
+    });
+
+    // Calculate total cost from finalPrice
+    const totalCost = itemsToSave.reduce((sum, item) => sum + (item.finalPrice ?? 0), 0);
 
     if (isNewEvent) {
       // CREATE the shopping event - this is the ONLY place events are created
       const newEvent = addShoppingEvent({
         date: new Date(eventDate),
-        items,
+        items: itemsToSave,
         totalCost,
       });
       setEvent(newEvent);
@@ -77,7 +96,7 @@ function ShoppingEvent() {
       if (!event || !id) return;
 
       const updatedEvent = updateShoppingEvent(id, {
-        items,
+        items: itemsToSave,
         totalCost,
         date: new Date(eventDate),
       });
@@ -88,7 +107,7 @@ function ShoppingEvent() {
     }
 
     // Add items to fridge
-    addItemsToFridgeFromShopping(items);
+    addItemsToFridgeFromShopping(itemsToSave);
 
     // Navigate to fridge
     navigate('/');

@@ -32,8 +32,9 @@ export interface Meal {
 
 export interface ShoppingItem {
   name: string;
-  listedPrice: number;
-  taxRate: number;
+  listedPrice?: number; // Used during creation/editing only
+  taxRate?: number; // Used during creation/editing only
+  finalPrice?: number; // Used for saved items (this is the "price")
 }
 
 export interface ShoppingEvent {

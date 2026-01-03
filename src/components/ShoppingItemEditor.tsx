@@ -17,45 +17,32 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
 
   // Read-only view
   const currency = getCurrency();
-  const calculateTotalCost = (item: ShoppingItem): number => {
-    return item.listedPrice * (1 + item.taxRate / 100);
+  const getItemPrice = (item: ShoppingItem): number => {
+    // If item has finalPrice (saved item), use it directly
+    if (item.finalPrice !== undefined) {
+      return item.finalPrice;
+    }
+    // Otherwise, calculate from taxRate (editing item)
+    return (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
   };
-  const totalCost = items.reduce((sum, item) => sum + calculateTotalCost(item), 0);
+  const totalCost = items.reduce((sum, item) => sum + getItemPrice(item), 0);
 
   return (
     <div className="shopping-item-view">
-      <div className="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Listed Price</th>
-              <th>Tax Rate (%)</th>
-              <th>Total Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item, index) => {
-              const itemTotalCost = calculateTotalCost(item);
-              return (
-                <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>{formatPrice(item.listedPrice, currency)}</td>
-                  <td>{item.taxRate.toFixed(2)}%</td>
-                  <td>{formatPrice(itemTotalCost, currency)}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colSpan={3} className="total-label">Total Cost:</td>
-              <td className="total-value" colSpan={1}>
-                {formatPrice(totalCost, currency)}
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+      <div className="items-list">
+        {items.map((item, index) => {
+          const price = getItemPrice(item);
+          return (
+            <div key={index} className="item-row">
+              <span className="item-name">{item.name}</span>
+              <span className="item-price">{formatPrice(price, currency)}</span>
+            </div>
+          );
+        })}
+        <div className="total-row">
+          <span className="total-label">Total:</span>
+          <span className="total-value">{formatPrice(totalCost, currency)}</span>
+        </div>
       </div>
     </div>
   );

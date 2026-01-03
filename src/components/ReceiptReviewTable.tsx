@@ -46,7 +46,8 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
   };
 
   const calculateTotalCost = (item: ShoppingItem): number => {
-    return item.listedPrice * (1 + item.taxRate / 100);
+    // For editing, items should have taxRate
+    return (item.listedPrice ?? 0) * (1 + (item.taxRate ?? 0) / 100);
   };
 
   const totalCost = localItems.reduce((sum, item) => sum + calculateTotalCost(item), 0);
@@ -90,7 +91,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={item.listedPrice}
+                      value={item.listedPrice ?? 0}
                       onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
                       className="table-input"
                     />
@@ -100,7 +101,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                       type="number"
                       step="0.01"
                       min="0"
-                      value={item.taxRate}
+                      value={item.taxRate ?? 0}
                       onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
                       className="table-input"
                     />
@@ -169,7 +170,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={item.listedPrice}
+                  value={item.listedPrice ?? 0}
                   onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
                   className="item-card-input"
                   placeholder="0.00"
@@ -181,7 +182,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
                   type="number"
                   step="0.01"
                   min="0"
-                  value={item.taxRate}
+                  value={item.taxRate ?? 0}
                   onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
                   className="item-card-input"
                   placeholder="0.00"
