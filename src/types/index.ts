@@ -33,7 +33,7 @@ export interface Meal {
 export interface ShoppingItem {
   name: string;
   listedPrice: number;
-  finalPrice: number;
+  taxRate: number;
 }
 
 export interface ShoppingEvent {
@@ -71,6 +71,9 @@ export interface OpenAIReceiptItem {
   'Listed Price'?: number;
   listedPrice?: number;
   listed_price?: number;
+  'Tax Rate'?: number;
+  taxRate?: number;
+  tax_rate?: number;
   'Final Price'?: number;
   finalPrice?: number;
   final_price?: number;

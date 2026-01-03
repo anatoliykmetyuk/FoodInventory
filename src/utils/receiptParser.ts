@@ -4,7 +4,7 @@ import type { OpenAIReceiptResponse, OpenAIReceiptItem } from '../types';
 export interface ParsedReceiptItem {
   name: string;
   listedPrice: number;
-  finalPrice: number;
+  taxRate: number;
 }
 
 /**
@@ -18,10 +18,10 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
   return data.items.map((item: OpenAIReceiptItem) => {
     const name = item.Item || item.item || item.name || '';
     const listedPriceValue = item['Listed Price'] ?? item.listedPrice ?? item.listed_price ?? 0;
-    const finalPriceValue = item['Final Price'] ?? item.finalPrice ?? item.final_price ?? item['Listed Price'] ?? item.listedPrice ?? 0;
+    const taxRateValue = item['Tax Rate'] ?? item.taxRate ?? item.tax_rate ?? 0;
 
     const listedPrice = typeof listedPriceValue === 'number' ? listedPriceValue : parseFloat(String(listedPriceValue || '0'));
-    const finalPrice = typeof finalPriceValue === 'number' ? finalPriceValue : parseFloat(String(finalPriceValue || '0'));
+    const taxRate = typeof taxRateValue === 'number' ? taxRateValue : parseFloat(String(taxRateValue || '0'));
 
     if (!name.trim()) {
       throw new Error('Item name is required');
@@ -31,14 +31,14 @@ export function parseReceiptItems(data: OpenAIReceiptResponse): ParsedReceiptIte
       throw new Error(`Invalid listed price for item: ${name}`);
     }
 
-    if (isNaN(finalPrice) || finalPrice < 0) {
-      throw new Error(`Invalid final price for item: ${name}`);
+    if (isNaN(taxRate) || taxRate < 0) {
+      throw new Error(`Invalid tax rate for item: ${name}`);
     }
 
     return {
       name: name.trim(),
       listedPrice,
-      finalPrice,
+      taxRate,
     };
   });
 }
@@ -50,7 +50,7 @@ export function toShoppingItems(parsedItems: ParsedReceiptItem[]): ShoppingItem[
   return parsedItems.map(item => ({
     name: item.name,
     listedPrice: item.listedPrice,
-    finalPrice: item.finalPrice,
+    taxRate: item.taxRate,
   }));
 }
 

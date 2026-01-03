@@ -199,20 +199,23 @@ export function addItemsToFridgeFromShopping(shoppingItems: ShoppingEvent['items
   const addedItems: Item[] = [];
 
   for (const shoppingItem of shoppingItems) {
+    // Compute final price from listed price and tax rate
+    const finalPrice = shoppingItem.listedPrice * (1 + shoppingItem.taxRate / 100);
+
     // Check if item with same name already exists
     const existingItem = data.items.find(item => item.name.toLowerCase() === shoppingItem.name.toLowerCase());
 
     if (existingItem) {
       // Update existing item: add to percentage left (up to 100%)
       existingItem.percentageLeft = Math.min(100, existingItem.percentageLeft + 100);
-      existingItem.cost = shoppingItem.finalPrice;
+      existingItem.cost = finalPrice;
       addedItems.push(existingItem);
     } else {
       // Create new item
       const newItem: Item = {
         id: generateId(),
         name: shoppingItem.name,
-        cost: shoppingItem.finalPrice,
+        cost: finalPrice,
         percentageLeft: 100,
       };
       data.items.push(newItem);

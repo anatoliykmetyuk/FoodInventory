@@ -21,7 +21,7 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
     const updated = [...localItems];
     updated[index] = {
       ...updated[index],
-      [field]: (field === 'listedPrice' || field === 'finalPrice') ? parseFloat(String(value)) || 0 :
+      [field]: (field === 'listedPrice' || field === 'taxRate') ? parseFloat(String(value)) || 0 :
                value,
     };
     setLocalItems(updated);
@@ -38,14 +38,18 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
     const newItem: ShoppingItem = {
       name: '',
       listedPrice: 0,
-      finalPrice: 0,
+      taxRate: 0,
     };
     const updated = [...localItems, newItem];
     setLocalItems(updated);
     onItemsChange(updated);
   };
 
-  const totalCost = localItems.reduce((sum, item) => sum + item.finalPrice, 0);
+  const calculateTotalCost = (item: ShoppingItem): number => {
+    return item.listedPrice * (1 + item.taxRate / 100);
+  };
+
+  const totalCost = localItems.reduce((sum, item) => sum + calculateTotalCost(item), 0);
 
   return (
     <div className="receipt-review-table">
@@ -55,68 +59,150 @@ function ReceiptReviewTable({ items, onItemsChange }: ReceiptReviewTableProps) {
           + Add Item
         </button>
       </div>
+
+      {/* Desktop table view */}
       <div className="table-container">
         <table>
           <thead>
             <tr>
               <th>Item</th>
               <th>Listed Price</th>
-              <th>Final Price</th>
+              <th>Tax Rate (%)</th>
+              <th>Total Cost</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {localItems.map((item, index) => (
-              <tr key={index}>
-                <td>
-                  <input
-                    type="text"
-                    value={item.name}
-                    onChange={(e) => updateItem(index, 'name', e.target.value)}
-                    className="table-input"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={item.listedPrice}
-                    onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
-                    className="table-input"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={item.finalPrice}
-                    onChange={(e) => updateItem(index, 'finalPrice', e.target.value)}
-                    className="table-input"
-                  />
-                </td>
-                <td>
-                  <button
-                    onClick={() => removeItem(index)}
-                    className="remove-button"
-                    type="button"
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {localItems.map((item, index) => {
+              const itemTotalCost = calculateTotalCost(item);
+              return (
+                <tr key={index}>
+                  <td>
+                    <input
+                      type="text"
+                      value={item.name}
+                      onChange={(e) => updateItem(index, 'name', e.target.value)}
+                      className="table-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={item.listedPrice}
+                      onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
+                      className="table-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={item.taxRate}
+                      onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
+                      className="table-input"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      value={formatPrice(itemTotalCost, currency)}
+                      readOnly
+                      className="table-input table-input-readonly"
+                    />
+                  </td>
+                  <td>
+                    <button
+                      onClick={() => removeItem(index)}
+                      className="remove-button"
+                      type="button"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={2} className="total-label">Total Cost:</td>
+              <td colSpan={3} className="total-label">Total Cost:</td>
               <td className="total-value" colSpan={2}>
                 {formatPrice(totalCost, currency)}
               </td>
             </tr>
           </tfoot>
         </table>
+      </div>
+
+      {/* Mobile card view */}
+      <div className="items-card-container">
+        {localItems.map((item, index) => {
+          const itemTotalCost = calculateTotalCost(item);
+          return (
+            <div key={index} className="item-card">
+              <div className="item-card-header">
+                <h4 className="item-card-title">Item {index + 1}</h4>
+                <button
+                  onClick={() => removeItem(index)}
+                  className="item-card-remove"
+                  type="button"
+                >
+                  Remove
+                </button>
+              </div>
+              <div className="item-card-field">
+                <label className="item-card-label">Item Name</label>
+                <input
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => updateItem(index, 'name', e.target.value)}
+                  className="item-card-input"
+                  placeholder="Enter item name"
+                />
+              </div>
+              <div className="item-card-field">
+                <label className="item-card-label">Listed Price</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={item.listedPrice}
+                  onChange={(e) => updateItem(index, 'listedPrice', e.target.value)}
+                  className="item-card-input"
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="item-card-field">
+                <label className="item-card-label">Tax Rate (%)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={item.taxRate}
+                  onChange={(e) => updateItem(index, 'taxRate', e.target.value)}
+                  className="item-card-input"
+                  placeholder="0.00"
+                />
+              </div>
+              <div className="item-card-field">
+                <label className="item-card-label">Total Cost</label>
+                <input
+                  type="text"
+                  value={formatPrice(itemTotalCost, currency)}
+                  readOnly
+                  className="item-card-input item-card-input-readonly"
+                />
+              </div>
+            </div>
+          );
+        })}
+        <div className="mobile-total">
+          <span className="mobile-total-label">Total Cost:</span>
+          <span className="mobile-total-value">{formatPrice(totalCost, currency)}</span>
+        </div>
       </div>
     </div>
   );

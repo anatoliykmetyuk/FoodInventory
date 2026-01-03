@@ -17,7 +17,10 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
 
   // Read-only view
   const currency = getCurrency();
-  const totalCost = items.reduce((sum, item) => sum + item.finalPrice, 0);
+  const calculateTotalCost = (item: ShoppingItem): number => {
+    return item.listedPrice * (1 + item.taxRate / 100);
+  };
+  const totalCost = items.reduce((sum, item) => sum + calculateTotalCost(item), 0);
 
   return (
     <div className="shopping-item-view">
@@ -27,21 +30,26 @@ function ShoppingItemEditor({ items, onItemsChange, isEditable = true }: Shoppin
             <tr>
               <th>Item</th>
               <th>Listed Price</th>
-              <th>Final Price</th>
+              <th>Tax Rate (%)</th>
+              <th>Total Cost</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
-              <tr key={index}>
-                <td>{item.name}</td>
-                <td>{formatPrice(item.listedPrice, currency)}</td>
-                <td>{formatPrice(item.finalPrice, currency)}</td>
-              </tr>
-            ))}
+            {items.map((item, index) => {
+              const itemTotalCost = calculateTotalCost(item);
+              return (
+                <tr key={index}>
+                  <td>{item.name}</td>
+                  <td>{formatPrice(item.listedPrice, currency)}</td>
+                  <td>{item.taxRate.toFixed(2)}%</td>
+                  <td>{formatPrice(itemTotalCost, currency)}</td>
+                </tr>
+              );
+            })}
           </tbody>
           <tfoot>
             <tr>
-              <td colSpan={2} className="total-label">Total Cost:</td>
+              <td colSpan={3} className="total-label">Total Cost:</td>
               <td className="total-value" colSpan={1}>
                 {formatPrice(totalCost, currency)}
               </td>
