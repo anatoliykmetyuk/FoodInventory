@@ -7,7 +7,7 @@
     "build": "npm run generate-icons && tsc && vite build",
     "preview": "vite preview",
     "generate-icons": "node scripts/generate-icons.js",
-    "test": "vitest",
+    "test": "vitest --run",
     "test:ui": "vitest --ui",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
