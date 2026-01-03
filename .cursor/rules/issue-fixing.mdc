@@ -2,6 +2,7 @@
 description: Apply this rule when the user requests to fix an issue, or specifies a Linear issue number of an issue to fix, such as "ANA-93"
 alwaysApply: false
 ---
+To start working on the issue, execute steps A.1-A.2. below, then wait for the user's confirmation to start going through the composed TODO list.
 
 ## A. Implementation Procedure
 1. If the user specified a Linear issue number, such as "ANA-93", then you should use Linear tool to fetch the issue details.
@@ -32,3 +33,8 @@ alwaysApply: false
 - VERY IMPORTANT: you must NOT SKIP OR SKIM over any of the steps of the instructions above! If any step fails, debug and try again until you get it EXACTLY right!
 - IMPORTANT: steps are not to be substituted by other similar steps! That is, for example, a step of testing via a browser tool may NOT be substituted by a step of running the unit tests! ALL THE STEPS ARE IMPORTANT!
 - IMPORTANT: you must NOT DISABLE ANY RULES via `// eslint-disable-next-line` comments!
+
+## D. Non-normal Checklists
+Execute the following checklists only if explicitly asked by the user.
+
+1. Fix your TODO list so that it EXACTLY matches this procedure. Refer to A.2. details on how it should be implemented.
